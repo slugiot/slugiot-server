@@ -6,31 +6,31 @@ It is written and programmable in Python. LGPLv3 License
 
 Learn more at http://web2py.com
 
+Clone this repository via: 
+
+    git clone --recursive https://github.com/lucadealfaro/web2py.git
+
+The --recursive option is important, or else you will be missing PyDAL, the database abstraction layer. 
+
 ## Google App Engine deployment
 
-    cp examples/app.yaml ./
-    cp handlers/gaehandler.py ./
+This is a special version of web2py, with logging written to mesh well with the logging on Google Appengine.
+To deploy, edit examples/app.yaml to replace "yourappname" with your application id. 
+
+### Creating a new app
+
+To create a new app called myapp:
+
+    cd web2py/applications
+    cp -r welcome myapp
     
-Then edit ./app.yaml and replace "yourappname" with yourappname.
+You may also want to edit routes.py to define what is your default app; replace "welcome" with "myapp".
 
-## Important reminder about this GIT repo
+### Running the app.
 
-An important part of web2py is the Database Abstraction Layer (DAL). In early 2015 this was decoupled into a separate code-base (PyDAL). In terms of git, it is a sub-module of the main repository.
+You can either use the Google Appengine Launcher, or you can download the Google Appengine source SDK and do:
 
-The use of a sub-module requires a one-time use of the --recursive flag for git clone if you are cloning web2py from scratch.
-
-    git clone --recursive https://github.com/web2py/web2py.git
-
-If you have an existing repository, the commands below need to be executed at least once:
-
-    git submodule update --init --recursive
-
-If you have a folder gluon/dal you must remove it:
-
-    rm -r gluon/dal
-
-PyDAL uses a separate stable release cycle to the rest of web2py. PyDAL releases will use a date-naming scheme similar to Ubuntu. Issues related to PyDAL should be reported to its separate repository.
-
+    python dev_appserver.py web2py/
 
 ## Documentation (readthedocs.org)
 
