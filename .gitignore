@@ -14,6 +14,7 @@
 Thumbs.db
 .DS_Store
 index.yaml
+logging.conf
 gluon/tests/VERSION
 gluon/tests/sql.log
 httpserver.log
