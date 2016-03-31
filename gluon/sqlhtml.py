@@ -27,7 +27,7 @@ from gluon.html import FORM, INPUT, LABEL, OPTION, SELECT, COL, COLGROUP
 from gluon.html import TABLE, THEAD, TBODY, TR, TD, TH, STYLE, SCRIPT
 from gluon.html import URL, FIELDSET, P, DEFAULT_PASSWORD_DISPLAY
 from pydal.base import DEFAULT
-from pydal.objects import Table, Row, Expression, Field
+from pydal.objects import Table, Row, Expression, Field, Set
 from pydal.adapters.base import CALLABLETYPES
 from pydal.helpers.methods import smart_query, bar_encode,  _repr_ref
 from pydal.helpers.classes import Reference, SQLCustomType
@@ -677,7 +677,23 @@ class AutocompleteWidget(object):
     def callback(self):
         if self.keyword in self.request.vars:
             field = self.fields[0]
-            if settings and settings.global_settings.web2py_runtime_gae:
+            if type(field) is Field.Virtual:
+                records = []
+                table_rows = self.db(self.db[field.tablename]).select(orderby=self.orderby)
+                count = 0
+                for row in table_rows:
+                    if self.at_beginning:
+                        if row[field.name].lower().startswith(self.request.vars[self.keyword]):
+                            count += 1
+                            records.append(row)
+                    else:
+                        if self.request.vars[self.keyword] in row[field.name].lower():
+                            count += 1
+                            records.append(row)
+                    if count == 10:
+                        break
+                rows = Rows(self.db, records, table_rows.colnames, compact=table_rows.compact)
+            elif settings and settings.global_settings.web2py_runtime_gae:
                 rows = self.db(field.__ge__(self.request.vars[self.keyword]) & field.__lt__(self.request.vars[self.keyword] + u'\ufffd')).select(orderby=self.orderby, limitby=self.limitby, *(self.fields+self.help_fields))
             elif self.at_beginning:
                 rows = self.db(field.like(self.request.vars[self.keyword] + '%', case_sensitive=False)).select(orderby=self.orderby, limitby=self.limitby, distinct=self.distinct, *(self.fields+self.help_fields))
@@ -725,8 +741,16 @@ class AutocompleteWidget(object):
                 del attr['requires']
             attr['_name'] = key2
             value = attr['value']
-            record = self.db(
-                self.fields[1] == value).select(self.fields[0]).first()
+            if type(self.fields[0]) is Field.Virtual:
+                record = None
+                table_rows = self.db(self.db[self.fields[0].tablename]).select(orderby=self.orderby)
+                for row in table_rows:
+                    if row.id == value:
+                        record = row
+                        break
+            else:
+                record = self.db(
+                    self.fields[1] == value).select(self.fields[0]).first()
             attr['value'] = record and record[self.fields[0].name]
             attr['_onblur'] = "jQuery('#%(div_id)s').delay(1000).fadeOut('slow');" % \
                 dict(div_id=div_id, u='F' + self.keyword)
@@ -877,6 +901,7 @@ def formstyle_bootstrap3_stacked(form, fields):
             elif controls['_type'] == 'checkbox':
                 label['_for'] = None
                 label.insert(0, controls)
+                label.insert(0, ' ')
                 _controls = DIV(label, _help, _class="checkbox")
                 label = ''
             elif isinstance(controls, (SELECT, TEXTAREA)):
@@ -912,7 +937,7 @@ def formstyle_bootstrap3_inline_factory(col_label_size=3):
             # wrappers
             _help = SPAN(help, _class='help-block')
             # embed _help into _controls
-            _controls = DIV(controls, _help, _class=col_class)
+            _controls = DIV(controls, _help, _class="%s" % (col_class))
             if isinstance(controls, INPUT):
                 if controls['_type'] == 'submit':
                     controls.add_class('btn btn-primary')
@@ -926,6 +951,7 @@ def formstyle_bootstrap3_inline_factory(col_label_size=3):
                 elif controls['_type'] == 'checkbox':
                     label['_for'] = None
                     label.insert(0, controls)
+                    label.insert(1, ' ')
                     _controls = DIV(DIV(label, _help, _class="checkbox"),
                                     _class="%s %s" % (offset_class, col_class))
                     label = ''
@@ -938,8 +964,6 @@ def formstyle_bootstrap3_inline_factory(col_label_size=3):
             elif isinstance(controls, UL):
                 for e in controls.elements("input"):
                     e.add_class('form-control')
-            elif controls is None or isinstance(controls, basestring):
-                _controls = P(controls, _class="form-control-static %s" % col_class)
             if isinstance(label, LABEL):
                 label['_class'] = add_class(label.get('_class'),'control-label %s' % label_col_class)
 
@@ -1504,13 +1528,12 @@ class SQLFORM(FORM):
             hideerror=hideerror,
             **kwargs
         )
-
-        self.deleted = \
-            request_vars.get(self.FIELDNAME_REQUEST_DELETE, False)
+        
+        self.deleted = request_vars.get(self.FIELDNAME_REQUEST_DELETE, False)
 
         self.custom.end = CAT(self.hidden_fields(), self.custom.end)
 
-        auch = self.record_id and self.errors and self.deleted
+        delete_exception = self.record_id and self.errors and self.deleted
 
         if self.record_changed and self.detect_record_change:
             message_onchange = \
@@ -1522,8 +1545,9 @@ class SQLFORM(FORM):
             if message_onchange is not None:
                 current.response.flash = message_onchange
             return ret
-        elif (not ret) and (not auch):
-            # auch is true when user tries to delete a record
+
+        elif (not ret) and (not delete_exception):
+            # delete_exception is true when user tries to delete a record
             # that does not pass validation, yet it should be deleted
             for fieldname in self.fields:
 
@@ -1720,6 +1744,7 @@ class SQLFORM(FORM):
                                        self.id_field_name]).update(**fields)
                 else:
                     self.vars.id = self.table.insert(**fields)
+
         self.accepted = ret
         return ret
 
@@ -2013,6 +2038,8 @@ class SQLFORM(FORM):
              use_cursor=False):
 
         formstyle = formstyle or current.response.formstyle
+        if isinstance(query, Set): 
+            query = query.query
 
         # jQuery UI ThemeRoller classes (empty if ui is disabled)
         if ui == 'jquery-ui':
@@ -2158,7 +2185,7 @@ class SQLFORM(FORM):
                        buttonurl=url(args=[]), callback=None,
                        delete=None, trap=True, noconfirm=None, title=None):
             if showbuttontext:
-                return A(SPAN(_class=ui.get(buttonclass)),
+                return A(SPAN(_class=ui.get(buttonclass)), CAT(' '),
                          SPAN(T(buttontext), _title=title or T(buttontext),
                               _class=ui.get('buttontext')),
                          _href=buttonurl,
@@ -2336,7 +2363,7 @@ class SQLFORM(FORM):
                 if deletable(record):
                     if ondelete:
                         ondelete(table, request.args[-1])
-                    record.delete_record()
+                    db(table[table._id.name] == request.args[-1]).delete()
             if request.ajax:
                 # this means javascript is enabled, so we don't need to do
                 # a redirect
@@ -2716,7 +2743,11 @@ class SQLFORM(FORM):
                     if field.type == 'blob':
                         continue
                     if isinstance(field, Field.Virtual) and field.tablename in row:
-                        value = dbset.db[field.tablename][row[field.tablename][field_id]][field.name]
+                        try:
+                            # fast path, works for joins
+                            value = row[field.tablename][field.name]
+                        except KeyError:
+                            value = dbset.db[field.tablename][row[field.tablename][field_id]][field.name]
                     else:
                         value = row[str(field)]
                     maxlength = maxtextlengths.get(str(field), maxtextlength)

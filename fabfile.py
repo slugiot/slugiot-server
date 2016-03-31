@@ -5,6 +5,9 @@ import os
 import datetime
 import getpass
 
+if os.path.exists('hosts'):
+    env.hosts = [h.strip() for h in open('hosts').readlines() if h.strip()]
+
 env.hosts = env.hosts or raw_input('hostname (example.com):').split(',')
 env.user = env.user or raw_input('username              :')
 
@@ -85,7 +88,7 @@ def mkdir_or_backup(appname):
 def git_deploy(appname, repo):
     """fab -H username@host git_deploy:appname,username/remoname"""
     appfolder = applications+'/'+appname
-    backup = mkdir_or_backup(appfolder)
+    backup = mkdir_or_backup(appname)
 
     if exists(appfolder):
         with cd(appfolder):
@@ -95,7 +98,7 @@ def git_deploy(appname, repo):
         with cd(applications):
             sudo('git clone git@github.com/%s %s' % (repo, name))
             sudo('chown -R www-data:www-data %s' % name)
-    
+
 def retrieve(appname=None):
     """fab -H username@host retrieve:appname"""
     appname = appname or os.path.split(os.getcwd())[-1]
@@ -115,18 +118,22 @@ def deploy(appname=None, all=False):
     if os.path.exists('_update.zip'):
         os.unlink('_update.zip')
 
-    backup = mkdir_or_backup(appfolder)
+    backup = mkdir_or_backup(appname)
             
     if all=='all' or not backup:
         local('zip -r _update.zip * -x *~ -x .* -x \#* -x *.bak -x *.bak2')
     else:        
         local('zip -r _update.zip */*.py views/*.html views/*/*.html static/*')
-    put('_update.zip','/tmp/_update.zip')
 
-    with cd(appfolder):
-        sudo('unzip -o /tmp/_update.zip')
-        sudo('chown -R www-data:www-data *')
-        sudo('echo "%s" > DATE_DEPLOYMENT' % now)
+    put('_update.zip','/tmp/_update.zip')
+    try:
+        with cd(appfolder):
+            sudo('unzip -o /tmp/_update.zip')
+            sudo('chown -R www-data:www-data *')
+            sudo('echo "%s" > DATE_DEPLOYMENT' % now)
+    
+    finally:
+        sudo('rm /tmp/_update.zip')
                
     if backup:
         print 'TO RESTORE: fab restore:%s' % backup
