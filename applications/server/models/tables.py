@@ -17,3 +17,12 @@
 
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
+
+
+
+db.define_table('device',
+                Field('name', 'string'),
+                Field('last_active', 'datetime'),
+                Field('is_active', 'boolean',
+                      writable=True, readable=True, default=True))
+
