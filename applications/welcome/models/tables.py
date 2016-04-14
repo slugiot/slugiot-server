@@ -45,3 +45,20 @@ db.define_table('values',
                 Field('name'),  # Name of variable
                 Field('value', 'text'),  # Json, short please
                 )
+
+
+#########################################################################
+
+## Adding table that should be used to store procedures on the server
+
+db.define_table('procedures',
+                Field('procedure_id', 'bigint', required=True),  # key
+                Field('device_id', required=True),  # not sure what field type this should be
+                Field('name', 'string'),  # Name of procedure
+                Field('data', 'text', required=True),  # Actual code for procedure - is check IS_LENGTH(65536) ok?
+                # Otherwise use string and specifiy larger length
+                # last_update corresponds to any save
+                Field('last_update', 'datetime', default=datetime.datetime.utcnow(), required=True),
+                # last_update_stable corresponds to an entry that is ready to be sent to client
+                Field('last_update_stable', 'datetime', default=datetime.datetime.utcnow(), required=True)
+                )
