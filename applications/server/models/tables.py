@@ -32,11 +32,40 @@ db.define_table('devices',
                 Field('description', 'text', default=''),
                 # part of what the UI calls for
                 Field('last_sync', 'datetime', required=True,default=datetime.utcnow()),
-                # status of the device, 0 = OK, 1 = Check Logs, 2 = Malfunction, 3 = Unknown/Unconfigured
-                Field('status', 'integer', required=True, default=3))
+                # status of the device
+                Field('status', 'integer', required=True, default=3)
+                )
 
 # This is a table that specifies what procedure runs on what device for what user
 db.define_table('runs_on',
                 Field('user_id', db.auth_user, required=True, default=auth.user_id),
                 Field('device_id', 'string', required=True),
-                Field('proc_id', 'string', required=True))
+                Field('proc_id', 'string', required=True)
+                )
+
+## These correspond to client tables.
+
+db.define_table('logs',
+                Field('device_id'),
+                Field('time_stamp', 'datetime', default=datetime.utcnow()),
+                Field('modulename'),
+                Field('log_level', 'integer'), #  int, 0 = most important.
+                Field('log_message', 'text'),
+                )
+
+db.define_table('outputs',
+                Field('device_id'),
+                Field('time_stamp', 'datetime', default=datetime.utcnow()),
+                Field('modulename'),
+                Field('name'), # Name of variable
+                Field('output_value', 'text'), # Json, short please
+                Field('tag')
+                )
+
+db.define_table('module_values',
+                Field('device_id'),
+                Field('time_stamp', 'datetime', default=datetime.utcnow()),
+                Field('modulename'),
+                Field('name'),  # Name of variable
+                Field('output_value', 'text'),  # Json, short please
+                )

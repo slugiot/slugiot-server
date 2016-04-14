@@ -21,9 +21,6 @@ def index():
         response.flash = T("Please sign in!")
     return dict(message=T('Welcome to web2py!'))
 
-def test():
-    return dict(message=T('Welcome to web2py!'))
-
 
 def user():
     """
