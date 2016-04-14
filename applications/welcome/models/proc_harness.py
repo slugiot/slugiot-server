@@ -11,15 +11,37 @@ from gluon import current
 
 proc_table = current.db["procedures"]
 
-def save(procedure_entry): #not exactly sure what this method needs
+
+####### API FOR EDITOR TEAM ##########
+
+# return procedure_id
+def create_procedure():
     pass
 
-def save_stable(procedure_entry): #will be defined the same way as save expect for specific timestamp updated
+# return list procedure_id
+def get_procedures_for_user(user_id):
     pass
 
-# will be used to create dictionary of procedure statuses
-def get_last_update_stable(procedure_id):
-    return db.proc_table(last_update_stable, procedure_id==procedure_id)
+# True for stable gets last stable, False gets most recent stable or not
+def get_procedure_data(procedure_id, stable):
+    pass
+
+# True for stable is save stable, False is save temp
+# when save is stable, flush all temp versions
+def save(procedure_id, stable):
+    pass
+
+
+####### API FOR PROCEDURE HARNESS TEAM ##########
+
+# called in response to client request for procedure info
+# returns a dictionary of the format {procedure_id, last_update_stable}
+def get_procedure_status(device_id):
+    # 1. Get all procedure_ids for the device_id
+    # 2. build dictionary containing last_update_stable date for each procedure_id
+    # 3. return dictionary
+    #     return db.proc_table(last_update_stable, procedure_id==procedure_id)
+    pass
 
 # not sure if we need this on the server but probably a good idea just to have it
 def cleanup_procedure_table(procedure_id):
