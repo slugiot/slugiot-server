@@ -56,7 +56,7 @@ db.define_table('values',
 # a = admin (valid only for one whole device)
 # e = edit settings of procedure
 db.define_table('user_permission',
-                Field('perm_user_id', db.auth),
+                Field('perm_user_email'), # The email of the currently logged in user can be found in auth.user.email
                 Field('device_id'),
                 Field('procedure_id'), # If None, then the permission is valid for ALL procedures.
                 Field('perm_type'), # See above.
