@@ -1,7 +1,14 @@
+<!-- Sample "dashboard" for SlugIOT
+    TODO: Replace all harcoded examples with things from the database
+    TODO: Actually make ractive work -->
+
 {{left_sidebar_enabled=False,right_sidebar_enabled=False,('message' in globals())}}
 {{extend 'layout.html'}}
 
+<!-- Ractive requires a "target" div, so everything from the template script is translated to the target -->
 <div id="target"></div>
+
+<!-- List of all devices sorted by Raspberry Pi -->
 <script id="template" type="text/ractive">
     {{block left_sidebar}}
       <div class="panel panel-info">
@@ -45,14 +52,17 @@
         </div>
     {{end}}
 
+    <!-- This where the charts and logs from the data viz team would go -->
     <div id="middle_bar" align="center">
         <h1 align="center">{% name %}</h1>
         <div id="curve_chart" style="width: 900px; height: 500px"></div>
     </div>
 
+    <!-- Things here would be generated from the database -->
     {{block right_sidebar}}
         <div id="device_info" align="center">
         <h1>Status</h1>
+        <!-- This would link to something produced by the script editor team -->
         <button type="button" class="btn btn-primary" onclick="editClick()">
             <i class="fa fa-pencil-square-o fa-fw" aria-hidden="true"></i><font size="1">Edit Script</font>
         </button><br><br>
@@ -78,16 +88,18 @@
       tripleDelimiters: ['{%%', '%%}'],
 
       // Here, we're passing in some initial data
-      data: { name: 'Nest Thermostat' }
+      data: { name: 'Nest Thermostat' } // this would be changed, obviously
     });
 
     ractive.on({
         'car_click': function(){
-            ractive.set('name', "Tesla Model S");
+            ractive.set('name', "Tesla Model S"); // again, would be changed, expanded
         }
     });
 
     // ============== Graphs =====================================
+    // Would be replace by whatever the data viz teams comes up with
+
     // Load the Visualization API and the corechart package.
       google.charts.load('current', {'packages':['corechart']});
 
@@ -117,6 +129,7 @@
       }
 
     // =============== Sync Timer ===================
+    // Countdown timer until next sync
     function startTimer(duration, display) {
         var timer = duration, minutes, seconds;
         setInterval(function () {
@@ -147,7 +160,7 @@
         alert("Work in progress, not added yet");
     }
 
-    // Chrome notifications
+    // Chrome notifications...neat little thing was messing around with
     // request permission on page load
     document.addEventListener('DOMContentLoaded', function () {
       if (Notification.permission !== "granted")
