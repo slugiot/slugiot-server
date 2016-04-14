@@ -88,7 +88,7 @@ auth.settings.table_user = custom_auth_table  # tell auth to use custom_auth_tab
 auth.define_tables()
 
 #########################################################################
-#These conrespond to device table
+#These conrespond to device tables.
 #########################################################################
 
 db.define_table(
@@ -98,7 +98,7 @@ db.define_table(
     Field("name", length=128, default=''),  # required
     Field("description", length=512, default='')
 )
-client_table = db["Device_Table"]  # get the custom_auth_permission_table
-client_table.device_id.requires = IS_NOT_EMPTY(error_message=auth.messages.is_empty)
-client_table.owner_email.requires = IS_NOT_EMPTY(error_message=auth.messages.is_empty)
-client_table.name.requires = IS_NOT_EMPTY(error_message=auth.messages.is_empty)
+device_table = db["Device_Table"]  # get the custom_auth_permission_table
+device_table.device_id.requires = IS_NOT_EMPTY(error_message=auth.messages.is_empty)
+device_table.owner_email.requires = IS_NOT_EMPTY(error_message=auth.messages.is_empty)
+device_table.name.requires = IS_NOT_EMPTY(error_message=auth.messages.is_empty)
