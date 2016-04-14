@@ -20,12 +20,10 @@
 
 from datetime import datetime
 
-# TODO: Restrict r/w permissions?
-# we would perhaps need another DB for logs and massive amounts of text like that?
-# is another team taking care of those?
-
-# This is a table for what rasberry pi devices a user owns
-db.define_table('rbp_devices',
+# For the user management team?
+db.define_table('devices',
+                # if we give the device an ID, we can do checks to verify devices belong to which device
+                Field('device_id', 'string', required=True),
                 # we can always an ID for something
                 Field('user_id', db.auth_user, default=auth.user_id),
                 # user should give rbp a name
@@ -35,21 +33,10 @@ db.define_table('rbp_devices',
                 # part of what the UI calls for
                 Field('last_sync', 'datetime', required=True,default=datetime.utcnow()),
                 # status of the device, 0 = OK, 1 = Check Logs, 2 = Malfunction, 3 = Unknown/Unconfigured
-                Field('status', 'integer', required=True, default=3),
-                # if we give the rbp an ID, we can do checks to verify devices belong to which rbp
-                Field('device_id', 'string', required=True)
-                )
+                Field('status', 'integer', required=True, default=3))
 
-# sub devices are indv devices connected to each rbp
-db.define_table('sub_devices',
-                # must match rbp_devices' device_id
-                db.Field('rbp_id', 'string', required=True),
-                # self explanatory
-                db.Field('name', 'text', required=False, default=''),
-                # status of the device, 0 = OK, 1 = Check Logs, 2 = Malfunction, 3 = Unknown/Unconfigured
-                Field('status', 'integer', required=True, default=3),
-                # when was the device last active/synced?
-                db.Field('is_active', 'boolean', required=False, default=True),
-                # who added the device and when?
-                db.Field('added_on', 'datetime', required=True),
-                db.Field('added_by', db.auth_user, default=auth.user_id))
+# This is a table that specifies what procedure runs on what device for what user
+db.define_table('runs_on',
+                Field('user_id', db.auth_user, required=True, default=auth.user_id),
+                Field('device_id', 'string', required=True),
+                Field('proc_id', 'string', required=True))
