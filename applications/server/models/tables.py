@@ -45,3 +45,19 @@ db.define_table('values',
                 Field('name'),  # Name of variable
                 Field('value', 'text'),  # Json, short please
                 )
+
+
+
+##############
+# Permission table.
+
+# Permission types.
+# v = view
+# a = admin (valid only for one whole device)
+# e = edit settings of procedure
+db.define_table('user_permission',
+                Field('perm_user_id', db.auth),
+                Field('device_id'),
+                Field('procedure_id'), # If None, then the permission is valid for ALL procedures.
+                Field('perm_type'), # See above.
+                )
