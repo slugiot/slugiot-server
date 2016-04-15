@@ -24,26 +24,20 @@ from datetime import datetime
 db.define_table('devices',
                 # if we give the device an ID, we can do checks to verify devices belong to which device
                 Field('device_id', 'string', required=True),
-                # we can always an ID for something
-                Field('user_id', db.auth_user, default=auth.user_id),
-                # user should give rbp a name
-                Field('name', 'string', required=True, default='Unknown Device'),
-                # perhaps a description as well?
+                Field('user_email'),
+                Field('name', 'string', required=True, default='Unknown Device'), # Name of device
                 Field('description', 'text', default=''),
-                # part of what the UI calls for
-                Field('last_sync', 'datetime', required=True,default=datetime.utcnow()),
-                # status of the device
-                Field('status', 'integer', required=True, default=3)
+                Field('last_sync', 'datetime', required=True,default=datetime.utcnow()), # TODO: move to synch code?
                 )
 
 # This is a table that specifies what procedure runs on what device for what user
 db.define_table('runs_on',
-                Field('user_id', db.auth_user, required=True, default=auth.user_id),
+                Field('user_email', required=True),
                 Field('device_id', 'string', required=True),
                 Field('proc_id', 'string', required=True)
                 )
 
-## These correspond to client tables.
+## These tables are synched "up" from the clients to the server.
 
 db.define_table('logs',
                 Field('device_id'),
@@ -69,3 +63,5 @@ db.define_table('module_values',
                 Field('name'),  # Name of variable
                 Field('output_value', 'text'),  # Json, short please
                 )
+
+## TODO: define the tables that need to be synched "down", for settings, and procedures.
