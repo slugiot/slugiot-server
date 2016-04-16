@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
 
@@ -9,6 +8,7 @@
 ## - download is for downloading files uploaded in the db (does streaming)
 #########################################################################
 
+@auth.requires_login()
 def index():
     """
     example action using the internationalization operator T and flash
@@ -16,7 +16,8 @@ def index():
     if you need a simple wiki simply replace the two lines below with:
     return auth.wiki()
     """
-    response.flash = T("Hello World")
+    if auth.user_id is None:
+        response.flash = T("Please sign in!")
     return dict(message=T('Welcome to web2py!'))
 
 
@@ -56,18 +57,3 @@ def call():
     supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
     """
     return service()
-
-
-def select():
-    """
-    search for the exit procedure in the database
-    :return:
-    """
-    row= db(db.testcoding).select().first()
-    if row is not None:
-        rows = db(db.testcoding).select()
-        code_list = [{'id': r.id, 'procedures': r.procedures, 'times': r.times} for r in rows]
-        return dict(exit = 1, code_list = code_list)
-    return dict(exit = 0)
-
-
