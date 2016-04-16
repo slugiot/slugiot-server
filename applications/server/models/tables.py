@@ -41,20 +41,24 @@ db.define_table('runs_on',
 
 db.define_table('logs',
                 Field('device_id'),
-                Field('time_stamp', 'datetime', default=datetime.utcnow()),
                 Field('modulename'),
                 Field('log_level', 'integer'), #  int, 0 = most important.
                 Field('log_message', 'text'),
+                Field('logged_time_stamp', 'datetime'),
+                Field('recieved_time_stamp', 'datetime', default=datetime.utcnow()),
+
                 )
 
 db.define_table('outputs',
                 Field('device_id'),
-                Field('time_stamp', 'datetime', default=datetime.utcnow()),
                 Field('modulename'),
                 Field('name'), # Name of variable
                 Field('output_value', 'text'), # Json, short please
-                Field('tag')
-                )
+                Field('tag'),
+                Field('logged_time_stamp', 'datetime', default=datetime.utcnow()),
+                Field('recieved_time_stamp', 'datetime', default=datetime.utcnow()),
+
+)
 
 db.define_table('module_values',
                 Field('device_id'),

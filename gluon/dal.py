@@ -117,3 +117,11 @@ if not DRIVERS.get('pg8000'):
         DRIVERS['pg8000'] = pg8000
     except:
         pass
+if not DRIVERS.get('sqlite3'):
+    try:
+        import sqlite3
+
+        DRIVERS['sqlite3'] = sqlite3
+    except:
+        pass
+
