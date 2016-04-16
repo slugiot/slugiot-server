@@ -65,3 +65,17 @@ db.define_table('module_values',
                 )
 
 ## TODO: define the tables that need to be synched "down", for settings, and procedures.
+
+
+
+
+
+
+
+
+
+## This is the table used to temperary testing editor
+db.define_table('coding',
+            Field('procedures', 'text'),
+            Field('times','datetime')
+            )

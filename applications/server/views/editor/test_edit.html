@@ -52,13 +52,14 @@
 <script>
 $(document).ready(function() {
     {{print(URL('controllers','default'))}}
-    load_file("/admin/default/edit_procedure?code=1");
+
+    load_file("/server/editor/edit_procedure?code=1");
 });
 
 
 function load_file(url) {
   $.getJSON(url, function (json) {
-
+     console.log(json['plain_html'])
       if(typeof (json['plain_html']) !== undefined) {
         if($('#' + json['id']).length === 0 ) {
           //  the code in it
