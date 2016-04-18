@@ -22,6 +22,7 @@ import datetime
 
 ## These correspond to client tables.
 
+
 db.define_table('logs',
                 Field('device_id'),
                 Field('timestamp', 'datetime', default=datetime.datetime.utcnow()),
@@ -46,6 +47,22 @@ db.define_table('values',
                 Field('value', 'text'),  # Json, short please
                 )
 
+##############
+#Device table
+db.define_table('devices',
+                # if we give the device an ID, we can do checks to verify devices belong to which device
+                Field('device_id', 'string', required=True),
+                # we can always an ID for something
+                Field('user_id', db.auth_user, default=auth.user_id),
+                # user should give rbp a name
+                Field('name', 'string', required=True, default='Unknown Device'),
+                # perhaps a description as well?
+                Field('description', 'text', default=''),
+                # part of what the UI calls for
+                #Field('last_sync', 'datetime', required=True, default=datetime.utcnow()),
+                # status of the device
+                Field('status', 'integer', required=True, default=3)
+                )
 
 
 ##############
@@ -56,8 +73,13 @@ db.define_table('values',
 # a = admin (valid only for one whole device)
 # e = edit settings of procedure
 db.define_table('user_permission',
-                Field('perm_user_email'), # The email of the currently logged in user can be found in auth.user.email
-                Field('device_id'),
-                Field('procedure_id'), # If None, then the permission is valid for ALL procedures.
-                Field('perm_type'), # See above.
+                Field('perm_id', 'string', required=True),
+                Field('perm_user_email', required =True),
+                # The email of the currently logged in user can be found in auth.user.email
+                Field('device_id', required = True),
+                Field('procedure_id'),
+                # If None, then the permission is valid for ALL procedures.
+                Field('perm_type',required = True)
+                # See above.
                 )
+
