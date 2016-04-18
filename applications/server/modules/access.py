@@ -17,25 +17,27 @@ def register_device(name=None, description=''):
 
 # Share one device to multiple users with one permission type
 # return emails which are not successfully shared.
-def share_device(device_id, user_email={}, type='v', procedure_id=None):
+def share_device(device_id, user_email=[], type='v', procedure_id=None):
     db = current.db
     permission = db.user_permission
-    fail_email = {}
+    fail_email = []
     for email in user_email:
         # Does the email exist in registered user table?
         # if it does not exist this permission adding operation is denied
         if db(db.auth_user.email == email) is None:
-            fail_email += email
+            fail_email.append(email)
         else:
+            # Does permission table contain this record?
             p = db((db.user_permission.perm_user_email == email) &
                    (db.user_permission.device_id == device_id) &
                    (db.user_permission.procedure_id == procedure_id)).select().first()
 
             if p is None:
                 # if no record stored in permission table we insert new permission record
-                permission.insert(device_id=device_id, user_email=email, procedure_id=procedure_id, perm_type=type)
+                permission.insert(perm_user_email=email, device_id=device_id, procedure_id=procedure_id, perm_type=type)
             else:
-                p.update(device_id=device_id, user_email=email, procedure_id=procedure_id, perm_type=type)
+                # update the selected row
+                p.update(perm_user_email=email, device_id=device_id, procedure_id=procedure_id, perm_type=type)
     return fail_email
 
 
