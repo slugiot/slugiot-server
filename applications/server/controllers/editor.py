@@ -7,13 +7,16 @@ from datetime import datetime
 
 
 def test_edit():
-    return dict()
+        procedure_id = request.vars.procedure_id
+        print(request.vars)
+        return dict(procedure_id = procedure_id)
 
 def edit_procedure():
     """ return json data to show the editor content """
     # Load json only if it is ajax edited...
     preferences={'theme':'web2py', 'editor': 'default', 'closetag': 'true', 'codefolding': 'false', 'tabwidth':'4', 'indentwithtabs':'false', 'linenumbers':'true', 'highlightline':'true'}
-    codeId = request.vars.code
+    codeId = request.vars.procedure_id
+    print(codeId)
     data =  db(db.coding.id == codeId).select(db.coding.procedures).first().procedures
     file_details = dict(
                     editor_settings=preferences,

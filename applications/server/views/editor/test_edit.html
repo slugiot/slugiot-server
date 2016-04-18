@@ -51,13 +51,12 @@
 
 <script>
 $(document).ready(function() {
-    {{print(URL('controllers','default'))}}
-
-    load_file("/server/editor/edit_procedure?code=1");
+    load_file("{{=URL('edit_procedure',vars=dict(procedure_id=procedure_id))}}");
 });
 
 
 function load_file(url) {
+
   $.getJSON(url, function (json) {
      console.log(json['plain_html'])
       if(typeof (json['plain_html']) !== undefined) {
@@ -68,7 +67,7 @@ function load_file(url) {
         }
       }
   }).fail(function() {
-      on_error();
+      console.log('load_file error');
   });
   return false;
 }
