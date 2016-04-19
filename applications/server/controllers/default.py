@@ -1,30 +1,56 @@
 # -*- coding: utf-8 -*-
-# this file is released under public domain and you can use without limitations
 
-#########################################################################
-## This is a sample controller
-## - index is the default action of any application
-## - user is required for authentication and authorization
-## - download is for downloading files uploaded in the db (does streaming)
-#########################################################################
+from gluon import utils as gluon_utils
+import time
 
 
 def index():
     """
-    Controller for the home page. Returns SQLFORM of devices if logged in and a list of all the
-    devices.
-
-    TODO: This is poor form, make it so that only devices matching with user email get
-    included here.
+    Controller for the home page. Returns SQLFORM of devices if logged in and a list of all the devices.
     """
+    sign_uuid = gluon_utils.web2py_uuid()
     if auth.user_id is None:
-        return dict(message=T('Please sign in!'))
+        # Would sign_uuid really be needed here? Leaving just in case.
+        return dict(message=T('Please sign in!'), sign_uuid=sign_uuid)
     else:
         device_list = db().select(db.devices.ALL)
-        form = SQLFORM(db.devices)
-        if form.process().accepted:
-            redirect(URL('default', 'index'))
-        return dict(device_list=device_list, form=form)
+        return dict(device_list=device_list, sign_uuid=sign_uuid)
+
+
+@auth.requires_login()
+def add():
+    db.devices.device_id.writable = True
+    db.devices.last_sync.readable = db.devices.last_sync.writable = False
+    form = SQLFORM(db.devices)
+    if form.process().accepted:
+        session.flash = "Device added!"
+        redirect(URL('default', 'index'))
+    return dict(form=form)
+
+
+def load_devices():
+    # TODO: Condense "rows" to just for that one specific user instead of ALL devices
+    rows = db(db.devices).select()
+    time.sleep(1)  # so we can some time to stare at the pretty animation :-)
+    d = {r.device_id: {'name': r.name,
+                       'description': r.description,
+                       'device_icon': r.device_icon,
+                       'last_sync': r.last_sync,
+                       'user_email': r.user_email,
+                       'id': r.id}
+         for r in rows}
+    return response.json(dict(device_dict=d))
+
+
+@auth.requires_signature()
+def delete_devices():
+    delete_devices = request.vars.get("delete_devices[]")
+    if type(delete_devices) is str:
+        db(db.devices.device_id == delete_devices).delete()
+    else:
+        for i in delete_devices:
+            db(db.devices.device_id == i).delete()
+    return "ok"
 
 
 def user():
@@ -44,10 +70,6 @@ def user():
     also notice there is http://..../[app]/appadmin/manage/auth to allow administrator to manage users
     """
     return dict(form=auth())
-
-
-def add():
-    return dict(message=T("Hello World"))
 
 
 @cache.action()
