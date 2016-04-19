@@ -45,6 +45,7 @@ def get_procedures_for_user(user_id):
     procedure_ids = []
     for row in records:
         procedure_ids.append(row.id)
+
     return procedure_ids
 
 
@@ -118,11 +119,12 @@ def get_procedure_status(device_id):
     procedure_ids = db((devices.device_id == device_id) &
                        (devices.user_id == proc_table.user_id)).select(proc_table.procedure_id)
 
-    # Build dictionary containing last_update_stable date for each procedure_id
+    # Build dictionary containing last_update date for each procedure_id
     procedure_info = {}
     for proc in procedure_ids:
         pid = proc.procedure_id
         procedure_info[pid] = db(revisions_table.procedure_id == pid).select(revisions_table.last_update).first().last_update
+
     return procedure_info
 
 
@@ -135,7 +137,7 @@ def get_procedure_update(procedure_id_lst):
     :return: Dict of the format {procedure_id: procedure_data}
     :rtype:
     """
-
+    # Build dictionary containing data for each procedure_id
     procedures_for_update = {}
     for proc in procedure_id_lst:
         procedures_for_update[proc.procedure_id] = get_procedure_data(proc, True)
