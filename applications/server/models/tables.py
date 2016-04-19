@@ -40,6 +40,7 @@ db.define_table('runs_on',
 
 ## These tables are synched "up" from the clients to the server.
 
+
 db.define_table('logs',
                 Field('device_id'),
                 Field('time_stamp', 'datetime', default=datetime.utcnow()),
@@ -71,3 +72,22 @@ db.logs.log_level.writable=False
 db.logs.log_message.writable=False
 
 ## TODO: define the tables that need to be synched "down", for settings, and procedures.
+
+##############
+# Permission table.
+
+# Permission types.
+# v = view
+# a = admin (valid only for one whole device)
+# e = edit settings of procedure
+db.define_table('user_permission',
+                Field('perm_id', 'string', required=True),
+                Field('perm_user_email', required =True),
+                # The email of the currently logged in user can be found in auth.user.email
+                Field('device_id', required = True),
+                Field('procedure_id'),
+                # If None, then the permission is valid for ALL procedures.
+                Field('perm_type',required = True)
+                # See above.
+                )
+
