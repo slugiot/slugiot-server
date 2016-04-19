@@ -18,52 +18,54 @@
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
 
-import datetime
+from datetime import datetime
 
-## These correspond to client tables.
+# For the user management team?
+db.define_table('devices',
+                # if we give the device an ID, we can do checks to verify devices belong to which device
+                Field('device_id', 'string', required=True),
+                Field('user_email'),
+                Field('name', 'string', required=True, default='Unknown Device'), # Name of device
+                Field('description', 'text', default=''),
+                Field('last_sync', 'datetime', required=True,default=datetime.utcnow()), # TODO: move to synch code?
+                )
+
+# This is a table that specifies what procedure runs on what device for what user
+db.define_table('runs_on',
+                Field('user_email', required=True),
+                Field('device_id', 'string', required=True),
+                Field('proc_id', 'string', required=True)
+                )
+
+## These tables are synched "up" from the clients to the server.
 
 
 db.define_table('logs',
                 Field('device_id'),
-                Field('timestamp', 'datetime', default=datetime.datetime.utcnow()),
-                Field('module'),
-                Field('level', 'integer'), #  int, 0 = most important.
-                Field('message', 'text'),
+                Field('time_stamp', 'datetime', default=datetime.utcnow()),
+                Field('modulename'),
+                Field('log_level', 'integer'), #  int, 0 = most important.
+                Field('log_message', 'text'),
                 )
 
-db.define_table('output',
+db.define_table('outputs',
                 Field('device_id'),
-                Field('timestamp', 'datetime', default=datetime.datetime.utcnow()),
-                Field('module'),
+                Field('time_stamp', 'datetime', default=datetime.utcnow()),
+                Field('modulename'),
                 Field('name'), # Name of variable
-                Field('value', 'text'), # Json, short please
+                Field('output_value', 'text'), # Json, short please
+                Field('tag')
                 )
 
-db.define_table('values',
+db.define_table('module_values',
                 Field('device_id'),
-                Field('timestamp', 'datetime', default=datetime.datetime.utcnow()),
-                Field('module'),
+                Field('time_stamp', 'datetime', default=datetime.utcnow()),
+                Field('modulename'),
                 Field('name'),  # Name of variable
-                Field('value', 'text'),  # Json, short please
+                Field('output_value', 'text'),  # Json, short please
                 )
 
-##############
-#Device table
-db.define_table('devices',
-                # if we give the device an ID, we can do checks to verify devices belong to which device
-                Field('device_id', 'string', required=True),
-                # we can always an ID for something
-                Field('user_id', db.auth_user, default=auth.user_id),
-                # user should give rbp a name
-                Field('name', 'string', required=True, default='Unknown Device'),
-                # perhaps a description as well?
-                Field('description', 'text', default=''),
-                # part of what the UI calls for
-                #Field('last_sync', 'datetime', required=True, default=datetime.utcnow()),
-                # status of the device
-                Field('status', 'integer', required=True, default=3)
-                )
-
+## TODO: define the tables that need to be synched "down", for settings, and procedures.
 
 ##############
 # Permission table.

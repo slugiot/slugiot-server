@@ -4,7 +4,6 @@
 #########################################################################
 ## Customize your APP title, subtitle and menus here
 #########################################################################
-
 response.logo = A(B('web',SPAN(2),'py'),XML('&trade;&nbsp;'),
                   _class="navbar-brand",_href="http://www.web2py.com/",
                   _id="web2py-logo")
@@ -25,10 +24,12 @@ response.google_analytics_id = None
 #########################################################################
 
 response.menu = [
-    (T('Home'), False, URL('default', 'index'), [])
+    (T('Home'), False, URL('default', 'index'), []),
+    (T('Add New Device'), False, URL('default', 'add'), []),
+    (T('Help'), False, URL('default', 'help'), [])
 ]
 
-DEVELOPMENT_MENU = True
+DEVELOPMENT_MENU = False
 
 #########################################################################
 ## provide shortcuts for development. remove in production
