@@ -21,11 +21,10 @@ def register_device(name=None, description=''):
     permission = db.user_permission
     device_id = devices.insert(name=name, user_id=auth.user_id, description=description)
     permission.insert(perm_user_email=auth.user.email, device_id=device_id, procedure_id=None, perm_type='a')
-#TODO: perhaps useful to the UI team.
 
 
-# Share one device to multiple users with one permission type
-# return emails which are not successfully shared.
+# TODO: perhaps useful to the UI team.
+
 
 def share_device(device_id, user_email=[], _type='v', procedure_id=None):
     """
@@ -52,7 +51,8 @@ def share_device(device_id, user_email=[], _type='v', procedure_id=None):
 
             if p is None:
                 # if no record stored in permission table we insert new permission record
-                permission.insert(perm_user_email=email, device_id=device_id, procedure_id=procedure_id, perm_type=_type)
+                permission.insert(perm_user_email=email, device_id=device_id, procedure_id=procedure_id,
+                                  perm_type=_type)
             else:
                 # update the selected row if given type entails original type
                 if permission_entail(_type, p.perm_type):
