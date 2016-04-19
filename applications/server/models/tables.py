@@ -65,4 +65,9 @@ db.define_table('module_values',
                 Field('output_value', 'text'),  # Json, short please
                 )
 
+db.logs.log_level.requires = IS_INT_IN_RANGE(0, 4)  # limit log type to 5 (INFO, WARNING, DEBUG, ERROR, CRITICAL)
+db.logs.time_stamp.writable=False                   # can not manual change log data (time, log_level, log_message)
+db.logs.log_level.writable=False
+db.logs.log_message.writable=False
+
 ## TODO: define the tables that need to be synched "down", for settings, and procedures.
