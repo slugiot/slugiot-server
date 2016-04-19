@@ -36,7 +36,6 @@ def load_devices():
     d = {r.device_id: {'name': r.name,
                        'description': r.description,
                        'device_icon': r.device_icon,
-                       'last_sync': r.last_sync,
                        'user_email': r.user_email,
                        'id': r.id}
          for r in rows}
