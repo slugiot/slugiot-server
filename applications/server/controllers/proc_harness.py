@@ -37,7 +37,7 @@ def get_procedures_for_user(user_id):
 def get_procedure_data(procedure_id, stable):
     if stable:
         date = db(proc_table.procedure_id == procedure_id,
-                  proc_table.stable == stable).select(proc_table.last_update).max()
+                  proc_table.stable_version == stable).select(proc_table.last_update).max()
     else:
         date = db(proc_table.procedure_id == procedure_id).select(proc_table.last_update).max()
     return db(proc_table.procedure_id == procedure_id,
@@ -49,11 +49,11 @@ def save(procedure_id, procedure_data, stable):
     # insert new record
     proc_table.insert(procedure_id = procedure_id,
                       procedure_data = procedure_data,
-                      stable = stable)
+                      stable_version = stable)
     #flush temp versions for stable save
     if stable:
         db(proc_table.procedure_id == procedure_id,
-           proc_table.stable == False).delete()
+           proc_table.stable_version == False).delete()
 
 ####### API FOR PROCEDURE HARNESS TEAM ##########
 
