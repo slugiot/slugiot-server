@@ -12,8 +12,6 @@ revisions_table = db.procedure_revisions
 
 ####### API FOR EDITOR TEAM ##########
 
-# PROBLEM: how does user_id get connected to procedure_id?
-
 # return procedure_id to be used for a new procedure being created
 # note - currently this function does NOT implicitly save the procedure_id in the table
 def create_procedure(procedure_name, user_id):
@@ -32,13 +30,14 @@ def get_procedures_for_user(user_id):
 
 # True for stable gets last stable, False gets most recent stable or not
 def get_procedure_data(procedure_id, stable):
+    max = revisions_table.last_update.max()
     if stable:
         date = db(revisions_table.procedure_id == procedure_id,
-                  revisions_table.stable_version == stable).select(revisions_table.last_update).max()
+                  revisions_table.stable_version == stable).select(max)
     else:
-        date = db(revisions_table.procedure_id == procedure_id).select(revisions_table.last_update).max()
+        date = db(revisions_table.procedure_id == procedure_id).select(max)
     return db(revisions_table.procedure_id == procedure_id,
-              revisions_table.last_update == date).select(revisions_table.data)
+                revisions_table.last_update == date).select(revisions_table.procedure_data).first().procedure_data
 
 # True for stable is save stable, False is save temp
 # when save is stable, flush all temp versions
@@ -56,6 +55,7 @@ def save(procedure_id, procedure_data, stable):
 
 # called in response to client request for procedure info
 # returns a dictionary of the format {procedure_id, last_update_stable}
+# when does a procedure get registered to a device? should this happen in first function??
 def get_procedure_status(device_id):
     # 1. Get all procedure_ids for the device_id
     procedure_ids = db(db.devices.device_id == device_id,
