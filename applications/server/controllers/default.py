@@ -21,7 +21,6 @@ def index():
 @auth.requires_login()
 def add():
     db.devices.device_id.writable = True
-    db.devices.last_sync.readable = db.devices.last_sync.writable = False
     form = SQLFORM(db.devices)
     if form.process().accepted:
         session.flash = "Device added!"
