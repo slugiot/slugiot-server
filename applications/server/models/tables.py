@@ -74,7 +74,10 @@ db.define_table('module_values',
 
 
 
-## This is the table used to temperary testing editor
+## This is the table used to temporary testing editor
+## it get procedure by the table id instead of device id
+## because Team2 provide API for us to get the data from procedures
+## we will delete this table at the final edition.
 db.define_table('coding',
             Field('procedures', 'text'),
             Field('times','datetime')
