@@ -121,24 +121,23 @@ def get_procedure_status(device_id):
     # Build dictionary containing last_update_stable date for each procedure_id
     procedure_info = {}
     for proc in procedure_ids:
-        procedure_info[proc.procedure_id] = get_procedure_data(proc, True)
+        pid = proc.procedure_id
+        procedure_info[pid] = db(revisions_table.procedure_id == pid).select(revisions_table.last_update).first().last_update
     return procedure_info
 
 
-# need to add each record to a json object and send it
 def get_procedure_update(procedure_id_lst):
     """
     Called in response to client request for procedures to be synced
 
     :param procedure_id_lst: List of procedure IDs that need to be updated on client
     :type procedure_id_lst:
-    :return: Not defined yet
+    :return: Dict of the format {procedure_id: procedure_data}
+    :rtype:
     """
 
-    for proc_id in procedure_id_lst:
-        record = db(revisions_table.procedure_id == proc_table.proc_id).select(proc_table.procedure_id,
-                                                                                 proc_table.user_id,
-                                                                                 revisions_table.last_update,
-                                                                                 proc_table.procedure_name,
-                                                                                 revisions_table.procedure_data).first()
-    return record
+    procedures_for_update = {}
+    for proc in procedure_id_lst:
+        procedures_for_update[proc.procedure_id] = get_procedure_data(proc, True)
+
+    return procedures_for_update
