@@ -21,6 +21,7 @@ def register_device(name=None, description=''):
     permission = db.user_permission
     device_id = devices.insert(name=name, user_id=auth.user_id, description=description)
     permission.insert(perm_user_email=auth.user.email, device_id=device_id, procedure_id=None, perm_type='a')
+#TODO: perhaps useful to the UI team.
 
 
 # Share one device to multiple users with one permission type
