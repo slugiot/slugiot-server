@@ -7,6 +7,8 @@
 ## perform saves and stable saves
 #########################################################################
 
+import datetime
+
 proc_table = db.procedures
 revisions_table = db.procedure_revisions
 
@@ -44,12 +46,15 @@ def get_procedure_data(procedure_id, stable):
 def save(procedure_id, procedure_data, stable):
     # insert new record
     revisions_table.insert(procedure_id = procedure_id,
-                      procedure_data = procedure_data,
-                      stable_version = stable)
+                           procedure_data = procedure_data,
+                           last_update = datetime.datetime.utcnow(),
+                           stable_version = stable)
     #flush temp versions for stable save
     if stable:
-        db(revisions_table.procedure_id == procedure_id,
-           revisions_table.stable_version == False).delete()
+        db((db[table].uuid == item.uuid) &
+           (db[table].id != item.id)).delete()
+        db((revisions_table.procedure_id == procedure_id) &
+           (revisions_table.stable_version == False)).delete()
 
 ####### API FOR PROCEDURE HARNESS TEAM ##########
 
