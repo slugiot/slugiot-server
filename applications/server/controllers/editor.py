@@ -9,25 +9,37 @@ def edit_procedure():
     """
     return json data to show the editor content
     """
-    # Load json only if it is ajax edited...
     preferences={'theme':'web2py', 'editor': 'default', 'closetag': 'true', 'codefolding': 'false', 'tabwidth':'4', 'indentwithtabs':'false', 'linenumbers':'true', 'highlightline':'true'}
-    codeId = request.vars.procedure_id
-    """
-    the final edition will use Team 2 API get_procedures_for_user(user_id) to get the data
-    we debug with temporary table to validate the function of editor
-    """
-    data =  db(db.coding.id == codeId).select(db.coding.procedures).first().procedures
+    code_id = request.vars.procedure_id
+
+    #the final edition will use Team 2 API "get_procedure_data(procedure_id, stable)"  to get the data
+    #we debug with temporary table to validate the function of editor
+    data =  db(db.coding.id == code_id).select(db.coding.procedures).first().procedures
+
     file_details = dict(
                     editor_settings=preferences,
+                    id=code_id,
                     data=data,
-                    id=codeId,
                     )
     plain_html = response.render('editor/edit_js.html', file_details)
     file_details['plain_html'] = plain_html
     return response.json(file_details)
 
+def save_procedure():
+    """
+    return the save result for the saving procedure
+    """
+    code_id = request.vars.procedure_id
+    data = request.vars.procedure
+    stable = request.vars.stable
+    print(data)
+    #save the procedure data to the database
+    if stable is False:
 
-
+        #the final edition will use Team 2 API save(procedure_id, stable) to save the data
+        #we debug with temporary table to validate the function of editor
+        db(db.coding.id == code_id).update(procedures =data)
+    return dict(result='true')
 
 
 ## all the following function is used for self debug and will be deleted at final edition
@@ -59,7 +71,7 @@ def select():
 
 def test_edit():
     """
-    This is served for the test demon view page, which help UI team to integrate editor
+    This is served for the test example view page, which help UI team to integrate editor
     This function will be delete at final edition
     """
     procedure_id = request.vars.procedure_id

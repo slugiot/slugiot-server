@@ -1,4 +1,4 @@
-
+<!-- Used for generate html content inside the editor-->
 <form method="post" name="editform" id="editform" class="form-inline row-fluid">
 
 </div>
@@ -45,10 +45,12 @@
     store_changes_function = function(instance, changeObj) {
         jQuery(instance).data('saved', false);
         instance.off("change", store_changes_function);
+
     }
     editor.on("change", store_changes_function);
         // save the editor as textarea data attribute
-        jQuery("#{{=id}} textarea").data('editor', editor);
+        jQuery("textarea").data('editor', editor);
+        //jQuery("#{{=id}} textarea").data('editor', editor);
         var hlLine = editor.addLineClass(0, "background", "activeline");
         window.mirror = editor; 	//backward compatibility
 
