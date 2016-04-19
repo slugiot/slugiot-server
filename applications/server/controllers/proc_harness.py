@@ -14,7 +14,7 @@ revisions_table = db.procedure_revisions
 
 ####### API FOR EDITOR TEAM ##########
 
-def create_procedure(procedure_name, user_id):
+def create_procedure(procedure_name, user_email, device_id):
     """
     This function should be called when a new procedure is created in the editor.
 
@@ -25,10 +25,10 @@ def create_procedure(procedure_name, user_id):
     :return: ID associated with new procedure (procedure_id in revisions table)
     :rtype: long
     """
-    return proc_table.insert(user_id = user_id, name = procedure_name)
+    return proc_table.insert(user_email = user_email, device_id = device_id, name = procedure_name)
 
 
-def get_procedures_for_user(user_id):
+def get_procedures_for_user(user_id, device_id):
     """
     This function returns all procedure IDs that are associated with a given user
 
@@ -39,7 +39,8 @@ def get_procedures_for_user(user_id):
     """
 
     # Get all relevant records for user_id
-    records = db(proc_table.user_id == user_id).select()
+    records = db((proc_table.user_id == user_id) &
+                 (proc_table.device_id == device_id)).select()
 
     # Create list of procedure IDs from records
     procedure_ids = []

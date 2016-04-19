@@ -27,7 +27,8 @@ from datetime import datetime
 # with this new split table definition it makes sense to just use the automatic id in this table as the procedure_id
 db.define_table('procedures',
                 #Field('procedure_id', 'bigint', required=True),  # key
-                Field('user_id', 'string', required=True),
+                Field('user_email', 'string', required=True),
+                Field('device_id', 'string', required=True),
                 Field('name', 'string')  # Name of procedure
                 )
 
