@@ -30,19 +30,3 @@ def get_procedure_data(procedure_id, stable):
 # when save is stable, flush all temp versions
 def save(procedure_id, stable):
     pass
-
-
-####### API FOR PROCEDURE HARNESS TEAM ##########
-
-# called in response to client request for procedure info
-# returns a dictionary of the format {procedure_id, last_update_stable}
-def get_procedure_status(device_id):
-    # 1. Get all procedure_ids for the device_id
-    # 2. build dictionary containing last_update_stable date for each procedure_id
-    # 3. return dictionary
-    #     return db.proc_table(last_update_stable, procedure_id==procedure_id)
-    pass
-
-# not sure if we need this on the server but probably a good idea just to have it
-def cleanup_procedure_table(procedure_id):
-    pass
