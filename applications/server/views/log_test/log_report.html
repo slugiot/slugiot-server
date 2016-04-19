@@ -1,0 +1,19 @@
+{{extend 'layout.html'}}
+<script src="/server/static/js/dygraph-combined-dev.js"></script>
+<h1>Visualization Test</h1>
+<center>
+    <div id="graphdiv" style="width: 600px; height: 400px"></div>
+</center>
+<script type="text/javascript">
+    g = new Dygraph(
+        document.getElementById("graphdiv"),
+        "{{=URL('static', 'temper.csv')}}",
+        {
+            rollPeriod: 5,
+            showRoller: true,
+            showRangeSelector: true
+        }
+    );
+</script>
+<h1>log report</h1>
+{{=grid}}
