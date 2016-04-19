@@ -24,10 +24,11 @@ from datetime import datetime
 db.define_table('devices',
                 # if we give the device an ID, we can do checks to verify devices belong to which device
                 Field('device_id', 'string', required=True),
-                Field('user_email'),
+                Field('user_email', 'string', default=db.auth_user.email),
                 Field('name', 'string', required=True, default='Unknown Device'), # Name of device
                 Field('description', 'text', default=''),
                 Field('last_sync', 'datetime', required=True,default=datetime.utcnow()), # TODO: move to synch code?
+                Field('device_icon', 'string', required=True, default='fa-globe')  # FA ID needed by UI team
                 )
 
 # This is a table that specifies what procedure runs on what device for what user
