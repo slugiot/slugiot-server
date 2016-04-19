@@ -6,7 +6,8 @@ import time
 
 def index():
     """
-    Controller for the home page. Returns SQLFORM of devices if logged in and a list of all the devices.
+    Controller for the home page.
+    Returns SQLFORM of devices if logged in and a list of all the devices.
     """
     sign_uuid = gluon_utils.web2py_uuid()
     if auth.user_id is None:
@@ -89,5 +90,3 @@ def call():
     supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
     """
     return service()
-
-
