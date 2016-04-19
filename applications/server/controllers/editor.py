@@ -9,7 +9,9 @@ def edit_procedure():
     """
     return json data to show the editor content
     """
+    #parameter for CodeMirror option parameter used for setting the editor feature
     preferences={'theme':'web2py', 'editor': 'default', 'closetag': 'true', 'codefolding': 'false', 'tabwidth':'4', 'indentwithtabs':'false', 'linenumbers':'true', 'highlightline':'true'}
+
     code_id = request.vars.procedure_id
 
     #the final edition will use Team 2 API "get_procedure_data(procedure_id, stable)"  to get the data
@@ -17,11 +19,14 @@ def edit_procedure():
     data =  db(db.coding.id == code_id).select(db.coding.procedures).first().procedures
 
     file_details = dict(
-                    editor_settings=preferences,
-                    id=code_id,
-                    data=data,
+                    editor_settings=preferences, #the option parameters used for setting editor feature.
+                    id=code_id, #the procedure_id in the procedures TALBE
+                    data=data, # code for procedure which is related with the id.
                     )
+
+    #generated HTML code for editor by parameters in file_details
     plain_html = response.render('editor/edit_js.html', file_details)
+
     file_details['plain_html'] = plain_html
     return response.json(file_details)
 
@@ -32,7 +37,6 @@ def save_procedure():
     code_id = request.vars.procedure_id
     data = request.vars.procedure
     stable = request.vars.stable
-    print(data)
     #save the procedure data to the database
     if stable is False:
 
@@ -53,7 +57,6 @@ def create():
     now = datetime.utcnow()
     code = "# enter your new procedure in the following" + now.strftime("%Y-%m-%d %H:%M:%S")
     db.coding.insert(procedures=code, times=now)
-    result = 'ok'
     return dict(result = now)
 
 def select():
@@ -62,12 +65,8 @@ def select():
     Team 2 provide the API get_procedures_for_user(user_id) to return the list of procedure_id belong to a user
     This function will be deleted in the final edition
     """
-    row= db(db.coding).select().first()
-    if row is not None:
-        rows = db(db.coding).select()
-        code_list = [{'id': r.id, 'procedures': r.procedures, 'times': r.times} for r in rows]
-        return dict(exit = 1, code_list = code_list)
-    return dict(exit = 0)
+    return dict(code_list = db(db.coding).select())
+
 
 def test_edit():
     """

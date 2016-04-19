@@ -49,8 +49,7 @@
     }
     editor.on("change", store_changes_function);
         // save the editor as textarea data attribute
-        jQuery("textarea").data('editor', editor);
-        //jQuery("#{{=id}} textarea").data('editor', editor);
+        jQuery("#textarea_{{=id}}").data('editor', editor)
         var hlLine = editor.addLineClass(0, "background", "activeline");
         window.mirror = editor; 	//backward compatibility
 
