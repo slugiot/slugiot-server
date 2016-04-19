@@ -8,18 +8,23 @@
 ## - download is for downloading files uploaded in the db (does streaming)
 #########################################################################
 
-@auth.requires_login()
+
 def index():
     """
-    example action using the internationalization operator T and flash
-    rendered by views/default/index.html or views/generic.html
+    Controller for the home page. Returns SQLFORM of devices if logged in and a list of all the
+    devices.
 
-    if you need a simple wiki simply replace the two lines below with:
-    return auth.wiki()
+    TODO: This is poor form, make it so that only devices matching with user email get
+    included here.
     """
     if auth.user_id is None:
-        response.flash = T("Please sign in!")
-    return dict(message=T('Welcome to web2py!'))
+        return dict(message=T('Please sign in!'))
+    else:
+        device_list = db().select(db.devices.ALL)
+        form = SQLFORM(db.devices)
+        if form.process().accepted:
+            redirect(URL('default', 'index'))
+        return dict(device_list=device_list, form=form)
 
 
 def user():
@@ -39,6 +44,10 @@ def user():
     also notice there is http://..../[app]/appadmin/manage/auth to allow administrator to manage users
     """
     return dict(form=auth())
+
+
+def add():
+    return dict(message=T("Hello World"))
 
 
 @cache.action()

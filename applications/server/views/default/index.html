@@ -1,66 +1,50 @@
-<!-- Sample "dashboard" for SlugIOT
-    TODO: Replace all harcoded examples with things from the database
-    TODO: Actually make ractive work -->
-
-{{left_sidebar_enabled=False,right_sidebar_enabled=False,('message' in globals())}}
 {{extend 'layout.html'}}
 
-<!-- Ractive requires a "target" div, so everything from the template script is translated to the target -->
-<div id="target"></div>
-
-<!-- List of all devices sorted by Raspberry Pi -->
-<script id="template" type="text/ractive">
-    {{block left_sidebar}}
-      <div class="panel panel-info">
-          <div class="panel-heading"><h3 class="panel-title"><a class="btn-block" href="#">
-              <i class="fa fa-home fa-fw fa-3x" aria-hidden="true"></i><font size="4">Family Home</font></a></h3>
-          </div>
-          <ul class="list-group">
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-sun-o fa-fw" aria-hidden="true"></i>Nest Thermostat</a>
-            </li>
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-television fa-fw" aria-hidden="true"></i>Samsung Smart TV</a>
-            </li>
-            <li class="list-group-item" on-click='car_click'>
-                <a href="#"><i class="fa fa-car fa-fw" aria-hidden="true"></i>Tesla Model S</a>
-            </li>
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-tint fa-fw" aria-hidden="true"></i>Sprinkler System</a>
-            </li>
-          </ul>
+<!-- If user not authenticated, kindly ask them to sign up or sign in -->
+{{if auth.user_id is None:}}
+    <div id="main_login">
+        <div class="jumbotron">
+            <h1>Hello, world!</h1>
+            <p>Get started with SlugIOT and start managing all of your appliances over the cloud.</p>
+            <p>
+                {{=A('Sign Up', _class='btn btn-warning btn-lg', _role="button", _href=URL('default', 'user', args=['register']))}}
+                {{=A('Sign In', _class='btn btn-success btn-lg', _role="button", _href=URL('default', 'user', args=['login']))}}
+            </p>
         </div>
+    </div>
 
-        <div class="panel panel-info">
-          <div class="panel-heading"><h3 class="panel-title"><a class="btn-block" href="{{=URL('admin','default','index')}}">
-              <i class="fa fa-plane fa-fw fa-3x" aria-hidden="true"></i><font size="4">Vacation Villa</font></a></h3>
-          </div>
-          <ul class="list-group">
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-video-camera fa-fw" aria-hidden="true"></i>Security Camera</a>
-            </li>
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-fax fa-fw" aria-hidden="true"></i>Fax Machine</a>
-            </li>
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-lightbulb-o fa-fw" aria-hidden="true"></i>Phillps Hue</a>
-            </li>
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-gamepad fa-fw" aria-hidden="true"></i>Xbox One</a>
-            </li>
-          </ul>
+{{else:}}
+    <!-- col-md-4 in Bootstrap ensures we have 3 even columns -->
+    <div id="left_sidebar" class="col-md-4">
+        <!-- Give the user a warning banner if they need to add a device still -->
+        {{if len(device_list) == 0:}}
+            <div class="alert alert-warning alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <strong>Hey!</strong> Looks like you haven't added any devices to your account, do that first.
+            </div>
+        {{pass}}
+        <div class="list-group">
+            <!-- Drill it into their minds that they NEED to add a device -->
+            {{if len(device_list) == 0:}}
+                <a href="{{=URL('default', 'add')}}" class="list-group-item active" align="center">Add a new device?</a>
+            <!-- Otherwise here we just list the device names -->
+            {{else:}}
+                {{for device in device_list:}}
+                    <a href="#" class="list-group-item">{{device.name}}</a>
+                {{pass}}
+            {{pass}}
         </div>
-    {{end}}
+    </div>
 
     <!-- This where the charts and logs from the data viz team would go -->
-    <div id="middle_bar" align="center">
-        <h1 align="center">{% name %}</h1>
-        <div id="curve_chart" style="width: 900px; height: 500px"></div>
+    <div id="middle_bar" class="col-md-4" align="center">
+        <h1 align="center">hello</h1>
     </div>
 
     <!-- Things here would be generated from the database -->
-    {{block right_sidebar}}
-        <div id="device_info" align="center">
+    <div id="device_info" class="col-md-4" align="center">
         <h1>Status</h1>
         <!-- This would link to something produced by the script editor team -->
         <button type="button" class="btn btn-primary" onclick="editClick()">
@@ -71,114 +55,5 @@
             <li class="list-group-item">Last synced: December 31, 1969</li>
             <li class="list-group-item">Next sync in: <span id="time"></span></li>
         </ul>
-        </div>
-    {{end}}
-</script>
-<script>
-    // =============== Ractive ===================================
-    var ractive = new Ractive({
-      // The `el` option can be a node, an ID, or a CSS selector.
-      el: '#target',
-
-      // We could pass in a string, but for the sake of convenience
-      // we're passing the ID of the <script> tag above.
-      template: '#template',
-
-      delimiters: ['{%', '%}'],
-      tripleDelimiters: ['{%%', '%%}'],
-
-      // Here, we're passing in some initial data
-      data: { name: 'Nest Thermostat' } // this would be changed, obviously
-    });
-
-    ractive.on({
-        'car_click': function(){
-            ractive.set('name', "Tesla Model S"); // again, would be changed, expanded
-        }
-    });
-
-    // ============== Graphs =====================================
-    // Would be replace by whatever the data viz teams comes up with
-
-    // Load the Visualization API and the corechart package.
-      google.charts.load('current', {'packages':['corechart']});
-
-      // Set a callback to run when the Google Visualization API is loaded.
-      google.charts.setOnLoadCallback(drawChart);
-
-      // Callback that creates and populates a data table,
-      // instantiates the pie chart, passes in the data and
-      // draws it.
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Day', 'This week', 'Last week'],
-          ['Saturday',  62,      25],
-          ['Sunday',    73,      28],
-          ['Yesterday', 41,      70],
-          ['Today',     64,      34]
-        ]);
-
-        var options = {
-          curveType: 'function',
-          legend: { position: 'bottom' }
-        };
-
-        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
-
-        chart.draw(data, options);
-      }
-
-    // =============== Sync Timer ===================
-    // Countdown timer until next sync
-    function startTimer(duration, display) {
-        var timer = duration, minutes, seconds;
-        setInterval(function () {
-            minutes = parseInt(timer / 60, 10);
-            seconds = parseInt(timer % 60, 10);
-
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
-
-            display.textContent = minutes + ":" + seconds;
-
-            if (--timer < 0) {
-                timer = duration;
-                notifyMe();
-            }
-        }, 1000);
-    }
-
-    window.onload = function () {
-        var fiveMinutes = 60 * 1,
-            display = document.querySelector('#time');
-        startTimer(fiveMinutes, display);
-    };
-
-    // =========== Misc ====================
-    // Edit Script alert box
-    function editClick() {
-        alert("Work in progress, not added yet");
-    }
-
-    // Chrome notifications...neat little thing was messing around with
-    // request permission on page load
-    document.addEventListener('DOMContentLoaded', function () {
-      if (Notification.permission !== "granted")
-        Notification.requestPermission();
-    });
-
-    function notifyMe() {
-      if (!Notification) return;
-      if (Notification.permission !== "granted") Notification.requestPermission();
-      else {
-        var notification = new Notification('Device synced', {
-          icon: '',
-          body: "One of your devices has synced",
-        });
-
-        notification.onclick = function () {
-          window.open("http://127.0.0.1:8800/#");
-        };
-      }
-    }
-</script>
+    </div>
+{{pass}}
