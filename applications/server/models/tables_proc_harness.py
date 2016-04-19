@@ -4,8 +4,9 @@ import datetime
 
 ## Adding table that should be used to store procedures on the server
 
+# with this new split table definition it makes sense to just use the automatic id in this table as the procedure_id
 db.define_table('procedures',
-                Field('procedure_id', 'bigint', required=True),  # key
+                #Field('procedure_id', 'bigint', required=True),  # key
                 Field('user_id', 'string', required=True),
                 Field('name', 'string')  # Name of procedure
                 )

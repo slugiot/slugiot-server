@@ -12,15 +12,13 @@ revisions_table = db.procedure_revisions
 
 ####### API FOR EDITOR TEAM ##########
 
+# PROBLEM: how does user_id get connected to procedure_id?
+
 # return procedure_id to be used for a new procedure being created
 # note - currently this function does NOT implicitly save the procedure_id in the table
-def create_procedure():
-    if db(proc_table.procedure_id).isempty():
-        proc_id = 1
-    else:
-        current_proc_max = proc_table.procedure_id.max()
-        proc_id = int(current_proc_max) + 1
-    return proc_id
+def create_procedure(procedure_name, user_id):
+    return proc_table.insert(user_id = user_id,
+                                name = procedure_name)
 
 # return list procedure_id
 # alternatively: return db(proc_table.user_id == user_id).select(proc_table.procedure_id)
@@ -29,7 +27,7 @@ def get_procedures_for_user(user_id):
     records = db(proc_table.user_id == user_id).select()
     procedure_ids = []
     for row in records:
-        procedure_ids.append(row.procedure_id)
+        procedure_ids.append(row.id)
     return procedure_ids
 
 # True for stable gets last stable, False gets most recent stable or not
