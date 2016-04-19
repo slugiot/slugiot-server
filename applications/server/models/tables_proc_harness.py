@@ -33,7 +33,7 @@ db.define_table('values',
 
 db.define_table('procedures',
                 Field('procedure_id', 'bigint', required=True),  # key
-                Field('user_email', 'string', required=True),
+                Field('user_id', 'string', required=True),
                 Field('name', 'string')  # Name of procedure
                 )
 
