@@ -45,7 +45,7 @@ db.define_table('logs',
                 Field('log_level', 'integer'), #  int, 0 = most important.
                 Field('log_message', 'text'),
                 Field('logged_time_stamp', 'datetime'),
-                Field('recieved_time_stamp', 'datetime', default=datetime.utcnow()),
+                Field('received_time_stamp', 'datetime', default=datetime.utcnow()),
 
                 )
 
@@ -55,8 +55,8 @@ db.define_table('outputs',
                 Field('name'), # Name of variable
                 Field('output_value', 'text'), # Json, short please
                 Field('tag'),
-                Field('logged_time_stamp', 'datetime', default=datetime.utcnow()),
-                Field('recieved_time_stamp', 'datetime', default=datetime.utcnow()),
+                Field('output_time_stamp', 'datetime'),
+                Field('received_time_stamp', 'datetime', default=datetime.utcnow()),
 
 )
 

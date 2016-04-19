@@ -1,96 +1,123 @@
 # -*- coding: utf-8 -*-
 import json
 
-def index():
-    """
-    example action using the internationalization operator T and flash
-    rendered by views/default/index.html or views/generic.html
-
-    if you need a simple wiki simply replace the two lines below with:
-    return auth.wiki()
-    """
-    response.flash = T("Hello World")
-    return dict(message=T('Welcome to web2py!'))
 
 
 @request.restful()
-def recieve_update():
+def receive_logs():
+    """
+    This method is to recieve log data.  It accepts two HTTP methods:
+        GET: returns the latest three log entries.  planning on adding
+            filtering based on device_id, and how many records to return
+        POST: accepts a JSON document with the log entries to ingest.  an
+            example document is described below:
+            {
+                "device_id":"my_device",
+                "logs":
+                    [
+                        {"modulename":"my_module","log_level":3,"log_message":"some message","time_stamp":"2016-03-19 20:48:41"},
+                        {"modulename":"my_module","log_level":2,"log_message":"some other message","time_stamp":"2016-03-19 20:49:41"}
+                    ]
+            }
+    """
     def GET(*args, **vars):
-        return response.json(['foo', {'bar': ('baz', None, 1.0, 2)}])
+        logs = db(db.logs).select(orderby="received_time_stamp DESC",limitby=(0,3))
+        return response.json(logs)
 
     def POST(*args, **vars):
         # get the log data from the request and validate
         request_body = request.body.read()
-        if (not request_body):
-            raise HTTP(400, "no data was included")
-
-        # get json and validate structure
-        try:
-            log_data = json.loads(request_body)
-        except:
-            raise HTTP(400, "data was not json-formatted")
-        if (not isinstance(log_data, dict)):
-            raise HTTP(400, "data was not properly formatted")
-        if (not "logs" in log_data and not isinstance(log_data.get('logs'), list)):
-            raise HTTP(400, "data needs to have list of log messages as 'logs'")
-        if (not "device_id" in log_data and not isinstance(log_data.get('device_id'), str)):
-            raise HTTP(400, "data needs to have string device id as 'device_id'")
+        log_data = __get_valdiated_data(request_body, "logs")
 
         # get information from document
         device_id = log_data.get('device_id')
         logs = log_data.get('logs')
 
-        print(logs);
-
         for log in logs:
             if (not isinstance(log, dict)):
                 raise HTTP(400, "all log entries must be of type 'dict'")
             log["device_id"] = device_id
-            log["logged_time_stamp"] = log.get('time_stamp')
+            if (log.get('time_stamp')):
+                log["logged_time_stamp"] = log.get('time_stamp')
+                del log['time_stamp']
+            if (log.get('id')):
+                del log['id']
 
+        try:
+            db.logs.bulk_insert(logs)
+        except Exception as e:
+            raise HTTP(400, "there was an error saving log data: " + e.message)
 
-        return response.json({"log_data":logs})
-
-
+        return response.json({"saved_logs":logs})
 
     return locals()
 
 
-def user():
+@request.restful()
+def receive_outputs():
     """
-    exposes:
-    http://..../[app]/default/user/login
-    http://..../[app]/default/user/logout
-    http://..../[app]/default/user/register
-    http://..../[app]/default/user/profile
-    http://..../[app]/default/user/retrieve_password
-    http://..../[app]/default/user/change_password
-    http://..../[app]/default/user/bulk_register
-    use @auth.requires_login()
-        @auth.requires_membership('group name')
-        @auth.requires_permission('read','table name',record_id)
-    to decorate functions that need access control
-    also notice there is http://..../[app]/appadmin/manage/auth to allow administrator to manage users
+    This method is to recieve output data.  It accepts two HTTP methods:
+        GET: returns the latest output entries.  planning on adding
+            filtering based on device_id, and how many records to return
+        POST: accepts a JSON document with the output entries to ingest.  an
+            example document is described below:
+            {
+                "device_id":"my_device",
+                "output":
+                    [
+                        {"modulename":"my_module","name":"variable","output_value":"10","tag":"example","time_stamp":"2016-03-19 20:48:41"}
+                    ]
+            }
     """
-    return dict(form=auth())
+
+    def GET(*args, **vars):
+        logs = db(db.outputs).select(orderby="received_time_stamp DESC", limitby=(0, 3))
+        return response.json(logs)
+
+    def POST(*args, **vars):
+        # get the log data from the request and validate
+        request_body = request.body.read()
+        output_data = __get_valdiated_data(request_body, 'outputs')
+
+        # get information from document
+        device_id = output_data.get('device_id')
+        output = output_data.get('outputs')
+
+        for out in output:
+            if (not isinstance(out, dict)):
+                raise HTTP(400, "all output entries must be of type 'dict'")
+            out["device_id"] = device_id
+            if (out.get('time_stamp')):
+                out["output_time_stamp"] = out.get('time_stamp')
+                del out['time_stamp']
+            if (out.get('id')):
+                del out['id']
+
+        try:
+            db.outputs.bulk_insert(output)
+        except Exception as e:
+            raise HTTP(400, "there was an error saving log data: " + e.message)
+
+        return response.json({"saved_logs": output})
+
+    return locals()
 
 
-@cache.action()
-def download():
-    """
-    allows downloading of uploaded files
-    http://..../[app]/default/download/[filename]
-    """
-    return response.download(request, db)
+def __get_valdiated_data(request_body, data_key):
+    if (not request_body):
+        raise HTTP(400, "no data was included")
 
+    # get json and validate structure
+    try:
+        data = json.loads(request_body)
+    except:
+        raise HTTP(400, "data was not json-formatted")
+    if (not isinstance(data, dict)):
+        raise HTTP(400, "data was not properly formatted")
+    if (not data_key in data or not isinstance(data.get(data_key), list)):
+        raise HTTP(400, "data needs to have list of data entries as '" + data_key + "'")
+    if (not "device_id" in data and not isinstance(data.get('device_id'), str)):
+        raise HTTP(400, "data needs to have string device id as 'device_id'")
 
-def call():
-    """
-    exposes services. for example:
-    http://..../[app]/default/call/jsonrpc
-    decorate with @services.jsonrpc the functions to expose
-    supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
-    """
-    return service()
-
+    return data
 
