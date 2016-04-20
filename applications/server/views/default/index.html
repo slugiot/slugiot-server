@@ -2,78 +2,65 @@
 
 <div id="target"></div>
 <script id="template" type="text/ractive">
-    <!-- If user not authenticated, kindly ask them to sign up or sign in -->
-    {{if auth.user_id is None:}}
-        <div id="main_login">
-            <div class="jumbotron">
-                <h1>Hello, world!</h1>
-                <p>Get started with SlugIOT and start managing all of your appliances over the cloud.</p>
-                <p>
-                    {{=A('Sign Up', _class='btn btn-warning btn-lg', _role="button", _href=URL('default', 'user', args=['register']))}}
-                    {{=A('Sign In', _class='btn btn-success btn-lg', _role="button", _href=URL('default', 'user', args=['login']))}}
-                </p>
+    <!-- Banner alert if the user has no devices. It asks them to register a new device. -->
+    {% #unless loading %}
+        {{if len(device_list) == 0:}}
+            <div class="alert alert-warning alert-dismissible" role="alert" align="center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <a href={{=URL('default', 'add')}}>Hey! Looks like you haven't added any devices to your account, do that first.</a>
             </div>
-        </div>
+        {{pass}}
+    {% /unless %}
 
-    {{else:}}
-        <div id="left_sidebar" class="col-md-3">
-            {% #unless loading %}
-                <!-- Give the user a warning banner if they need to add a device still -->
-                {{if len(device_list) == 0:}}
-                    <div class="alert alert-warning alert-dismissible" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <strong>Hey!</strong> Looks like you haven't added any devices to your account, do that first.
-                    </div>
-                {{pass}}
-
-                <h2 align="center">Devices</h2><br/>
-                <div class="list-group" align="center">
-                    <!-- Drill it into their minds that they NEED to add a device -->
-                    {{if len(device_list) == 0:}}
-                        <a href="{{=URL('default', 'add')}}" class="list-group-item active">Add a new device?</a>
-                    <!-- Otherwise here we just list the device names -->
-                    {{else:}}
-                        {% #each device_dict:device_id %}
-                            <a href="#" on-click="set_val:{% device_id %}" class="list-group-item">{% name %}</a>
-                        {% /each %}
-                    {{pass}}
-                </div>
-            {% /unless %}
-        </div>
-
-        <!-- This where the charts and logs from the data viz team would go
-              For now, we're just fine with leaving a loading animation in here. -->
-        <div id="middle_bar" class="col-md-6" align="center">
-            {% #if loading %}
-                <div id="load_spinner" class="centered">
-                    <div class="showbox">
-                      <div class="loader">
-                        <svg class="circular" viewBox="25 25 50 50">
-                          <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>
-                        </svg>
-                      </div>
-                    </div>
-                </div>
-            {% /if %}
-        </div>
-
-        <!-- Things here are mostly still a WIP except for the delete button -->
+    <div id="left_sidebar" class="col-md-3">
         {% #unless loading %}
-            <div id="device_info" class="col-md-3" align="center">
-                <h2>Configuration</h2><br/>
-                <!-- This would link to something produced by the script editor team -->
-                <button type="button" class="btn btn-primary" onclick="editClick()">Manage Procedures</button>
-                <button type="button" class="btn btn-danger" on-click="markedDelete:{% selection_value %}">Delete Device</button><br><br>
-                <ul class="list-group">
-                    <li class="list-group-item"><span class="badge"><i class="fa fa-check" aria-hidden="true"></i></span>Status: OK</li>
-                    <li class="list-group-item">Last synced: </li>
-                    <li class="list-group-item">Next sync in: </li>
-                </ul>
+            <h2 align="center">Devices</h2><br/>
+            <div class="list-group" align="center">
+                <!-- Drill it into their minds that they NEED to add a device -->
+                {{if len(device_list) == 0:}}
+                    <a href="{{=URL('default', 'add')}}" class="list-group-item active">Add a new device?</a>
+                <!-- Otherwise here we just list the device names -->
+                {{else:}}
+                    {% #each device_dict:device_id %}
+                        <a href="#" on-click="set_val:{% device_id %}" class="list-group-item">{% name %}</a>
+                    {% /each %}
+                {{pass}}
             </div>
         {% /unless %}
-    {{pass}}
+    </div>
+
+    <!-- This where the charts and logs from the data viz team would go
+          For now, we're just fine with leaving a loading animation in here. -->
+    <div id="middle_bar" class="col-md-6" align="center">
+        {% #if loading %}
+            <div id="load_spinner" class="centered">
+                <div class="showbox">
+                  <div class="loader">
+                    <svg class="circular" viewBox="25 25 50 50">
+                      <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>
+                    </svg>
+                  </div>
+                </div>
+            </div>
+        {% /if %}
+    </div>
+
+    <!-- Things here are mostly still a WIP except for the delete button -->
+    {% #unless loading %}
+        <div id="device_info" class="col-md-3" align="center">
+            <h2>Configuration</h2><br/>
+            <!-- This would link to something produced by the script editor team -->
+            <button type="button" class="btn btn-primary" href="{{=URL('default', 'manage')}}">Manage Procedures</button>
+            <button type="button" class="btn btn-danger" on-click="delete:{% selection_value %}">Delete Device</button><br><br>
+            <ul class="list-group">
+                <li class="list-group-item"><span class="badge"><i class="fa fa-check" aria-hidden="true"></i></span>Status: OK</li>
+                <li class="list-group-item">Last synced: </li>
+                <li class="list-group-item">Next sync in: </li>
+            </ul>
+        </div>
+    {% /unless %}
 </script>
 
 <script>
@@ -114,10 +101,9 @@ $(function() {
     });
 
     // Delete logic
-    ractive.on("markedDelete", function(e, device_id){
+    ractive.on("delete", function(e, device_id){
         if(device_id == -1){
             alert("You are trying to delete with no selection.");
-            ractive.set('delete_list', []);
             return;
         }
         var delete_devices = ractive.get('delete_devices');
