@@ -65,20 +65,24 @@ db.define_table('user_permission',
 
 db.define_table('logs',
                 Field('device_id'),
-                Field('time_stamp', 'datetime', default=datetime.utcnow()),
                 Field('modulename'),
                 Field('log_level', 'integer'), #  int, 0 = most important.
                 Field('log_message', 'text'),
+                Field('logged_time_stamp', 'datetime'),
+                Field('received_time_stamp', 'datetime', default=datetime.utcnow()),
+
                 )
 
 db.define_table('outputs',
                 Field('device_id'),
-                Field('time_stamp', 'datetime', default=datetime.utcnow()),
                 Field('modulename'),
                 Field('name'), # Name of variable
                 Field('output_value', 'text'), # Json, short please
-                Field('tag')
-                )
+                Field('tag'),
+                Field('output_time_stamp', 'datetime'),
+                Field('received_time_stamp', 'datetime', default=datetime.utcnow()),
+
+)
 
 db.define_table('module_values',
                 Field('device_id'),
