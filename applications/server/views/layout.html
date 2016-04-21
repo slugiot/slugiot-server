@@ -29,7 +29,6 @@
     <!-- All JavaScript at the bottom, except for Modernizr which enables
          HTML5 elements & feature detects -->
     <script src="{{=URL('static','js/modernizr-2.8.3.min.js')}}"></script>
-      <script src="{{=URL('static','js/Chart.js')}}"></script>
     <!--[if lt IE 9]>
         <script src="{{=URL('static','js/respond-1.4.2.min.js')}}"></script>
         <![endif]-->
@@ -119,7 +118,6 @@
     <script src="{{=URL('static','js/bootstrap.min.js')}}"></script>
     <script src="{{=URL('static','js/web2py-bootstrap3.js')}}"></script>
     <script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     {{block page_js}}{{end page_js}}
     {{if response.google_analytics_id:}}
     <!-- Analytics ==================================== -->
@@ -130,7 +128,5 @@
       });
     </script>
     {{pass}}
-    <!-- Share ============================y============ -->
-    <script src="{{=URL('static','js/share.js',vars=dict(static=URL('static','images')))}}"></script>
   </body>
 </html>
