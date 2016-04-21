@@ -1,7 +1,12 @@
 # tesing logs database
 
+# I put this here in order to keep the code, but I am putting a better version
+in the controller visualization.py
+
 # add random log data by populate
 from gluon.contrib.populate import populate
+from gluon import current
+db = current.db
 db.logs.truncate()
 db.outputs.truncate()
 populate(db.logs, 50)
