@@ -5169,6 +5169,7 @@
     }
 
     options.finishInit = function(cm) {
+      //
       cm.save = save;
       cm.getTextArea = function() { return textarea; };
       cm.toTextArea = function() {

@@ -25,7 +25,7 @@ from datetime import datetime
 # Server organization tables.
 
 # Keeps track of devices.
-db.define_table('devices',
+db.define_table('device',
                 # if we give the device an ID, we can do checks to verify devices belong to which device
                 Field('device_id', 'string', required=True),
                 Field('user_email', 'string', default=db.auth_user.email),
@@ -84,20 +84,24 @@ db.define_table('procedure_revisions',
 
 db.define_table('logs',
                 Field('device_id'),
-                Field('time_stamp', 'datetime', default=datetime.utcnow()),
                 Field('modulename'),
                 Field('log_level', 'integer'), #  int, 0 = most important.
                 Field('log_message', 'text'),
+                Field('logged_time_stamp', 'datetime'),
+                Field('received_time_stamp', 'datetime', default=datetime.utcnow()),
+
                 )
 
 db.define_table('outputs',
                 Field('device_id'),
-                Field('time_stamp', 'datetime', default=datetime.utcnow()),
                 Field('modulename'),
                 Field('name'), # Name of variable
                 Field('output_value', 'text'), # Json, short please
-                Field('tag')
-                )
+                Field('tag'),
+                Field('output_time_stamp', 'datetime'),
+                Field('received_time_stamp', 'datetime', default=datetime.utcnow()),
+
+)
 
 db.define_table('module_values',
                 Field('device_id'),

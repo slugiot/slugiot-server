@@ -10,7 +10,7 @@ def edit_procedure():
     This function received ajax request to generated the HTML content for editor
 
     : parameter precedure_id: the precedure_id parameter in precedure TABLE sent by request.vars
-    : type precedure_id: int
+    : type precedure_id: str
     :return: Dict with HTML content of editor and procedure_id, procedure data, editor preferences
     :rtype: Json
     """
@@ -29,7 +29,7 @@ def edit_procedure():
                     data=data,                       # code for procedure which is related with the id.
                     )
 
-    #generated HTML code for editor by parameters in file_details
+    # generated HTML code for editor by parameters in file_details
     plain_html = response.render('editor/edit_js.html', file_details)
 
     # add the HTML content element for editor to file_details dictionary
@@ -43,11 +43,11 @@ def save_procedure():
     This function received ajax request to save procedure to the procedure TABLE
 
     : parameter procedure_id: the precedure_id parameter in precedure TABLE sent by request.vars
-    : type procedure_id: int
+    : type procedure_id: str
     : parameter procedure: the procedure data in procedure TABLE sent by request.vars
     : type procedure: str
     : parameter stable: the sign to identify if saved procedure is stable
-    : type stable: boolean
+    : type stable: str
     :return: whether the procedure is saved correctlly.
     :rtype: str
     """
@@ -57,13 +57,50 @@ def save_procedure():
     data = request.vars.procedure
     stable = request.vars.stable
 
+    result_html = DIV(T('file saved successfully'))
+    highlight = None
+
     #save the procedure data to the database
-    if stable is False:
+    if stable == 'false':
 
-        #the final edition will use Team 2 API save(procedure_id, stable) to save the data
-        db(db.coding.id == procedure_id).update(procedures =data)
+        #the final edition will use Team 2 API save(procedure_id, stable) to save the temporary procedure
+        db(db.coding.id == procedure_id).update(procedures = data)
+    else:
+        # compile the stable procedure and saved it if there is no exception during compiling
 
-    return dict(result='true')
+        import _ast
+        try:
+            code = request.vars.procedure.rstrip().replace('\r\n', '\n') + '\n'
+            compile(code, '<string>', "exec", _ast.PyCF_ONLY_AST)
+
+            #the final edition will use Team 2 API save(procedure_id, stable) to save the data
+            db(db.coding.id == procedure_id).update(procedures = data)
+
+        except Exception, e:
+            # offset calculation is only used for textarea (start/stop)
+            start = sum([len(line) + 1 for l, line
+                         in enumerate(request.vars.procedure.split("\n"))
+                         if l < e.lineno - 1])
+
+            if e.text and e.offset:
+                offset = e.offset - (len(e.text) - len(
+                    e.text.splitlines()[-1]))
+            else:
+                offset = 0
+            highlight = {'start': start, 'end': start +
+                         offset + 1, 'lineno': e.lineno, 'offset': offset}
+            try:
+                ex_name = e.__class__.__name__
+            except:
+                ex_name = 'unknown exception!'
+            result_html = DIV(T('failed to compile and save file because:'), BR(),
+                                 B(ex_name), ' ' + T('at line %s', e.lineno),
+                                 offset and ' ' +
+                                 T('at char %s', offset) or '')
+
+    file_save = dict(result = result_html,
+                     highlight = highlight)
+    return response.json(file_save)
 
 
 ## all the following function is used for self debug and will be deleted at final edition
@@ -71,6 +108,7 @@ def create():
     """
     This function is only used for self debug to create a new procedure and will be deleted in the final edition
     Team 2 provide the API create_procedure() to create a new procedure and return the procedure_id
+
     :return: the time for create one row in database
     :rtype: str
     """
@@ -91,6 +129,7 @@ def select():
     """
     This function is only used for self debug to show exited procedure in database and will be deleted in the final edition
     Team 2 provide the API get_procedures_for_user(user_id) to return the list of procedure_id belong to a user
+
     :return: the existed rows for procedure in database
     :rtype: dict
     """
@@ -102,8 +141,9 @@ def test_edit():
     """
     This is served for the test example view page, which help UI team to integrate editor
     This function will be delete at final edition
+
     parameter procedure_id: the precedure_id parameter in precedure TABLE sent by request.vars
-    type procedure_id: int
+    type procedure_id: str
     :return: the procedure_id for procedure in procedure TABLE
     :rtype: dict
     """
@@ -111,3 +151,6 @@ def test_edit():
     procedure_id = request.vars.procedure_id
 
     return dict(procedure_id = procedure_id)
+
+def eprint():
+    print('ok')

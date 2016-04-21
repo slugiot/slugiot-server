@@ -27,7 +27,7 @@
 
 
         // must be here or break emmet/zencoding for python
-        CodeMirror.defaults.extraKeys["Ctrl-Space"] = "autocomplete";
+        // CodeMirror.defaults.extraKeys["Ctrl-Space"] = "autocomplete";
         CodeMirror.defaults.extraKeys["Tab"] = "indentMore";
         CodeMirror.defaults.extraKeys["Shift-Tab"] = "indentLess";
         CodeMirror.defaults.extraKeys["Ctrl-F11"] = function(cm) {
@@ -46,10 +46,13 @@
         jQuery(instance).data('saved', false);
         instance.off("change", store_changes_function);
 
-    }
+    };
+    editor.on("inputRead", function() {
+            editor.execCommand("autocomplete");
+        });
     editor.on("change", store_changes_function);
         // save the editor as textarea data attribute
-        jQuery("#textarea_{{=id}}").data('editor', editor)
+        jQuery("#textarea_{{=id}}").data('editor', editor);
         var hlLine = editor.addLineClass(0, "background", "activeline");
         window.mirror = editor; 	//backward compatibility
 

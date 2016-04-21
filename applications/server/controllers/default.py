@@ -1,56 +1,80 @@
 # -*- coding: utf-8 -*-
 
+# Needed to generate a UUID in index()
 from gluon import utils as gluon_utils
+
+# Needed to slow down time in load_devices()
 import time
 
 
 def index():
     """
-    Controller for the home page.
-    Returns SQLFORM of devices if logged in and a list of all the devices.
+    Description: Controller for the home page.
+    Returns: a redirect to the splash page if not logged in or a list of the devices + UUID to index.html if you are.
     """
-    sign_uuid = gluon_utils.web2py_uuid()
     if auth.user_id is None:
-        # Would sign_uuid really be needed here? Leaving just in case.
-        return dict(message=T('Please sign in!'), sign_uuid=sign_uuid)
+        redirect(URL('default', 'login.html'))
+        return dict(message=T('Please sign in!'))
     else:
-        device_list = db().select(db.devices.ALL)
+        sign_uuid = gluon_utils.web2py_uuid()
+        device_list = db().select(db.device.ALL)
         return dict(device_list=device_list, sign_uuid=sign_uuid)
+
+
+def login():
+    """
+    Description: Controller for the login/splash page.
+    Returns: Nothing of substance
+    """
+    return dict(message=T('Welcome to SlugIOT!'))
 
 
 @auth.requires_login()
 def add():
-    db.devices.device_id.writable = True
-    db.devices.last_sync.readable = db.devices.last_sync.writable = False
-    form = SQLFORM(db.devices)
+    """
+    Description: Controller for the add page, which lets you add a device into the DB
+    Returns: A form that lets you add things into db.devices (use by including {{=form}} in add.html)
+    """
+    db.device.device_id.writable = True
+    form = SQLFORM(db.device)
     if form.process().accepted:
         session.flash = "Device added!"
         redirect(URL('default', 'index'))
     return dict(form=form)
 
 
+@auth.requires_login()
 def load_devices():
     # TODO: Condense "rows" to just for that one specific user instead of ALL devices
-    rows = db(db.devices).select()
+    """
+    Description: Returns a list of devices to show on index.html. This is called from the JS.
+    Returns: A JSON with a dictionary of all the devices and their database fields.
+    """
+    rows = db(db.device).select()
     time.sleep(1)  # so we can some time to stare at the pretty animation :-)
     d = {r.device_id: {'name': r.name,
                        'description': r.description,
                        'device_icon': r.device_icon,
-                       'last_sync': r.last_sync,
                        'user_email': r.user_email,
                        'id': r.id}
          for r in rows}
     return response.json(dict(device_dict=d))
 
 
+@auth.requires_login()
 @auth.requires_signature()
 def delete_devices():
+    # TODO: Rename delete_devices so it doesn't shadow the name from an outer scope
+    """
+    Description: Deletes items from the device database using the device ID.
+    Returns: An "ok" so you know the deletion is done.
+    """
     delete_devices = request.vars.get("delete_devices[]")
     if type(delete_devices) is str:
-        db(db.devices.device_id == delete_devices).delete()
+        db(db.device.device_id == delete_devices).delete()
     else:
         for i in delete_devices:
-            db(db.devices.device_id == i).delete()
+            db(db.device.device_id == i).delete()
     return "ok"
 
 
