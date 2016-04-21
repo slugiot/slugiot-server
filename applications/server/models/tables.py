@@ -24,7 +24,7 @@ from datetime import datetime
 # Server organization tables.
 
 # Keeps track of devices.
-db.define_table('devices',
+db.define_table('device',
                 # if we give the device an ID, we can do checks to verify devices belong to which device
                 Field('device_id', 'string', required=True),
                 Field('user_email', 'string', default=db.auth_user.email),
