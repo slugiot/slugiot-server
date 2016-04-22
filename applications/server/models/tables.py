@@ -25,9 +25,9 @@ db.define_table('devices',
                 # if we give the device an ID, we can do checks to verify devices belong to which device
                 Field('device_id', 'string', required=True),
                 Field('user_email'),
-                Field('name', 'string', required=True, default='Unknown Device'), # Name of device
+                Field('name', 'string', required=True, default='Unknown Device'),  # Name of device
                 Field('description', 'text', default=''),
-                Field('last_sync', 'datetime', required=True,default=datetime.utcnow()), # TODO: move to synch code?
+                Field('last_sync', 'datetime', required=True, default=datetime.utcnow()),  # TODO: move to synch code?
                 )
 
 # This is a table that specifies what procedure runs on what device for what user
@@ -43,7 +43,7 @@ db.define_table('logs',
                 Field('device_id'),
                 Field('time_stamp', 'datetime', default=datetime.utcnow()),
                 Field('modulename'),
-                Field('log_level', 'integer'), #  int, 0 = most important.
+                Field('log_level', 'integer'),  # int, 0 = most important.
                 Field('log_message', 'text'),
                 )
 
@@ -51,8 +51,8 @@ db.define_table('outputs',
                 Field('device_id'),
                 Field('time_stamp', 'datetime', default=datetime.utcnow()),
                 Field('modulename'),
-                Field('name'), # Name of variable
-                Field('output_value', 'text'), # Json, short please
+                Field('name'),  # Name of variable
+                Field('output_value', 'text'),  # Json, short please
                 Field('tag')
                 )
 
@@ -65,8 +65,8 @@ db.define_table('module_values',
                 )
 
 db.logs.log_level.requires = IS_INT_IN_RANGE(0, 4)  # limit log type to 5 (INFO, WARNING, DEBUG, ERROR, CRITICAL)
-db.logs.time_stamp.writable=False                   # can not manual change log data (time, log_level, log_message)
-db.logs.log_level.writable=False
-db.logs.log_message.writable=False
+db.logs.time_stamp.writable = False  # can not manual change log data (time, log_level, log_message)
+db.logs.log_level.writable = False
+db.logs.log_message.writable = False
 
 ## TODO: define the tables that need to be synched "down", for settings, and procedures.

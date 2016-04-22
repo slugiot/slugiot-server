@@ -60,3 +60,14 @@ def call():
     return service()
 
 
+def visualization():
+    """
+    goes to the data visualization page
+    currently with fake data
+    """
+
+    data = []
+
+
+    return dict()
+
