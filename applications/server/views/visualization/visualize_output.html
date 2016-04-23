@@ -1,0 +1,33 @@
+{{extend 'layout.html'}}
+
+<div class="visualization">
+
+  <h1>{{=procedure_name}}</h1>
+
+  <div id="result-spinner">
+    <i class="fa fa-spinner fa-pulse fa-4x"></i>
+  </div>
+
+  <div id="output_section" style="display:none">
+    <div id="dyg-target"></div>
+
+    <script id="template" type="text/ractive">
+      <div id="text_output">
+        {% #text_data %}
+          <div class="log_entry">
+            {% data_date %} , {% data_value %}
+          </div>
+        {% /text_data %}
+      </div>
+    </script>
+
+    <div id="target"></div>
+  </div>
+
+  <script>
+    var ajax_url="{{=ajax_url}}"
+  </script>
+
+  <script src="{{=URL('static', 'js/visualize_output.js')}}"></script>
+
+</div>

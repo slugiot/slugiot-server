@@ -77,6 +77,7 @@ def save_procedure():
             db(db.coding.id == procedure_id).update(procedures = data)
 
         except Exception, e:
+            # DISCUSS
             # offset calculation is only used for textarea (start/stop)
             start = sum([len(line) + 1 for l, line
                          in enumerate(request.vars.procedure.split("\n"))
