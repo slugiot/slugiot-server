@@ -75,7 +75,6 @@ db.define_table('module_values',
 # a = admin (valid only for one whole device)
 # e = edit settings of procedure
 db.define_table('user_permission',
-                Field('perm_id', 'string', required=True),
                 Field('perm_user_email', required =True),
                 # The email of the currently logged in user can be found in auth.user.email
                 Field('device_id', required = True),

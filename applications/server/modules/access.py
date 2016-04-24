@@ -1,5 +1,5 @@
 from gluon import current
-from gluon import auth
+from gluon.tools import Auth
 from perm_comparator import permission_max
 from perm_comparator import permission_min
 from perm_comparator import permission_entail
@@ -10,54 +10,57 @@ from perm_comparator import permission_entail
 # a = admin (valid only for one whole device)
 # e = edit settings of procedure
 
-def register_device(name=None, description=''):
+
+def add_permission(device_id, user_email, _type='v', procedure_id=None):
     """
-    This function register a device into device_table
-    @param name : device name
-    @param description : device description
-    """
-    db = current.db
-    devices = db.devices
-    permission = db.user_permission
-    device_id = devices.insert(name=name, user_id=auth.user_id, description=description)
-    permission.insert(perm_user_email=auth.user.email, device_id=device_id, procedure_id=None, perm_type='a')
-
-
-# TODO: perhaps useful to the UI team.
-
-
-def share_device(device_id, user_email=[], _type='v', procedure_id=None):
-    """
-    This function share one device to multiple users with one permission type return
+    This function add one permission of a device to user
     @param device_id : device id
     @param user_email : a list of user email to share
     @param procedure_id : procedure id
     @param _type : permission type to share
-    @returns : the user email list that do not register
+    @returns : if fail return this user's email else return None
     """
+    # Check input type value is valid or not
+    if _type not in ['v','e','a']:
+        raise Exception("Invalid permission type input")
+
     db = current.db
     permission = db.user_permission
-    fail_email = []
-    for email in user_email:
-        # Does the email exist in registered user table?
-        # if it does not exist this permission adding operation is denied
-        if db(db.auth_user.email == email) is None:
-            fail_email.append(email)
-        else:
-            # Does permission table contain this record?
-            p = db((db.user_permission.perm_user_email == email) &
-                   (db.user_permission.device_id == device_id) &
-                   (db.user_permission.procedure_id == procedure_id)).select().first()
+    fail_email = None
+    # Does the email exist in registered user table?
+    # if it does not exist this permission adding operation is denied
+    if db(db.auth_user.email == user_email) is None:
+        fail_email = user_email
+    else:
+        # Does permission table contain this record?
+        p = db((db.user_permission.perm_user_email == user_email) &
+               (db.user_permission.device_id == device_id) &
+               (db.user_permission.procedure_id == procedure_id)).select().first()
 
-            if p is None:
-                # if no record stored in permission table we insert new permission record
-                permission.insert(perm_user_email=email, device_id=device_id, procedure_id=procedure_id,
-                                  perm_type=_type)
-            else:
-                # update the selected row if given type entails original type
-                if permission_entail(_type, p.perm_type):
-                    p.update(perm_user_email=email, device_id=device_id, procedure_id=procedure_id, perm_type=_type)
+        if p is None:
+            # if no record stored in permission table we insert new permission record
+            permission.insert(perm_user_email=user_email, device_id=device_id, procedure_id=procedure_id,
+                              perm_type=_type)
+        else:
+            # update the selected row if given type entails original type
+            if permission_entail(_type, p.perm_type):
+                p.update(perm_user_email=user_email, device_id=device_id, procedure_id=procedure_id, perm_type=_type)
     return fail_email
+
+
+def delete_permission(user_email, device_id, procedure_id):
+    """
+    This function delete one permission record from user_permission table
+    @param user_email : user's email
+    @param device_id : device id
+    @param procedure_id : procedure id
+    @returns : Success or not
+    """
+    db = current.db
+    return \
+        db((db.user_permission.perm_user_email == user_email) &
+           (db.user_permission.device_id == device_id) &
+           (db.user_permission.procedure_id == procedure_id)).delete()
 
 
 def can_view_procedure(user_email, device_id, procedure_id):
@@ -73,8 +76,7 @@ def can_view_procedure(user_email, device_id, procedure_id):
     # Does the user have generic permission to the whole device?
     p = db((db.user_permission.perm_user_email == user_email) &
            (db.user_permission.device_id == device_id) &
-           (db.user_permission.procedure_id == None)).select().first()
-
+           (db.user_permission.procedure_id is None)).select().first()
     if p is not None:
         return permission_entail(p.perm_type, 'v')
 
