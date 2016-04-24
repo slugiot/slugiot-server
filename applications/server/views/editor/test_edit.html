@@ -1,0 +1,60 @@
+
+{{extend 'layout.html'}}
+
+<!-- the editor js and css part used which will be integrated to UI team web page-->
+{{cm=URL('static', 'codemirror')}}
+{{js_url=URL('static','js')}}
+{{css_url=URL('static', 'css')}}
+<link rel="stylesheet" href="{{=cm}}/lib/codemirror.css">
+<link rel="stylesheet" href="{{='%s/theme/web2py.css' % cm}}">
+<script src="{{=cm}}/lib/codemirror.js"></script>
+<script src="{{=cm}}/addon/edit/matchbrackets.js"></script>
+<script src="{{=cm}}/mode/python/python.js"></script>
+<script src="{{=cm}}/addon/hint/show-hint.js"></script>
+<script src="{{=cm}}/addon/hint/python-hint.js"></script>
+<link rel="stylesheet" href="{{=cm}}/addon/hint/show-hint.css">
+<script src="{{=cm}}/addon/search/search.js"></script>
+<script src="{{=cm}}/addon/search/searchcursor.js"></script>
+<script src="{{=cm}}/addon/dialog/dialog.js"></script>
+<script src="{{=cm}}/addon/edit/trailingspace.js"></script>
+<link rel="stylesheet" href="{{=cm}}/addon/dialog/dialog.css">
+<script src="{{=cm}}/addon/selection/active-line.js"></script>
+<script src="{{=cm}}/addon/display/fullscreen.js"></script>
+<link rel="stylesheet" href="{{=cm}}/addon/display/fullscreen.css">
+<script src="{{=cm}}/addon/fold/foldcode.js"></script>
+<script src="{{=cm}}/addon/fold/foldgutter.js"></script>
+<script src="{{=cm}}/addon/fold/brace-fold.js"></script>
+<script src="{{=cm}}/addon/fold/comment-fold.js"></script>
+<script src="{{=cm}}/addon/fold/indent-fold.js"></script>
+<script src="{{=cm}}/addon/comment/comment.js"></script>
+<link rel="stylesheet" href="{{=cm}}/addon/fold/foldgutter.css">
+<script src="{{=cm}}/emmet.min.js"></script>
+<script src="{{=js_url}}/ajax_editor.js"></script>
+<link rel="stylesheet" href="{{=css_url}}/typeahead.js-bootstrap.css">
+<link rel="stylesheet" href="{{=css_url}}/web2py-codemirror.css">
+
+<!-- the editor html part used which can be integrated to UI team web page-->
+<div id="editor_area" class="row-fluid">
+    <div class="span12" id="edit_placeholder">
+        <div id="myTabContent" class="tab-content">
+        </div>
+    </div>
+
+</div>
+
+<!-- the save button example integrated to UI team web page-->
+<button type="button" class="btn btn-primary" onclick="save_procedure('{{=URL('save_procedure')}}',{{=procedure_id}}, false)">save temporary</button>
+<button type="button" class="btn btn-info" onclick="save_procedure('{{=URL('save_procedure')}}',{{=procedure_id}}, true)">save stable</button>
+
+<!-- the text area to show the saving state for editor-->
+<div style="margin: 15px 0px 0px 0px;">
+    <a class="list-group-item active" id="save_result"><div></div></a>
+</div>
+
+<script>
+
+$(document).ready(function() {
+    load_procedure('{{=URL('edit_procedure')}}',{{=procedure_id}});
+});
+
+</script>
