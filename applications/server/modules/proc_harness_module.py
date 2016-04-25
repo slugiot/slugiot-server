@@ -1,4 +1,5 @@
 import datetime
+import access
 
 proc_table = db.procedures
 revisions_table = db.procedure_revisions
@@ -16,8 +17,15 @@ def create_procedure(procedure_name, user_email, device_id):
     :return: ID associated with new procedure (procedure_id in revisions table)
     :rtype: long
     """
-    return proc_table.insert(user_email = user_email, device_id = device_id, name = procedure_name)
 
+    if not access.can_create_procedure(device_id, user_email):
+        return None
+
+    pid = proc_table.insert(user_email = user_email, device_id = device_id, name = procedure_name)
+
+    # not sure if we really need both these tables
+    db.runs_on.insert(device_id = device_id, procedure_id = pid, procedure_name = procedure_name)
+    return pid
 
 def get_procedures_for_user(user_id, device_id):
     """
