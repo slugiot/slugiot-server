@@ -29,7 +29,7 @@ def get_procedure_status(device_id):
 
     # Get all procedure_ids for the device_id
     procedure_ids = db((devices.device_id == device_id) &
-                       (devices.user_id == proc_table.user_id)).select(proc_table.procedure_id)
+                       (devices.user_email == proc_table.user_email)).select(proc_table.procedure_id)
 
     # Build dictionary containing last_update date for each procedure_id
     procedure_info = {}

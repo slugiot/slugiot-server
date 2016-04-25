@@ -12,8 +12,8 @@ def create_procedure(procedure_name, user_email, device_id):
 
     :param procedure_name: Name of the new procedure
     :type procedure_name: str
-    :param user_id: User id associated with the account that created the procedure
-    :type user_id: str
+    :param user_email: User email associated with the account that created the procedure
+    :type user_email: str
     :return: ID associated with new procedure (procedure_id in revisions table)
     :rtype: long
     """
@@ -27,26 +27,51 @@ def create_procedure(procedure_name, user_email, device_id):
     db.runs_on.insert(device_id = device_id, procedure_id = pid, procedure_name = procedure_name)
     return pid
 
-def get_procedures_for_user(user_id, device_id):
+def get_procedures_for_user_edit(user_email, device_id):
     """
-    This function returns all procedure IDs that are associated with a given user
+    This function returns all procedure IDs that are associated with a given user to edit
 
-    :param user_id: User id associated with the account that is trying to access their procedures
-    :type user_id: str
-    :return: List of procedure IDs associated with user_id
+    :param user_email: User email associated with the account that is trying to access their procedures
+    :type user_email: str
+    :return: List of procedure IDs associated with user_email
     :rtype:
     """
 
-    # Get all relevant records for user_id
-    records = db((proc_table.user_id == user_id) &
+    # Get all relevant records for user_email
+    records = db((proc_table.user_email == user_email) &
                  (proc_table.device_id == device_id)).select()
 
     # Create list of procedure IDs from records
     procedure_ids = []
     for row in records:
-        procedure_ids.append(row.id)
+        if access.can_edit_procedure(user_email, device_id, row.id):
+            procedure_ids.append(row.id)
 
     return procedure_ids
+
+def get_procedures_for_user_view(user_email, device_id):
+    """
+    This function returns all procedure IDs that are associated with a given user to view ONLY
+
+    :param user_email: User email associated with the account that is trying to access their procedures
+    :type user_email: str
+    :return: List of procedure IDs associated with user_email
+    :rtype:
+    """
+
+    # Get all relevant records for user_email
+    records = db((proc_table.user_email == user_email) &
+                 (proc_table.device_id == device_id)).select()
+
+    # Create list of procedure IDs from records
+    procedure_ids = []
+    for row in records:
+        if (not access.can_edit_procedure(user_email, device_id, row.id)) and\
+                access.can_view_procedure(user_email, device_id, row.id):
+            procedure_ids.append(row.id)
+
+    return procedure_ids
+
 
 
 # Do we have to worry about stuff coming in at the same time? Currently a bug
