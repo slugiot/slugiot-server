@@ -34,11 +34,18 @@ db.define_table('device',
                 Field('device_icon', 'string', required=True, default='fa-globe')  # FA ID needed by UI team
                 )
 
-# This is a table that specifies what procedure runs on what device for what user
-db.define_table('runs_on',
+# with this new split table definition it makes sense to just use the automatic id in this table as the procedure_id
+db.define_table('procedures',
                 Field('device_id', 'string', required=True),
-                Field('procedure_id', 'string', required=True),
-                Field('procedure_name'), # Name of the procedure on a particular device.
+                Field('name', 'string')  # Name of procedure
+                )
+
+db.define_table('procedure_revisions',
+                Field('procedure_id', 'bigint', required=True),  # key
+                Field('procedure_data', 'text', required=True),  # Actual code for procedure - is check IS_LENGTH(65536) ok?
+                # Otherwise use string and specifiy larger length
+                Field('last_update', 'datetime', default=datetime.utcnow(), required=True),
+                Field('stable_version', 'boolean', required=True) # True for stable False for not stable
                 )
 
 ##############
@@ -58,25 +65,6 @@ db.define_table('user_permission',
                 # See above.
                 )
 
-#########################################################################
-
-# Procedure Harness Tables
-
-# with this new split table definition it makes sense to just use the automatic id in this table as the procedure_id
-db.define_table('procedures',
-                #Field('procedure_id', 'bigint', required=True),  # key
-                Field('user_email', 'string', required=True),
-                Field('device_id', 'string', required=True),
-                Field('name', 'string')  # Name of procedure
-                )
-
-db.define_table('procedure_revisions',
-                Field('procedure_id', 'bigint', required=True),  # key
-                Field('procedure_data', 'text', required=True),  # Actual code for procedure - is check IS_LENGTH(65536) ok?
-                # Otherwise use string and specifiy larger length
-                Field('last_update', 'datetime', default=datetime.utcnow(), required=True),
-                Field('stable_version', 'boolean', required=True) # True for stable False for not stable
-                )
 
 #########################
 # Settings are synched "down" to the client.
@@ -93,6 +81,7 @@ db.define_table('client_setting',
 #########################
 ## These tables are synched "up" from the clients to the server.
 
+# Synched client -> server
 db.define_table('logs',
                 Field('device_id'),
                 Field('procedure_id'),
@@ -103,6 +92,7 @@ db.define_table('logs',
 
                 )
 
+# Synched client -> server
 db.define_table('outputs',
                 Field('device_id'),
                 Field('procedure_id'),
@@ -113,6 +103,7 @@ db.define_table('outputs',
                 Field('received_time_stamp', 'datetime', default=datetime.utcnow()),
 )
 
+# Synched client -> server
 db.define_table('module_values',
                 Field('device_id'),
                 Field('time_stamp', 'datetime', default=datetime.utcnow()),
