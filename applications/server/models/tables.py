@@ -20,6 +20,7 @@
 
 from datetime import datetime
 
+
 #########################
 # Server organization tables.
 
@@ -35,27 +36,10 @@ db.define_table('device',
 
 # This is a table that specifies what procedure runs on what device for what user
 db.define_table('runs_on',
+                Field('user_email', required=True),
                 Field('device_id', 'string', required=True),
-                Field('procedure_id', 'string', required=True),
-                Field('procedure_name'), # Name of the procedure on a particular device.
+                Field('proc_id', 'string', required=True)
                 )
-
-# with this new split table definition it makes sense to just use the automatic id in this table as the procedure_id
-db.define_table('procedures',
-                # TODO: add device_id or account or something.
-                #Field('procedure_id', 'bigint', required=True),  # key
-                Field('user_email', 'string', required=True),
-                Field('name', 'string')  # Name of procedure
-                )
-
-db.define_table('procedure_revisions',
-                Field('procedure_id', 'bigint', required=True),  # key
-                Field('procedure_data', 'text', required=True),  # Actual code for procedure - is check IS_LENGTH(65536) ok?
-                # Otherwise use string and specifiy larger length
-                Field('last_update', 'datetime', default=datetime.datetime.utcnow(), required=True),
-                Field('stable_version', 'boolean', required=True) # True for stable False for not stable
-                )
-
 
 ##############
 # Permission table.
@@ -75,25 +59,32 @@ db.define_table('user_permission',
                 # See above.
                 )
 
+#########################################################################
 
-#########################
-# Settings are synched "down" to the client.
+# Procedure Harness Tables
 
-db.define_table('client_setting',
-                Field('device_id'),
-                Field('procedure_id'), # Can be Null for device-wide settings.
-                Field('setting_name'),
-                Field('setting_value'), # Encoded in json-plus.
-                Field('last_updated', 'datetime', update=datetime.utcnow())
+# with this new split table definition it makes sense to just use the automatic id in this table as the procedure_id
+db.define_table('procedures',
+                #Field('procedure_id', 'bigint', required=True),  # key
+                Field('user_email', 'string', required=True),
+                Field('device_id', 'string', required=True),
+                Field('name', 'string')  # Name of procedure
                 )
 
+db.define_table('procedure_revisions',
+                Field('procedure_id', 'bigint', required=True),  # key
+                Field('procedure_data', 'text', required=True),  # Actual code for procedure - is check IS_LENGTH(65536) ok?
+                # Otherwise use string and specifiy larger length
+                Field('last_update', 'datetime', default=datetime.datetime.utcnow(), required=True),
+                Field('stable_version', 'boolean', required=True) # True for stable False for not stable
+                )
 
 #########################
 ## These tables are synched "up" from the clients to the server.
 
 db.define_table('logs',
                 Field('device_id'),
-                Field('procedure_id'),
+                Field('modulename'),
                 Field('log_level', 'integer'), #  int, 0 = most important.
                 Field('log_message', 'text'),
                 Field('logged_time_stamp', 'datetime'),
@@ -103,18 +94,19 @@ db.define_table('logs',
 
 db.define_table('outputs',
                 Field('device_id'),
-                Field('procedure_id'),
+                Field('modulename'),
                 Field('name'), # Name of variable
                 Field('output_value', 'text'), # Json, short please
                 Field('tag'),
                 Field('output_time_stamp', 'datetime'),
                 Field('received_time_stamp', 'datetime', default=datetime.utcnow()),
+
 )
 
 db.define_table('module_values',
                 Field('device_id'),
                 Field('time_stamp', 'datetime', default=datetime.utcnow()),
-                Field('procedure_id'),
+                Field('modulename'),
                 Field('name'),  # Name of variable
                 Field('output_value', 'text'),  # Json, short please
                 )
