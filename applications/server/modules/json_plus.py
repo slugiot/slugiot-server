@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # Copyright 2014 Camiolog Inc.
+# BSD license.
 
 import base64
 import datetime
@@ -9,40 +10,15 @@ import json
 import numbers
 import numpy
 import unittest
-import collections
-from camarray import CamArray, PNGarray, PNGImage, PNGbytes, JPEGimage
-from safelog import Log
 
-fallback = {'Event':'events', 'Image':'events', 'Movie':'events', 'RecentEvents':'recent_events'}
-remapper = {'events.RecentEvents':'recent_events.RecentEvents'}
+fallback = {}
+remapper = {}
 
 class Storage(dict):
     __getattr__ = dict.__getitem__
     __setattr__ = dict.__setitem__
 
-def smartcmp(a,b,
-             types=(int, long, basestring, float, bool, tuple)):
-    is_a_primitive = isinstance(a[1],types)
-    is_b_primitive = isinstance(b[1],types)
-    if is_a_primitive and not is_b_primitive:
-        return -1
-    elif not is_a_primitive and is_b_primitive:
-        return +1
-    else:
-        return cmp(a[0],b[0])
-
 class Serializable(object):
-
-    def __getitem__(self, key):
-        return getattr(self, key)
-    def __setitem__(self, key, value):
-        setattr(self, key, value)
-
-    def get(self, k, d=None):
-        try:
-            return getattr(self, k)
-        except AttributeError:
-            return d
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
@@ -55,11 +31,9 @@ class Serializable(object):
         def custom(o):
             if isinstance(o, Serializable):
                 module = o.__class__.__module__.split('campil.')[-1]
-                # make sure keys are sorted
-                d = collections.OrderedDict()
-                d['meta_class'] = '%s.%s' % (module, o.__class__.__name__)
-                d.update(sorted((item for item in o.__dict__.iteritems()
-                                 if not item[0].startswith('_')), smartcmp))
+                d = {'meta_class': '%s.%s' % (module,
+                                              o.__class__.__name__)}
+                d.update(item for item in o.__dict__.items() if not item[0].startswith('_'))
                 return d
             elif isinstance(o, datetime.datetime):
                 d = {'meta_class': 'datetime.datetime',
@@ -71,22 +45,6 @@ class Serializable(object):
                 return d
             elif isinstance(o, file):
                 return '<file %r>' % o.name
-            elif isinstance(o, PNGarray):
-                d = {'meta_class': 'PNGarray',
-                     'data': o.to_string()}
-                return d
-            elif isinstance(o, PNGImage):
-                d = {'meta_class': 'PNGImage',
-                     'data': o.to_string()}
-                return d
-            elif isinstance(o, PNGbytes):
-                d = {'meta_class': 'PNGbytes',
-                     'data': o.to_string()}
-                return d
-            elif isinstance(o, JPEGimage):
-                d = {'meta_class': 'JPEGimage',
-                     'data': o.to_string()}
-                return d
 
             elif pack_ndarray and isinstance(o, numpy.ndarray):
                 # This catches both numpy arrays, and CamArray.
@@ -105,20 +63,15 @@ class Serializable(object):
                 return d
 
             # Normal Python types are unchanged
-            elif isinstance(o, (int, long, basestring, float, bool, list, tuple)):
+            elif isinstance(o, (int, long, str, unicode, float, bool, list, tuple, dict)):
                 return o
-            # except dictionaries which are sorted
-            elif isinstance(o, dict):
-                d = collections.OrderedDict()
-                d.update(sorted((item for item in o.iteritems()), smartcmp))
-                return d
+
             # These two defaults are catch-all
             elif isinstance(o, numbers.Integral):
                 return int(o)
             elif isinstance(o, numbers.Real):
                 return float(o)
-            elif isinstance(o, (numpy.bool, numpy.bool_)):
-                return bool(o)
+
             elif tolerant:
                 return None
             else:
@@ -126,17 +79,7 @@ class Serializable(object):
         return json.dumps(obj, default=custom, indent=2)
 
     @staticmethod
-    def from_json(s, objectify=True, mapper={}):
-        """Decodes json_plus.
-         @param s : the string to decode
-         @param objectify : If True, reconstructs the object hierarchy.
-         @param mapper :
-            - If a dictonary, then the key classes are replaced by the value classes in the
-                decoding.
-            - If a class, then all objects that are not dates or numpy classes are decoded to
-              this class.
-            - If None, then all objects that are not dates or numpy classes are decoded to
-              json_plus.Serializable."""
+    def from_json(s, objectify=True, to_camarray=False):
         def hook(o):
             meta_module, meta_class = None, o.get('meta_class')
             if meta_class in ('Datetime', 'datetime.datetime'):
@@ -158,7 +101,7 @@ class Serializable(object):
                 shape = o['shape']
                 v = numpy.frombuffer(data, dtype=dtype)
                 v = v.reshape(shape)
-                return CamArray(v)
+                return v
             # Numpy numbers.
             elif meta_class == 'numpy.number':
                 data = base64.b64decode(o['data'])
@@ -166,58 +109,31 @@ class Serializable(object):
                 v = numpy.frombuffer(data, dtype=dtype)[0]
                 return v
 
-            elif meta_class == 'PNGarray':
-                return PNGarray.from_string(o['data'])
-            elif meta_class == 'PNGImage':
-                return PNGImage.from_string(o['data'])
-            elif meta_class == 'PNGbytes':
-                return PNGbytes.from_string(o['data'])
-            elif meta_class in ('JPEGimage', 'JPGimage'):
-                return JPEGimage.from_string(o['data'])
-            elif meta_class and '.' in meta_class and mapper is not None:
+            elif meta_class and '.' in meta_class:
                 # correct for classes that have migrated from one module to another
-                meta_class = mapper.get(meta_class, meta_class)
                 meta_class = remapper.get(meta_class, meta_class)
                 # separate the module name from the actual class name
                 meta_module, meta_class = meta_class.rsplit('.',1)
 
             if meta_class is not None:
                 del o['meta_class']
-                if mapper is None:
-                    obj = Serializable()
-                    obj.__dict__.update(o)
-                    o = obj
-                elif isinstance(mapper, dict):
-                    # this option is for backward compatibility in case a module is not specified
-                    if meta_class in fallback:
-                        meta_module = fallback.get(meta_class)
+                # this option is for backward compatibility in case a module is not specified
+                if meta_class in fallback:
+                    meta_module = fallback.get(meta_class)
 
-                    if meta_module is not None and objectify:
-                        # Removes 'campil.' if it has it, for safety.  This helps avoid breaking
-                        # in case of ill-formed campil. paths (perhaps due to webapp).
-                        meta_module = meta_module.split('campil.')[-1]
-                        prefix = 'campil.' if __name__.startswith('campil.') else ''
-                        try:
-                            module = importlib.import_module(prefix+meta_module)
-                            cls = getattr(module, meta_class)
-                            obj = cls()
-                            obj.__dict__.update(o)
-                            o = obj
-                        except Exception, e:
-                            # If an object is unknown, restores it as a member
-                            # of this same class.
-                            obj = Serializable()
-                            obj.__dict__.update(o)
-                            o = obj
-                else:
-                    # Map all to the specified class.
-                    obj = mapper()
-                    obj.__dict__.update(o)
-                    o = obj
+                if meta_module is not None and objectify:
+                    try:
+                        module = importlib.import_module(meta_module)
+                        cls = getattr(module, meta_class)
+                        obj = cls()
+                        obj.__dict__.update(o)
+                        o = obj
+                    except Exception, e:
+                        # We need to allow the case where the class is now obsolete.
+                        print("Could not restore: %r %r", (meta_module, meta_class))
+                        o = None
             elif type(o).__name__ == 'dict':
-                obj = Serializable()
-                obj.__dict__.update(o)
-                o = obj
+                o = Storage(o)
             return o
 
         return json.loads(s, object_hook=hook)
@@ -269,41 +185,6 @@ class TestSerializable(unittest.TestCase):
         s = Serializable.dumps(a, pack_ndarray=True)
         c = Serializable.from_json(s)
         self.assertEqual(numpy.sum(numpy.abs(a - c)), 0)
-
-    def test_png_array(self):
-        a = numpy.random.rand(5, 5) > 0.5
-        b = PNGarray(a)
-        s = Serializable.dumps(b)
-        bb = Serializable.from_json(s)
-        self.assertEqual(numpy.sum(numpy.abs(b - bb)), 0)
-
-    def test_png_array_twice(self):
-        a = numpy.random.rand(5, 5) > 0.5
-        b = PNGarray(a)
-        bb = Serializable.from_json(Serializable.dumps(b))
-        self.assertEqual(numpy.sum(numpy.abs(b - bb)), 0)
-        bbb = Serializable.from_json(Serializable.dumps(bb))
-        self.assertEqual(numpy.sum(numpy.abs(b - bbb)), 0)
-
-    def test_png_array_in_obj(self):
-        o = Serializable()
-        o.a = PNGarray(numpy.random.rand(5, 5) > 0.5)
-        s = o.to_json()
-        oo = Serializable.from_json(s)
-        self.assertEqual(numpy.sum(numpy.abs(o.a - oo.a)), 0)
-
-    def test_png_array_in_obj(self):
-        o = Serializable()
-        r = (numpy.random.rand(10, 10) * 255).astype('int32')
-        g = (numpy.random.rand(10, 10) * 255).astype('int32')
-        b = (numpy.random.rand(10, 10) * 255).astype('int32')
-        o.a = PNGImage((r, g, b))
-        s = o.to_json()
-        oo = Serializable.from_json(s)
-        rr, gg, bb = o.a
-        self.assertEqual(numpy.sum(numpy.abs(r - rr)), 0)
-        self.assertEqual(numpy.sum(numpy.abs(g - gg)), 0)
-        self.assertEqual(numpy.sum(numpy.abs(b - bb)), 0)
 
     def test_float(self):
         x = numpy.float16(3.5)

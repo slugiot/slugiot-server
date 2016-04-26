@@ -14,6 +14,7 @@ if request.global_settings.web2py_version < "2.14.1":
 
 ## app configuration made easy. Look inside private/appconfig.ini
 from gluon.contrib.appconfig import AppConfig
+from gluon import current
 ## once in production, remove reload=True to gain full speed
 myconf = AppConfig(reload=True)
 
@@ -23,10 +24,14 @@ if not request.env.web2py_runtime_gae:
              pool_size = myconf.get('db.pool_size'),
              migrate_enabled = myconf.get('db.migrate'),
              check_reserved = ['all'])
+    ## Store sessions
+    session.connect(request, response, db=db)
+    current.db = db
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore+ndb')
     ## store sessions and tickets there
+    current.db = db
     session.connect(request, response, db=db)
     ## or store session in Memcache, Redis, etc.
     ## from gluon.contrib.memdb import MEMDB
