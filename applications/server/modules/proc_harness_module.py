@@ -1,6 +1,8 @@
 import datetime
 import access
+from gluon import current
 
+db = current.db
 proc_table = db.procedures
 revisions_table = db.procedure_revisions
 
@@ -23,8 +25,9 @@ def create_procedure(procedure_name, user_email, device_id):
 
     pid = proc_table.insert(user_email = user_email, device_id = device_id, name = procedure_name)
 
-    # not sure if we really need both these tables
+    # not sure if we really need all these tables
     db.runs_on.insert(device_id = device_id, procedure_id = pid, procedure_name = procedure_name)
+    access.add_permission(device_id = device_id, user_email = user_email, procedure_id = pid)
     return pid
 
 def get_procedures_for_user_edit(user_email, device_id):
