@@ -49,7 +49,6 @@ db.define_table('runs_on',
 # a = admin (valid only for one whole device)
 # e = edit settings of procedure
 db.define_table('user_permission',
-                Field('perm_id', 'string', required=True),  # REMOVE
                 Field('perm_user_email', required =True),
                 # The email of the currently logged in user can be found in auth.user.email
                 Field('device_id', required = True),
@@ -130,9 +129,8 @@ db.logs.log_message.writable=False
 ## TODO: define the tables that need to be synched "down", for settings, and procedures.
 
 
+
 ############ Test tables.
-
-
 ## This is the table used to temporary testing editor
 ## it get procedure by the table id instead of device id
 ## because Team2 provide API for us to get the data from procedures
