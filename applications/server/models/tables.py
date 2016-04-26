@@ -20,6 +20,7 @@
 
 from datetime import datetime
 
+
 #########################
 # Server organization tables.
 
@@ -40,23 +41,6 @@ db.define_table('runs_on',
                 Field('procedure_name'), # Name of the procedure on a particular device.
                 )
 
-# with this new split table definition it makes sense to just use the automatic id in this table as the procedure_id
-db.define_table('procedures',
-                # TODO: add device_id or account or something.
-                #Field('procedure_id', 'bigint', required=True),  # key
-                Field('user_email', 'string', required=True),
-                Field('name', 'string')  # Name of procedure
-                )
-
-db.define_table('procedure_revisions',
-                Field('procedure_id', 'bigint', required=True),  # key
-                Field('procedure_data', 'text', required=True),  # Actual code for procedure - is check IS_LENGTH(65536) ok?
-                # Otherwise use string and specifiy larger length
-                Field('last_update', 'datetime', default=datetime.datetime.utcnow(), required=True),
-                Field('stable_version', 'boolean', required=True) # True for stable False for not stable
-                )
-
-
 ##############
 # Permission table.
 
@@ -75,6 +59,25 @@ db.define_table('user_permission',
                 # See above.
                 )
 
+#########################################################################
+
+# Procedure Harness Tables
+
+# with this new split table definition it makes sense to just use the automatic id in this table as the procedure_id
+db.define_table('procedures',
+                #Field('procedure_id', 'bigint', required=True),  # key
+                Field('user_email', 'string', required=True),
+                Field('device_id', 'string', required=True),
+                Field('name', 'string')  # Name of procedure
+                )
+
+db.define_table('procedure_revisions',
+                Field('procedure_id', 'bigint', required=True),  # key
+                Field('procedure_data', 'text', required=True),  # Actual code for procedure - is check IS_LENGTH(65536) ok?
+                # Otherwise use string and specifiy larger length
+                Field('last_update', 'datetime', default=datetime.utcnow(), required=True),
+                Field('stable_version', 'boolean', required=True) # True for stable False for not stable
+                )
 
 #########################
 # Settings are synched "down" to the client.
@@ -120,11 +123,10 @@ db.define_table('module_values',
                 )
 
 
-
-# db.logs.log_level.requires = IS_INT_IN_RANGE(0, 4)  # limit log type to 5 (INFO, WARNING, DEBUG, ERROR, CRITICAL)
-# db.logs.time_stamp.writable=False                   # can not manual change log data (time, log_level, log_message)
-# db.logs.log_level.writable=False
-# db.logs.log_message.writable=False
+db.logs.log_level.requires = IS_INT_IN_RANGE(0, 4)  # limit log type to 5 (INFO, WARNING, DEBUG, ERROR, CRITICAL)
+db.logs.logged_time_stamp.writable=False            # can not manual change log data (time, log_level, log_message)
+db.logs.log_level.writable=False
+db.logs.log_message.writable=False
 
 ## TODO: define the tables that need to be synched "down", for settings, and procedures.
 
