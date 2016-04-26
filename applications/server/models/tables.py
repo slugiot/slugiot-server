@@ -75,7 +75,7 @@ db.define_table('procedure_revisions',
                 Field('procedure_id', 'bigint', required=True),  # key
                 Field('procedure_data', 'text', required=True),  # Actual code for procedure - is check IS_LENGTH(65536) ok?
                 # Otherwise use string and specifiy larger length
-                Field('last_update', 'datetime', default=datetime.datetime.utcnow(), required=True),
+                Field('last_update', 'datetime', default=datetime.utcnow(), required=True),
                 Field('stable_version', 'boolean', required=True) # True for stable False for not stable
                 )
 
@@ -112,7 +112,7 @@ db.define_table('module_values',
                 )
 
 db.logs.log_level.requires = IS_INT_IN_RANGE(0, 4)  # limit log type to 5 (INFO, WARNING, DEBUG, ERROR, CRITICAL)
-db.logs.time_stamp.writable=False                   # can not manual change log data (time, log_level, log_message)
+db.logs.logged_time_stamp.writable=False                   # can not manual change log data (time, log_level, log_message)
 db.logs.log_level.writable=False
 db.logs.log_message.writable=False
 
