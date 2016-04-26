@@ -127,3 +127,41 @@ def save(procedure_id, procedure_data, stable):
     if stable:
         db((revisions_table.procedure_id == procedure_id) &
            (revisions_table.stable_version == False)).delete()
+
+
+####################### TEST CODE #######################
+
+class TestProcedureHarness(unittest.TestCase):
+    def setUp(self):
+        # os.copy('mysafecopy.sql', 'myfile.sql')
+        # test_db = DAL('sqlite:myfile.sql')
+        # current.db = test_db
+        # import mymodule
+        # mymodule.foo()
+
+        # eventually want to get db instance of SQL lite and dump database
+        self.db = current.db
+        self.proc_table = self.db.procedures
+        self.revisions_table = self.db.procedure_revisions
+
+        self.db(self.proc_table).delete()
+        self.db(self.revisions_table).delete()
+
+    def testBasicSave(self):
+        proc_id = phm.create_procedure("blah", "blah@blah", 1)
+        phm.save(proc_id, "blahblah", True)
+        proc_id2 = phm.create_procedure("blah2", "blah2@blah", 1)
+        phm.save(proc_id2, "blahblah2", False)
+        phm.save(proc_id2, "blahblah3", False)
+
+        proc_list1 = phm.get_procedures_for_user_edit("blah@blah", 1)
+        proc_list2 = phm.get_procedures_for_user_edit("blah2@blah", 1)
+
+        for row in self.db(self.revisions_table).select():
+            print row.procedure_id, row.procedure_data, row.last_update, row.stable_version
+
+        print "first", phm.get_procedure_data(proc_list1[0], True)
+        print "second", phm.get_procedure_data(proc_list2[0], False)
+
+if __name__ == '__main__':
+    unittest.main() # runs all unit tests
