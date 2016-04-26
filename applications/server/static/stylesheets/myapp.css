@@ -1,0 +1,101 @@
+/******************* Bootstrap Banners *******************/
+/* line 3, ../sass/_main.scss */
+.close {
+  color: #fff;
+  opacity: 1;
+}
+
+/******************* Loading Animation *******************/
+/* https://css-tricks.com/quick-css-trick-how-to-center-an-object-exactly-in-the-center/ */
+/* line 11, ../sass/_main.scss */
+.centered {
+  position: fixed;
+  top: 45%;
+  left: 45%;
+  transform: translate(-50%, -50%);
+}
+
+/* http://codepen.io/jczimm/pen/vEBpoL */
+/* line 27, ../sass/_main.scss */
+body {
+  background-color: #ffffff;
+}
+
+/* line 33, ../sass/_main.scss */
+.showbox {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 5%;
+}
+
+/* line 41, ../sass/_main.scss */
+.loader {
+  position: relative;
+  margin: 0px auto;
+  width: 100px;
+}
+/* line 45, ../sass/_main.scss */
+.loader:before {
+  content: '';
+  display: block;
+  padding-top: 100%;
+}
+
+/* line 52, ../sass/_main.scss */
+.circular {
+  animation: rotate 2s linear infinite;
+  height: 100%;
+  transform-origin: center center;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+/* line 63, ../sass/_main.scss */
+.path {
+  stroke-dasharray: 1,200;
+  stroke-dashoffset: 0;
+  animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
+  stroke-linecap: round;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1,200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -124px;
+  }
+}
+@keyframes color {
+  100%, 0% {
+    stroke: #d62d20;
+  }
+  40% {
+    stroke: #0057e7;
+  }
+  66% {
+    stroke: #008744;
+  }
+  80%, 90% {
+    stroke: #ffa700;
+  }
+}
