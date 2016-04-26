@@ -11,17 +11,17 @@ from perm_comparator import permission_entail
 # e = edit settings of procedure
 
 
-def add_permission(device_id, user_email, _type='v', procedure_id=None):
+def add_permission(device_id, user_email, perm_type='v', procedure_id=None):
     """
     This function add one permission of a device to user
     @param device_id : device id
     @param user_email : a list of user email to share
     @param procedure_id : procedure id
-    @param _type : permission type to share
+    @param perm_type : permission type to share
     @returns : if fail return this user's email else return None
     """
     # Check input type value is valid or not
-    if _type not in ['v','e','a']:
+    if perm_type not in ['v','e','a']:
         raise Exception("Invalid permission type input")
 
     db = current.db
@@ -40,11 +40,11 @@ def add_permission(device_id, user_email, _type='v', procedure_id=None):
         if p is None:
             # if no record stored in permission table we insert new permission record
             permission.insert(perm_user_email=user_email, device_id=device_id, procedure_id=procedure_id,
-                              perm_type=_type)
+                              perm_type=perm_type)
         else:
             # update the selected row if given type entails original type
-            if permission_entail(_type, p.perm_type):
-                p.update(perm_user_email=user_email, device_id=device_id, procedure_id=procedure_id, perm_type=_type)
+            if permission_entail(perm_type, p.perm_type):
+                p.update(perm_user_email=user_email, device_id=device_id, procedure_id=procedure_id, perm_type=perm_type)
     return fail_email
 
 
@@ -104,7 +104,7 @@ def can_edit_procedure(user_email, device_id, procedure_id):
     # Does the user have generic permission to the whole device?
     p = db((db.user_permission.perm_user_email == user_email) &
            (db.user_permission.device_id == device_id) &
-           (db.user_permission.procedure_id == None)).select().first()
+           (db.user_permission.procedure_id is None)).select().first()
     if p is not None:
         return permission_entail(p.perm_type, 'e')
 
@@ -132,7 +132,7 @@ def can_share_procedure(user_email, device_id, procedure_id):
     # Does the user have generic permission to the whole device?
     p = db((db.user_permission.perm_user_email == user_email) &
            (db.user_permission.device_id == device_id) &
-           (db.user_permission.procedure_id == None)).select().first()
+           (db.user_permission.procedure_id is None)).select().first()
     if p is not None:
         return permission_entail(p.perm_type, 'a')
 
