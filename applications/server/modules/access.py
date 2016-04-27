@@ -164,7 +164,7 @@ def can_share_procedure(user_email, device_id, procedure_id):
     return False
 
 
-def can_manage_procedure(device_id, user_email):
+def can_create_procedure(device_id, user_email):
     """
     This function check whether a user can create a procedure, it need 'a' permission type
     @param device_id : device id
