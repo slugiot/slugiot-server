@@ -21,7 +21,7 @@ def add_permission(device_id, user_email, perm_type='v', procedure_id=None):
     @returns : if fail return this user's email else return None
     """
     # Check input type value is valid or not
-    if perm_type not in ['v','e','a']:
+    if perm_type not in ['v', 'e', 'a']:
         raise Exception("Invalid permission type input")
 
     db = current.db
@@ -44,7 +44,8 @@ def add_permission(device_id, user_email, perm_type='v', procedure_id=None):
         else:
             # update the selected row if given type entails original type
             if permission_entail(perm_type, p.perm_type):
-                p.update(perm_user_email=user_email, device_id=device_id, procedure_id=procedure_id, perm_type=perm_type)
+                p.update(perm_user_email=user_email, device_id=device_id, procedure_id=procedure_id,
+                         perm_type=perm_type)
     return fail_email
 
 
@@ -57,10 +58,26 @@ def delete_permission(user_email, device_id, procedure_id):
     @returns : Success or not
     """
     db = current.db
-    return \
-        db((db.user_permission.perm_user_email == user_email) &
-           (db.user_permission.device_id == device_id) &
-           (db.user_permission.procedure_id == procedure_id)).delete()
+    # if user_email is None then delete permissions for all permissions regarding that device_id and procedure_id
+    if user_email is None:
+        if device_id is None:
+            raise Exception("missing device_id")
+        if procedure_id is None:
+            db(db.user_permission.device_id == device_id).delete()
+        else:
+            db((db.user_permission.device_id == device_id) &
+               (db.user_permission.procedure_id == procedure_id)).delete()
+    else:
+        if device_id is None:
+            raise Exception("missing device_id")
+        # if procedure_id is None then delete all permissions regarding to the device
+        if procedure_id is None:
+            db((db.user_permission.perm_user_email == user_email) &
+               (db.user_permission.device_id == device_id)).delete()
+        else:
+            db((db.user_permission.perm_user_email == user_email) &
+               (db.user_permission.device_id == device_id) &
+               (db.user_permission.procedure_id == procedure_id)).delete()
 
 
 def can_view_procedure(user_email, device_id, procedure_id):
@@ -76,7 +93,7 @@ def can_view_procedure(user_email, device_id, procedure_id):
     # Does the user have generic permission to the whole device?
     p = db((db.user_permission.perm_user_email == user_email) &
            (db.user_permission.device_id == device_id) &
-           (db.user_permission.procedure_id is None)).select().first()
+           (db.user_permission.procedure_id == None)).select().first()
     if p is not None:
         return permission_entail(p.perm_type, 'v')
 
@@ -104,7 +121,7 @@ def can_edit_procedure(user_email, device_id, procedure_id):
     # Does the user have generic permission to the whole device?
     p = db((db.user_permission.perm_user_email == user_email) &
            (db.user_permission.device_id == device_id) &
-           (db.user_permission.procedure_id is None)).select().first()
+           (db.user_permission.procedure_id == None)).select().first()
     if p is not None:
         return permission_entail(p.perm_type, 'e')
 
@@ -132,7 +149,7 @@ def can_share_procedure(user_email, device_id, procedure_id):
     # Does the user have generic permission to the whole device?
     p = db((db.user_permission.perm_user_email == user_email) &
            (db.user_permission.device_id == device_id) &
-           (db.user_permission.procedure_id is None)).select().first()
+           (db.user_permission.procedure_id == None)).select().first()
     if p is not None:
         return permission_entail(p.perm_type, 'a')
 
@@ -147,7 +164,7 @@ def can_share_procedure(user_email, device_id, procedure_id):
     return False
 
 
-def can_create_procedure(device_id, user_email):
+def can_manage_procedure(device_id, user_email):
     """
     This function check whether a user can create a procedure, it need 'a' permission type
     @param device_id : device id
@@ -160,7 +177,7 @@ def can_create_procedure(device_id, user_email):
     # Does the user have generic permission to the whole device?
     p = db((db.user_permission.perm_user_email == user_email) &
            (db.user_permission.device_id == device_id) &
-           (db.user_permission.procedure_id is None)).select().first()
+           (db.user_permission.procedure_id == None)).select().first()
     # it need admin permission
     if p.perm_type is 'a':
         return True
