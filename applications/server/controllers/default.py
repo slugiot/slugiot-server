@@ -6,15 +6,11 @@ from gluon import utils as gluon_utils
 # Needed to slow down time in load_devices()
 import time
 
-import test_proc_harness as tph
-
 def index():
     """
     Description: Controller for the home page.
     Returns: a redirect to the splash page if not logged in or a list of the devices + UUID to index.html if you are.
     """
-
-    tph.run_test()
 
     if auth.user_id is None:
         redirect(URL('default', 'login.html'))
