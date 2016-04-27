@@ -17,12 +17,16 @@ def edit_procedure():
     # parameter for CodeMirror option parameter used for setting the editor feature
     preferences={'theme':'web2py', 'editor': 'default', 'closetag': 'true', 'codefolding': 'false', 'tabwidth':'4', 'indentwithtabs':'false', 'linenumbers':'true', 'highlightline':'true'}
 
-    # get the procedure_id of procedure in TABLE procedure
+    # get the procedure_id and stable state of procedure in TABLE procedure
     procedure_id = request.vars.procedure_id
+    stable = request.vars.stable
 
     # the final edition will use Team 2 API "get_procedure_data(procedure_id, stable)"  to get the data
     #data = db(db.coding.id == procedure_id).select(db.coding.procedures).first().procedures
-    data=proc_harness_module.get_procedure_data(procedure_id,True)
+    if stable == 'false':
+        data = proc_harness_module.get_procedure_data(procedure_id,False)
+    else:
+        data = proc_harness_module.get_procedure_data(procedure_id,True)
 
     file_details = dict(
                     editor_settings=preferences,     # the option parameters used for setting editor feature.
@@ -152,10 +156,11 @@ def test_edit():
     :return: the procedure_id for procedure in procedure TABLE
     :rtype: dict
     """
-    # get the procedure_id of procedure in TABLE procedure
+    # get the procedure_id and stable statues of procedure in TABLE procedure
     procedure_id = request.vars.procedure_id
+    stable = request.vars.stable
 
-    return dict(procedure_id = procedure_id)
+    return dict(procedure_id = procedure_id, stable=stable)
 
 def eprint():
     print('ok')
