@@ -1,8 +1,10 @@
 import datetime
 import access
 import unittest
+import time
 from gluon import current
 from gluon.tools import Auth
+
 
 auth = Auth(globals(), current.db)
 
@@ -112,8 +114,10 @@ def get_procedure_data(procedure_id, stable):
     if stable:
         date = db((revisions_table.procedure_id == procedure_id) &
                   (revisions_table.stable_version == stable)).select(max).first()[max]
+        print "stable date", date
     else:
         date = db(revisions_table.procedure_id == procedure_id).select(max).first()[max]
+        print "not stable date", date
 
     # Return the data corresponding the procedure ID and determined date
     return db((revisions_table.procedure_id == procedure_id) &
@@ -167,19 +171,22 @@ def run_test():
     print "test4"
     save(proc_id, "blahblah", True)
     proc_id2 = create_procedure("blah2", "1")
-    save(proc_id2, "blahblah2", False)
+    save(proc_id2, "blahblah2", True)
+    time.sleep(2)
     save(proc_id2, "blahblah3", False)
 
     proc_list1 = get_procedures_for_edit("1")
-    proc_list2 = get_procedures_for_edit("1")
 
-    print "procs", proc_list1, "two", proc_list2
+    print "procs", proc_list1, "two"
 
     for row in db(revisions_table).select():
         print row.procedure_id, row.procedure_data, row.last_update, row.stable_version
 
-    print "first", get_procedure_data(proc_list1[0], True)
-    print "second", get_procedure_data(proc_list2[0], False)
+    print "should be blahblah", get_procedure_data(proc_list1[0], True)
+    print "second be blahblah", get_procedure_data(proc_list1[0], False)
+
+    print "should be blahblah2", get_procedure_data(proc_list1[1], True)
+    print "second be blahblah3", get_procedure_data(proc_list1[1], False)
 
 
 class TestProcedureHarness(unittest.TestCase):
