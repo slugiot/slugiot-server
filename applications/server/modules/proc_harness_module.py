@@ -1,48 +1,58 @@
 import datetime
 import access
+import unittest
+import time
 from gluon import current
+from gluon.tools import Auth
 
-db = current.db
-proc_table = db.procedures
-revisions_table = db.procedure_revisions
+
+auth = Auth(globals(), current.db)
 
 ####### API FOR EDITOR TEAM ##########
 
-def create_procedure(procedure_name, user_email, device_id):
+#@auth.requires_login()
+def create_procedure(procedure_name, device_id):
     """
     This function should be called when a new procedure is created in the editor.
 
     :param procedure_name: Name of the new procedure
     :type procedure_name: str
-    :param user_email: User email associated with the account that created the procedure
-    :type user_email: str
+    :param device_id: Device ID associated with device on which user wants to create proc
+    :type device_id: str
     :return: ID associated with new procedure (procedure_id in revisions table)
     :rtype: long
     """
+    db = current.db
+    auth = Auth(globals(), db)
+    proc_table = db.procedures
+
+    user_email = "blah@blah.com" #auth.auth.user_email
 
     if not access.can_create_procedure(device_id, user_email):
         return None
 
-    pid = proc_table.insert(user_email = user_email, device_id = device_id, name = procedure_name)
-
-    # not sure if we really need all these tables
-    db.runs_on.insert(device_id = device_id, procedure_id = pid, procedure_name = procedure_name)
+    pid = proc_table.insert(device_id = device_id, name = procedure_name)
     access.add_permission(device_id = device_id, user_email = user_email, procedure_id = pid)
     return pid
 
-def get_procedures_for_user_edit(user_email, device_id):
+#@auth.requires_login()
+def get_procedures_for_edit(device_id):
     """
     This function returns all procedure IDs that are associated with a given user to edit
 
-    :param user_email: User email associated with the account that is trying to access their procedures
-    :type user_email: str
-    :return: List of procedure IDs associated with user_email
+    :param device_id: Device ID associated with device on which user wants to create proc
+    :type device_id: str
+    :return: List of procedure IDs associated with device
     :rtype:
     """
+    db = current.db
+    auth = Auth(globals(), db)
+    proc_table = db.procedures
+
+    user_email = "blah@blah.com" #auth.auth.user_email
 
     # Get all relevant records for user_email
-    records = db((proc_table.user_email == user_email) &
-                 (proc_table.device_id == device_id)).select()
+    records = db(proc_table.device_id == device_id).select()
 
     # Create list of procedure IDs from records
     procedure_ids = []
@@ -52,19 +62,24 @@ def get_procedures_for_user_edit(user_email, device_id):
 
     return procedure_ids
 
-def get_procedures_for_user_view(user_email, device_id):
+#@auth.requires_login()
+def get_procedures_for_view(device_id):
     """
     This function returns all procedure IDs that are associated with a given user to view ONLY
 
-    :param user_email: User email associated with the account that is trying to access their procedures
-    :type user_email: str
-    :return: List of procedure IDs associated with user_email
+    :param device_id: Device ID associated with device on which user wants to create proc
+    :type device_id: str
+    :return: List of procedure IDs associated with device
     :rtype:
     """
 
+    db = current.db
+    auth = Auth(globals(), db)
+    proc_table = db.procedures
+
     # Get all relevant records for user_email
-    records = db((proc_table.user_email == user_email) &
-                 (proc_table.device_id == device_id)).select()
+    user_email = "blah@blah.com" #auth.auth.user_email
+    records = db(proc_table.device_id == device_id).select()
 
     # Create list of procedure IDs from records
     procedure_ids = []
@@ -77,7 +92,7 @@ def get_procedures_for_user_view(user_email, device_id):
 
 
 
-# Do we have to worry about stuff coming in at the same time? Currently a bug
+#@auth.requires_login()
 def get_procedure_data(procedure_id, stable):
     """
     Returns actual code that corresponds to a given procedure ID.
@@ -91,19 +106,24 @@ def get_procedure_data(procedure_id, stable):
     :rtype: str
     """
 
+    db = current.db
+    revisions_table = db.procedure_revisions
+
     # Get the most recent date, either stable or absolute
     max = revisions_table.last_update.max()
     if stable:
         date = db((revisions_table.procedure_id == procedure_id) &
                   (revisions_table.stable_version == stable)).select(max).first()[max]
+        print "stable date", date
     else:
         date = db(revisions_table.procedure_id == procedure_id).select(max).first()[max]
+        print "not stable date", date
 
     # Return the data corresponding the procedure ID and determined date
     return db((revisions_table.procedure_id == procedure_id) &
               (revisions_table.last_update == date)).select(revisions_table.procedure_data).first().procedure_data
 
-
+#@auth.requires_login()
 def save(procedure_id, procedure_data, stable):
     """
     Save code corresponding to a procedure ID as either a stable version or a temporary version
@@ -116,6 +136,9 @@ def save(procedure_id, procedure_data, stable):
     :type stable: bool
     """
 
+    db = current.db
+    revisions_table = db.procedure_revisions
+
     # Insert new record to revisions table
     revisions_table.insert(procedure_id = procedure_id,
                            procedure_data = procedure_data,
@@ -127,3 +150,77 @@ def save(procedure_id, procedure_data, stable):
     if stable:
         db((revisions_table.procedure_id == procedure_id) &
            (revisions_table.stable_version == False)).delete()
+
+
+####################### TEST CODE #######################
+
+def run_test():
+    db = current.db
+    proc_table = db.procedures
+    revisions_table = db.procedure_revisions
+
+    print "test1"
+    db(proc_table).delete()
+    print "test2"
+    db(revisions_table).delete()
+
+    access.add_permission("1","blah@blah.com",perm_type="a")
+
+    print "test3"
+    proc_id = create_procedure("blah", "1")
+    print "test4"
+    save(proc_id, "blahblah", True)
+    proc_id2 = create_procedure("blah2", "1")
+    save(proc_id2, "blahblah2", True)
+    time.sleep(2)
+    save(proc_id2, "blahblah3", False)
+
+    proc_list1 = get_procedures_for_edit("1")
+
+    print "procs", proc_list1, "two"
+
+    for row in db(revisions_table).select():
+        print row.procedure_id, row.procedure_data, row.last_update, row.stable_version
+
+    print "should be blahblah", get_procedure_data(proc_list1[0], True)
+    print "second be blahblah", get_procedure_data(proc_list1[0], False)
+
+    print "should be blahblah2", get_procedure_data(proc_list1[1], True)
+    print "second be blahblah3", get_procedure_data(proc_list1[1], False)
+
+
+class TestProcedureHarness(unittest.TestCase):
+    def setUp(self):
+        # os.copy('mysafecopy.sql', 'myfile.sql')
+        # test_db = DAL('sqlite:myfile.sql')
+        # current.db = test_db
+        # import mymodule
+        # mymodule.foo()
+
+        # eventually want to get db instance of SQL lite and dump database
+        self.db = current.db
+        self.proc_table = self.db.procedures
+        self.revisions_table = self.db.procedure_revisions
+
+        self.db(self.proc_table).delete()
+        self.db(self.revisions_table).delete()
+
+    #@unittest.skip("later")
+    def testBasicSave(self):
+        proc_id = create_procedure("blah", "blah@blah", 1)
+        save(proc_id, "blahblah", True)
+        proc_id2 = create_procedure("blah2", "blah2@blah", 1)
+        save(proc_id2, "blahblah2", False)
+        save(proc_id2, "blahblah3", False)
+
+        proc_list1 = get_procedures_for_edit("blah@blah", 1)
+        proc_list2 = get_procedures_for_view("blah2@blah", 1)
+
+        for row in self.db(self.revisions_table).select():
+            print row.procedure_id, row.procedure_data, row.last_update, row.stable_version
+
+        print "first", get_procedure_data(proc_list1[0], True)
+        print "second", get_procedure_data(proc_list2[0], False)
+
+#if __name__ == '__main__':
+#    unittest.main() # runs all unit tests
