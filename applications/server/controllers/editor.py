@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # this file is used to test the editor
 
-
+import proc_harness_module
 from datetime import datetime
 
 def edit_procedure():
@@ -21,7 +21,8 @@ def edit_procedure():
     procedure_id = request.vars.procedure_id
 
     # the final edition will use Team 2 API "get_procedure_data(procedure_id, stable)"  to get the data
-    data = db(db.coding.id == procedure_id).select(db.coding.procedures).first().procedures
+    #data = db(db.coding.id == procedure_id).select(db.coding.procedures).first().procedures
+    data=proc_harness_module.get_procedure_data(procedure_id,True)
 
     file_details = dict(
                     editor_settings=preferences,     # the option parameters used for setting editor feature.
@@ -64,7 +65,9 @@ def save_procedure():
     if stable == 'false':
 
         #the final edition will use Team 2 API save(procedure_id, stable) to save the temporary procedure
-        db(db.coding.id == procedure_id).update(procedures = data)
+        #db(db.coding.id == procedure_id).update(procedures = data)
+        proc_harness_module.save(procedure_id,data,False)
+
     else:
         # compile the stable procedure and saved it if there is no exception during compiling
 
@@ -74,7 +77,8 @@ def save_procedure():
             compile(code, '<string>', "exec", _ast.PyCF_ONLY_AST)
 
             #the final edition will use Team 2 API save(procedure_id, stable) to save the data
-            db(db.coding.id == procedure_id).update(procedures = data)
+            #db(db.coding.id == procedure_id).update(procedures = data)
+            proc_harness_module.save(procedure_id,data,True)
 
         except Exception, e:
             # DISCUSS
@@ -155,3 +159,52 @@ def test_edit():
 
 def eprint():
     print('ok')
+
+
+
+def run_test():
+    """
+    test code refered and edited from proc_harness_module.py
+    this is only used for demo in the next class and will be deleted later
+    :return:
+    """
+    import access
+    import time
+    db = current.db
+    proc_table = db.procedures
+    revisions_table = db.procedure_revisions
+    db(proc_table).delete()
+    db(revisions_table).delete()
+
+    #set logger
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    logger.addHandler(ch)
+
+    # add permission for the usermanagement
+    access.add_permission("1","blah@blah.com",perm_type="a")
+
+    # create procedure name=demo_1 for the device whose id = 1 and saved it
+    proc_id = proc_harness_module.create_procedure("demo_1", "1")
+    proc_harness_module.save(proc_id, "#demo1 stable edition code", True)
+    time.sleep(2)
+    proc_harness_module.save(proc_id, "#demo1 temporary edition code", False)
+    time.sleep(2)
+    # create procedure name=demo_2 for the device whose id = 1 and saved it
+    proc_id2 = proc_harness_module.create_procedure("demo_2", "1")
+    proc_harness_module.save(proc_id2, "#demo2 stable edition code", True)
+    time.sleep(2)
+    proc_harness_module.save(proc_id2, "#demo2 temporary edition code", False)
+
+    # get the list of procedure_id from device whose id = 1
+    proc_list1 = proc_harness_module.get_procedures_for_edit("1")
+    proc_list2 = proc_harness_module.get_procedures_for_edit("1")
+    logger.info(proc_list1)
+
+    # get the data of procedure
+    data1 =proc_harness_module.get_procedure_data(proc_list1[0], True)
+    logger.info(data1)
+    data2 =proc_harness_module.get_procedure_data(proc_list2[0], False)
+    logger.info(data2)
+    return "ok"
+
