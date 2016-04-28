@@ -45,7 +45,7 @@ db.define_table('procedure_revisions',
                 Field('procedure_data', 'text', required=True),  # Actual code for procedure - is check IS_LENGTH(65536) ok?
                 # Otherwise use string and specifiy larger length
                 Field('last_update', 'datetime', default=datetime.utcnow(), required=True),
-                Field('stable_version', 'boolean', required=True) # True for stable False for not stable
+                Field('is_stable', 'boolean', required=True) # True for stable False for not stable
                 )
 
 ##############
