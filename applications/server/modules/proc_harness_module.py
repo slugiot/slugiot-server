@@ -94,6 +94,22 @@ def get_procedures_for_view(device_id):
     return procedure_ids
 
 
+def __get_most_recent_date__(procedure_id, stable):
+    db = current.db
+    revisions_table = db.procedure_revisions
+
+    # Get the most recent date, either stable or absolute
+    max = revisions_table.last_update.max()
+    if stable:
+        date = db((revisions_table.procedure_id == procedure_id) &
+                  (revisions_table.stable_version == stable)).select(max).first()[max]
+        print "stable date", date
+    else:
+        date = db(revisions_table.procedure_id == procedure_id).select(max).first()[max]
+        print "not stable date", date
+
+    return date
+
 
 #@auth.requires_login()
 def get_procedure_data(procedure_id, stable):
@@ -112,19 +128,35 @@ def get_procedure_data(procedure_id, stable):
     db = current.db
     revisions_table = db.procedure_revisions
 
-    # Get the most recent date, either stable or absolute
-    max = revisions_table.last_update.max()
-    if stable:
-        date = db((revisions_table.procedure_id == procedure_id) &
-                  (revisions_table.stable_version == stable)).select(max).first()[max]
-        print "stable date", date
-    else:
-        date = db(revisions_table.procedure_id == procedure_id).select(max).first()[max]
-        print "not stable date", date
+    date = __get_most_recent_date__(procedure_id, stable)
 
     # Return the data corresponding the procedure ID and determined date
     return db((revisions_table.procedure_id == procedure_id) &
               (revisions_table.last_update == date)).select(revisions_table.procedure_data).first().procedure_data
+
+#@auth.requires_login()
+def get_procedure_name(procedure_id, stable):
+    """
+    Returns actual code that corresponds to a given procedure ID.
+    Returns either the most recent stable version or the most recent absolute version.
+
+    :param procedure_id: Procedure ID for which code should be fetched
+    :type procedure_id: long
+    :param stable: Flag that determines whether the code returned should be most recent stable or just the most recent
+    :type stable: bool
+    :return: Data stored for the procedure
+    :rtype: str
+    """
+
+    db = current.db
+    revisions_table = db.procedure_revisions
+
+    date = __get_most_recent_date__(procedure_id, stable)
+
+    # Return the data corresponding the procedure ID and determined date
+    return db((revisions_table.procedure_id == procedure_id) &
+              (revisions_table.last_update == date)).select(revisions_table.procedure_data).first().procedure_name
+
 
 #@auth.requires_login()
 def save(procedure_id, procedure_data, stable):
@@ -159,14 +191,16 @@ def save(procedure_id, procedure_data, stable):
 
 class TestProcedureHarness(unittest.TestCase):
     def setUp(self):
-        #os.system("rm -rf ../testdatabases")
+        os.system("rm -rf ../testdatabases")
+        os.system("cp -r ../databases ../testdatabases")
         #os.system("python ../../../scripts/cpdb.py -f ../databases -F ../testdatabases -y 'sqlite://storage.sqlite' -Y 'sqlite://storage.sqlite' -d ../../../gluon")
-        current.db = DAL('sqlite://storage.sqlite',
+        current.db = DAL('sqlite://../testdatabases/storage.sqlite',
                       pool_size="10",
                       migrate_enabled="true",
                       check_reserved=['all']
                       )
         self.db = current.db
+        print "tables!!", self.db.tables
         self.proc_table = self.db.procedures
         self.revisions_table = self.db.procedure_revisions
 
