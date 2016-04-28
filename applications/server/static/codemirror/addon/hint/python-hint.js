@@ -55,7 +55,7 @@
         );
     };
 
-    var pythonKeywords = "and del from not while as elif global or with assert else if pass yield break except import print class exec in raise continue finally is return def for lambda try";
+    var pythonKeywords = "procedureapi ProcedureApi api write_value write_output write_log add_schedule and del from not while as elif global or with assert else if pass yield break except import print class exec in raise continue finally is return def for lambda try";
     var pythonKeywordsL = pythonKeywords.split(" ");
     var pythonKeywordsU = pythonKeywords.toUpperCase().split(" ");
 
