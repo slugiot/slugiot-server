@@ -1,12 +1,15 @@
 import datetime
 import access
 import unittest
+from gluon.contrib.appconfig import AppConfig
+
 import time
-from gluon import current
+import os
+from gluon import current, DAL
 from gluon.tools import Auth
 
 
-auth = Auth(globals(), current.db)
+#auth = Auth(globals(), current.db)
 
 ####### API FOR EDITOR TEAM ##########
 
@@ -154,73 +157,42 @@ def save(procedure_id, procedure_data, stable):
 
 ####################### TEST CODE #######################
 
-def run_test():
-    db = current.db
-    proc_table = db.procedures
-    revisions_table = db.procedure_revisions
-
-    print "test1"
-    db(proc_table).delete()
-    print "test2"
-    db(revisions_table).delete()
-
-    access.add_permission("1","blah@blah.com",perm_type="a")
-
-    print "test3"
-    proc_id = create_procedure("blah", "1")
-    print "test4"
-    save(proc_id, "blahblah", True)
-    proc_id2 = create_procedure("blah2", "1")
-    save(proc_id2, "blahblah2", True)
-    time.sleep(2)
-    save(proc_id2, "blahblah3", False)
-
-    proc_list1 = get_procedures_for_edit("1")
-
-    print "procs", proc_list1, "two"
-
-    for row in db(revisions_table).select():
-        print row.procedure_id, row.procedure_data, row.last_update, row.stable_version
-
-    print "should be blahblah", get_procedure_data(proc_list1[0], True)
-    print "second be blahblah", get_procedure_data(proc_list1[0], False)
-
-    print "should be blahblah2", get_procedure_data(proc_list1[1], True)
-    print "second be blahblah3", get_procedure_data(proc_list1[1], False)
-
-
 class TestProcedureHarness(unittest.TestCase):
     def setUp(self):
-        # os.copy('mysafecopy.sql', 'myfile.sql')
-        # test_db = DAL('sqlite:myfile.sql')
-        # current.db = test_db
-        # import mymodule
-        # mymodule.foo()
-
-        # eventually want to get db instance of SQL lite and dump database
+        #os.system("rm -rf ../testdatabases")
+        #os.system("python ../../../scripts/cpdb.py -f ../databases -F ../testdatabases -y 'sqlite://storage.sqlite' -Y 'sqlite://storage.sqlite' -d ../../../gluon")
+        current.db = DAL('sqlite://storage.sqlite',
+                      pool_size="10",
+                      migrate_enabled="true",
+                      check_reserved=['all']
+                      )
         self.db = current.db
         self.proc_table = self.db.procedures
         self.revisions_table = self.db.procedure_revisions
 
-        self.db(self.proc_table).delete()
-        self.db(self.revisions_table).delete()
+        access.add_permission("test", "test@test.com", perm_type="a")
 
     #@unittest.skip("later")
-    def testBasicSave(self):
-        proc_id = create_procedure("blah", "blah@blah", 1)
+    def testBasicFlow(self):
+        proc_id = create_procedure("blah", "blah@blah", "test")
         save(proc_id, "blahblah", True)
-        proc_id2 = create_procedure("blah2", "blah2@blah", 1)
-        save(proc_id2, "blahblah2", False)
+        proc_id2 = create_procedure("blah2", "blah2@blah", "test")
+        save(proc_id2, "blahblah2", True)
+        time.sleep(2)
         save(proc_id2, "blahblah3", False)
 
-        proc_list1 = get_procedures_for_edit("blah@blah", 1)
-        proc_list2 = get_procedures_for_view("blah2@blah", 1)
+        proc_list1 = get_procedures_for_edit("test")
 
-        for row in self.db(self.revisions_table).select():
-            print row.procedure_id, row.procedure_data, row.last_update, row.stable_version
+        val1 = get_procedure_data(proc_list1[0], True)
+        val2 = get_procedure_data(proc_list1[0], False)
 
-        print "first", get_procedure_data(proc_list1[0], True)
-        print "second", get_procedure_data(proc_list2[0], False)
+        val3 = get_procedure_data(proc_list1[1], True)
+        val4 = get_procedure_data(proc_list1[1], False)
 
-#if __name__ == '__main__':
-#    unittest.main() # runs all unit tests
+        self.assertEqual("blahblah", val1)
+        self.assertEqual("blahblah", val2)
+        self.assertEqual("blahblah2", val3)
+        self.assertEqual("blahblah3", val4)
+
+if __name__ == '__main__':
+    unittest.main() # runs all unit tests
