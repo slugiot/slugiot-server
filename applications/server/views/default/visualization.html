@@ -39,6 +39,8 @@
 <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 
+<!-- dygraph library -->
+<script src="/server/static/js/dygraph-combined-dev.js"></script>
 
 <div class="visualization">
 
@@ -126,7 +128,8 @@
                     <!-- ------------------------------------ DATA VISUALIZATION amChart ------------------------------------ -->
 
                     <div class="col-sm-9">
-                        <div id="chartdiv" style="width: 100%; height: 400px;"></div>
+                        <div id="chartdiv" style="width: 100%; height: 400px;" class="hidden"></div>
+                        <div id="graphdiv" style="width: 600px; height: 400px"></div>
                     </div>
                 </div>
             </div>
@@ -727,6 +730,18 @@
     $(function () {
         $('#time_span').daterangepicker();
     });
+
+    // ------------  Dygraph testing  ------------
+    g = new Dygraph(
+        document.getElementById("graphdiv"),
+        "{{=URL('static', 'temper.csv')}}",
+        {
+            rollPeriod: 5,
+            showRoller: true,
+            showRangeSelector: true
+        }
+    );
+
 </script>
 
 <script src="{{=URL('static', 'js/visualize_output.js')}}"></script>
