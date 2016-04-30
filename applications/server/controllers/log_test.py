@@ -40,8 +40,9 @@ def log_report():
 
     """
     # Construct log data into SQLFORM
-    grid = SQLFORM.grid(db.logs, deletable=False, editable=False,
-                        create=False, paginate=50, formstyle='table3cols')
+    db.logs.id.label = "#"
+    grid = SQLFORM.grid(db.logs, deletable=False, editable=False, details=False,
+                        create=False, csv=False, paginate=25, formstyle='table3cols')
 
     # Write fake temperature data to a csv file
     import csv

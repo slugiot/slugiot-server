@@ -1,9 +1,45 @@
 {{extend 'layout.html'}}
 <script src="/server/static/js/dygraph-combined-dev.js"></script>
 <h1>Visualization Test</h1>
-<center>
-    <div id="graphdiv" style="width: 600px; height: 400px"></div>
-</center>
+<div class="panel-group">
+    <div class="panel panel-success">
+        <div class="panel-heading">
+                <h2 class="panel-title">Visualization Panel</h2>
+        </div>
+        <div class="panel-body">
+            <center>
+                <div id="graphdiv" style="width: 600px; height: 400px"></div>
+            </center>
+        </div>
+    </div>
+    <div class="panel panel-success">
+        <div class="panel-heading">
+                <h2 class="panel-title">Log Report Panel</h2>
+        </div>
+        <div class="panel-body">
+            <center>
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#log1">Log</a> </li>
+                    <li><a data-toggle="tab" href="#log2"> Output</a> </li>
+                    <li><a data-toggle="tab" href="#log3"> Mixed</a> </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="log1" class="tab-pane fade in active">
+                        {{=grid}}
+                    </div>
+                    <div id="log2" class="tab-pane fade">
+                        {{=grid}}
+                    </div>
+                    <div id="log3" class="tab-pane fade">
+                        {{=grid}}
+                    </div>
+                </div>
+            </center>
+        </div>
+    </div>
+</div>
+
+
 <script type="text/javascript">
     g = new Dygraph(
         document.getElementById("graphdiv"),
@@ -15,5 +51,3 @@
         }
     );
 </script>
-<h1>log report</h1>
-{{=grid}}
