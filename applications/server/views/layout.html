@@ -20,6 +20,21 @@
          http://google.com/webmasters -->
     <meta name="google-site-verification" content="">
     <!-- include stylesheets -->
+    <!-- Definitions for the URL abbreviations -->
+    {{cm = URL('static', 'codemirror')}}
+    {{js_url = URL('static','js')}}
+    {{css_url = URL('static', 'css')}}
+
+    <!-- CSS from the editor team -->
+    <link rel="stylesheet" href="{{=cm}}/lib/codemirror.css">
+    <link rel="stylesheet" href="{{='%s/theme/web2py.css' % cm}}">
+    <link rel="stylesheet" href="{{=css_url}}/typeahead.js-bootstrap.css">
+    <link rel="stylesheet" href="{{=css_url}}/web2py-codemirror.css">
+    <link rel="stylesheet" href="{{=cm}}/addon/fold/foldgutter.css">
+    <link rel="stylesheet" href="{{=cm}}/addon/display/fullscreen.css">
+    <link rel="stylesheet" href="{{=cm}}/addon/dialog/dialog.css">
+    <link rel="stylesheet" href="{{=cm}}/addon/hint/show-hint.css">
+
     <link rel="stylesheet" href="{{=URL('static','css/bootstrap.min.css')}}"/>
     <link rel="stylesheet" href="{{=URL('static','css/web2py-bootstrap3.css')}}"/>
     <link href="{{=URL('static', 'stylesheets/myapp.css')}}" rel="stylesheet" type="text/css" />
@@ -118,6 +133,27 @@
     <script src="{{=URL('static','js/bootstrap.min.js')}}"></script>
     <script src="{{=URL('static','js/web2py-bootstrap3.js')}}"></script>
     <script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
+
+    <!-- The javascript for the editor team -->
+    <script src="{{=cm}}/lib/codemirror.js"></script>
+    <script src="{{=cm}}/addon/edit/matchbrackets.js"></script>
+    <script src="{{=cm}}/mode/python/python.js"></script>
+    <script src="{{=cm}}/addon/hint/show-hint.js"></script>
+    <script src="{{=cm}}/addon/hint/python-hint.js"></script>
+    <script src="{{=cm}}/addon/search/search.js"></script>
+    <script src="{{=cm}}/addon/search/searchcursor.js"></script>
+    <script src="{{=cm}}/addon/dialog/dialog.js"></script>
+    <script src="{{=cm}}/addon/edit/trailingspace.js"></script>
+    <script src="{{=cm}}/addon/selection/active-line.js"></script>
+    <script src="{{=cm}}/addon/display/fullscreen.js"></script>
+    <script src="{{=cm}}/addon/fold/foldcode.js"></script>
+    <script src="{{=cm}}/addon/fold/foldgutter.js"></script>
+    <script src="{{=cm}}/addon/fold/brace-fold.js"></script>
+    <script src="{{=cm}}/addon/fold/comment-fold.js"></script>
+    <script src="{{=cm}}/addon/fold/indent-fold.js"></script>
+    <script src="{{=cm}}/addon/comment/comment.js"></script>
+    <script src="{{=cm}}/emmet.min.js"></script>
+    <script src="{{=js_url}}/ajax_editor.js"></script>
     {{block page_js}}{{end page_js}}
     {{if response.google_analytics_id:}}
     <!-- Analytics ==================================== -->
