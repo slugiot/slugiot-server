@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 
-
-
 @request.restful()
 def receive_logs():
     """
@@ -99,6 +97,131 @@ def receive_outputs():
             raise HTTP(400, "there was an error saving log data: " + e.message)
 
         return response.json({"saved_logs": output})
+
+    return locals()
+
+
+@request.restful()
+def receive_values():
+    """
+    This method is to receive value data.  It accepts two HTTP methods:
+        GET: returns all the current output entries (for the device id)
+        POST: accepts a JSON document with the value entries to ingest.
+            all current entries (for the device_id) will be removed and replaced
+            with the ones submitted.
+            an example document is described below:
+            {
+                "device_id":"my_device",
+                "values":
+                    [
+                        {"procedure_id":"proc1","name":"some_name","output_value":"some_value","time_stamp":"2016-04-19 01:04:25"},
+                        {"procedure_id":"proc2","name":"some_other_name","output_value":"some_other_value"}
+                    ]
+            }
+    """
+
+    def GET(*args, **vars):
+        if (vars == None or not vars.has_key('device_id')):
+            raise HTTP(400, "Please specify 'device_id' as a parameter to retrieve values")
+        device_id = vars['device_id']
+        vars = db(db.module_values.device_id == device_id).select()
+        return response.json(vars)
+
+    def POST(*args, **vars):
+        # get the log data from the request and validate
+        request_body = request.body.read()
+        values_data = __get_valdiated_data(request_body, 'values')
+
+        # get information from document
+        device_id = values_data.get('device_id')
+        values = values_data.get('values')
+
+        for value in values:
+            if (not isinstance(value, dict)):
+                raise HTTP(400, "all value entries must be of type 'dict'")
+            value["device_id"] = device_id
+            if (value.get('time_stamp')):
+                value["value_time_stamp"] = value.get('time_stamp')
+                del value['time_stamp']
+            if (value.get('id')):
+                del value['id']
+
+        try:
+            db(db.module_values.device_id == device_id).delete()
+            db.module_values.bulk_insert(values)
+        except Exception as e:
+            db.rollback()
+            raise HTTP(400, "there was an error saving value data: " + e.message)
+
+        return response.json({"saved_values": values})
+
+    return locals()
+
+
+@request.restful()
+def get_settings():
+    """
+    This method is to receive setting data.  Given a device_id, it returns
+    all the setting information that the client needs.  If the parameter
+    'last_updated' is set, it will only select changed settings
+    since that time
+
+    If you POST to this endpoint, it will save posted settings to the DB.
+    This is intended to be used for debugging:
+    {
+      "device_id":"trevor",
+      "settings":[
+            {"procedure_id":"proc1","setting_name":"some_setting","setting_value":"42"},
+            {"setting_name":"some_global_setting","setting_value":True}
+      ]
+    }
+    """
+
+    def GET(*args, **vars):
+        if (vars == None or not vars.has_key('device_id')):
+            raise HTTP(400, "Please specify 'device_id' as a parameter to retrieve settings")
+        device_id = vars['device_id']
+        last_updated = datetime.fromtimestamp(1)
+        if (vars.has_key('last_updated')):
+            last_updated = vars['last_updated']
+
+        settings = db((db.client_setting.device_id == device_id) & (db.client_setting.last_updated > last_updated)).select()
+        return response.json(settings)
+
+    def POST(*args, **vars):
+        # get the log data from the request and validate
+        request_body = request.body.read()
+        values_data = __get_valdiated_data(request_body, 'settings')
+
+        # get information from document
+        device_id = values_data.get('device_id')
+        settings = values_data.get('settings')
+
+        for setting in settings:
+            if (not isinstance(setting, dict)):
+                raise HTTP(400, "all setting entries must be of type 'dict'")
+            setting["device_id"] = device_id
+            if (setting.get('id')):
+                del setting['id']
+
+        try:
+            if (vars.has_key('delete_existing_settings') and vars['delete_existing_settings'] == "true"):
+                db(db.client_setting.device_id == device_id).delete()
+            for setting in settings:
+                setting_name = setting['setting_name']
+                setting_value = setting['setting_value']
+                procedure_id = None
+                if (setting.has_key('procedure_id')):
+                    procedure_id = setting['procedure_id']
+                db.client_setting.update_or_insert(
+                    ((db.client_setting.setting_name == setting_name) & (db.client_setting.procedure_id == procedure_id) & (db.client_setting.device_id == device_id)),
+                    setting_name=setting_name, setting_value=setting_value, procedure_id=procedure_id, device_id=device_id)
+
+        except Exception as e:
+            db.rollback()
+            raise HTTP(400, "there was an error saving setting data: " + e.message)
+
+        return response.json({"saved_settings": settings})
 
     return locals()
 
