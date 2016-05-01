@@ -7,7 +7,8 @@
 ## perform saves and stable saves
 #########################################################################
 
-import datetime
+import proc_harness_module as phm
+
 
 proc_table = db.procedures
 revisions_table = db.procedure_revisions
@@ -40,7 +41,7 @@ def get_procedure_status(device_id):
     return procedure_info
 
 
-def get_procedure_update(procedure_id_lst):
+def get_procedure_data(procedure_id_lst):
     """
     Called in response to client request for procedures to be synced
 
@@ -52,6 +53,23 @@ def get_procedure_update(procedure_id_lst):
     # Build dictionary containing data for each procedure_id
     procedures_for_update = {}
     for proc in procedure_id_lst:
-        procedures_for_update[proc.procedure_id] = get_procedure_data(proc, True)
+        procedures_for_update[proc.procedure_id] = phm.get_procedure_data(proc, True)
+
+    return procedures_for_update
+
+
+def get_procedure_names(procedure_id_lst):
+    """
+    Called in response to client request for procedures to be synced
+
+    :param procedure_id_lst: List of procedure IDs that need to be updated on client
+    :type procedure_id_lst:
+    :return: Dict of the format {procedure_id: procedure_data}
+    :rtype:
+    """
+    # Build dictionary containing data for each procedure_id
+    procedures_for_update = {}
+    for proc in procedure_id_lst:
+        procedures_for_update[proc.procedure_id] = phm.get_procedure_name(proc, True)
 
     return procedures_for_update
