@@ -740,15 +740,21 @@
     });
 
     // ------------  Dygraph testing  ------------
-    g = new Dygraph(
-        document.getElementById("graphdiv"),
-        "{{=URL('static', 'temper.csv')}}",
-        {
-            rollPeriod: 5,
-            showRoller: true,
-            showRangeSelector: true
-        }
-    );
+    var dy_plot = function(){
+        var graph_com = document.getElementById("graphdiv");
+        var data = "{{=URL('static', 'temper.csv')}}";
+        g= new Dygraph(
+            graph_com,
+            "{{=URL('static', 'temper.csv')}}",
+            {
+                rollPeriod: 5,
+                showRoller: true,
+                showRangeSelector: true
+            }
+        );
+    };
+
+    dy_plot();
 
 </script>
 
