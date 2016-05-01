@@ -585,6 +585,9 @@
         chart.dataProvider = output_data;  // plugin outputdata here
         chart.validateData();
         chart.showGraph(graph0);
+
+        //  ---------- showing test output dygraph ----------
+        dy_plot();
 //// ------------ END testing output_data for tab and dynamic chart ----------
 
 
@@ -742,13 +745,40 @@
     // ------------  Dygraph testing  ------------
     var dy_plot = function(){
         var graph_com = document.getElementById("graphdiv");
-        var data = "{{=URL('static', 'temper.csv')}}";
+        var data = "{{=URL('static', 'temper.csv')}}";  // this line not work if put in .js file
+
+
+        // collecting output data
+        if (typeof output_data === "undefined"){
+            console.log('output_data not define yet!');
+        }
+        else if( output_data.length > 0){
+            var data = "Date, Temperature\n";   // [['Date', 'Temperature']];
+            for (var i = 0; i < output_data.length; i++){
+                var output = output_data[i];
+                data = data + output.time_stamp + ',' + output.output_value.toString() + '\n'
+                //data.push([output.time_stamp, output.output_value]);
+            }
+
+            g2 = new Dygraph(
+                graph_com,
+                data,
+                {
+                    //labels: ['Date', 'Temperature'],
+                    //rollPeriod: 5,
+                    //showRoller: true,
+                    showRangeSelector: true
+                    //xTicker: Dygraph.dateTicker
+                }
+            );
+
+        }
         g= new Dygraph(
             graph_com,
-            "{{=URL('static', 'temper.csv')}}",
+            data,
             {
-                rollPeriod: 5,
-                showRoller: true,
+                //rollPeriod: 5,
+                //showRoller: true,
                 showRangeSelector: true
             }
         );
