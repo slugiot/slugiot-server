@@ -129,7 +129,7 @@
 
                     <div class="col-sm-9">
                         <div id="chartdiv" style="width: 100%; height: 400px;" class="hidden"></div>
-                        <div id="graphdiv" style="width: 600px; height: 400px"></div>
+                        <div id="graphdiv" style="width: 100%; height: 400px"></div>
                     </div>
                 </div>
             </div>
@@ -595,36 +595,44 @@
                 'modulename': 'superman',
                 'name': 'normal log',
                 'output_value': 'Your system went smoothly',
-                'time_stamp': '2016-04-01'
+                'time_stamp': '2016-04-01',
+                'log_level': '0'
             },
             {
                 'device_id': 'home',
                 'modulename': 'superman',
                 'name': 'normal log',
                 'output_value': 'Your system just got modified',
-                'time_stamp': '2016-04-02'
+                'time_stamp': '2016-04-02',
+                'log_level': '0'
             },
             {
                 'device_id': 'office',
                 'modulename': 'superman',
-                'name': 'normal log',
-                'output_value': 'Administrator logged in ',
-                'time_stamp': '2016-04-03'
+                'name': 'critical log',
+                'output_value': 'Unauthorized logged in',
+                'time_stamp': '2016-04-03',
+                'log_level': '4'
             },
             {
                 'device_id': 'home',
                 'modulename': 'superman',
                 'name': 'normal log',
                 'output_value': 'guest logged in',
-                'time_stamp': '2016-04-04'
+                'time_stamp': '2016-04-04',
+                'log_level': '0'
             }
         ];
 
         $('#log_accordion').empty();
         for (var i = 0; i < log_data.length; i++) {
             var log = log_data[i];
+            var use_panel = 'default';
+            if (log.log_level == '4')
+                use_panel = 'warning';
+
             var content =
-                    '<div class="panel panel-default">' +
+                    '<div class="panel panel-' + use_panel +'">' +
                     '<div class="panel-heading" role="tab" >' +
                     '<h4 class="panel-title">' +
                     '<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + i + '" aria-expanded="false" aria-controls="collapse' + i + '">' +
