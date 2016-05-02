@@ -1,0 +1,833 @@
+{{extend 'layout.html'}}
+
+
+<!-- Angular.js Libraries -->
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
+
+
+<!-- amCharts library -->
+<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+<script src="https://www.amcharts.com/lib/3/serial.js"></script>
+<script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+
+
+<!-- Bootstrap CSS & JS-->
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+      integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
+        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+        crossorigin="anonymous"></script>
+
+
+<!-- Bootstrap select -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+
+
+<!-- Date range picker -->
+<!-- Include Required Prerequisites -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<!-- Include Date Range Picker -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+
+<!-- dygraph library -->
+<script src="/server/static/js/dygraph-combined-dev.js"></script>
+
+<div class="visualization">
+
+    <h1>Data Visualization</h1>
+
+
+    <div class="container-fluid">
+
+
+        <!-- DATA VISUALIZATION START -->
+        <div class="panel panel-default" name="dataVisualization">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data Visualization Panel</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+
+                    <!-- ------------------------------------ CONTROL PANEL ------------------------------------ -->
+                    <div class="col-sm-3">
+                        <table>
+                            <tr>
+                                <td>
+                                    <label>Select:</label> <br>
+                                    <select id="select_device" class="selectpicker" data-live-search="true"
+                                            title="Choose Device...">
+                                        <option>Android</option>
+                                        <option>iPhone</option>
+                                        <option>iPad</option>
+                                        <option>Nest</option>
+
+                                    </select>
+                                    <br>
+                                    <select id="select_data_module" class="selectpicker" data-live-search="true"
+                                            title="Choose Data Module...">
+                                        <option value="temperature">temperature</option>
+                                        <option value="pressure">pressure</option>
+                                    </select>
+
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <label>Compare:</label> <br>
+                                    <select class="selectpicker" data-live-search="true" multiple data-max-options="3">
+                                        <optgroup label="Picnic">
+                                            <option>Mustard</option>
+                                            <option>Ketchup</option>
+                                            <option>Relish</option>
+                                        </optgroup>
+                                        <optgroup label="Camping">
+                                            <option>Tent</option>
+                                            <option>Flashlight</option>
+                                            <option>Toilet Paper</option>
+                                        </optgroup>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>Time Span:</label>
+                                    <div>
+                                        <input id="time_span" type="text" class="form-control" name="time_span"
+                                               value="04/01/2016 - 04/10/2016"/>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <br><br>
+
+                                    <button id="refreshButton" onclick="refresh();" type="button"
+                                            class="btn btn-info btn-block">Refresh
+                                    </button>
+                                    <!-- Spinner icon -->
+                                    <div id="result-spinner" class="hidden">
+                                        <i class="fa fa-spinner fa-pulse fa-4x"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- ------------------------------------ DATA VISUALIZATION amChart ------------------------------------ -->
+
+                    <div class="col-sm-9">
+                        <div id="chartdiv" style="width: 100%; height: 400px;" class="hidden"></div>
+                        <div id="graphdiv" style="width: 100%; height: 400px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ------------------------------------ DATA DETAIL START ------------------------------------ -->
+
+        <div class="panel panel-default" name="dataDetail" ng-controller="dataDetailController">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data Detail Panel</h3>
+            </div>
+            <div class="panel-body">
+                <!-- Tab -->
+                <div>
+
+                    <!-- ------- Data Detail  Nav tabs  ------- -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#Mixed" aria-controls="Mixed" role="tab"
+                                                                  data-toggle="tab">Mixed</a>
+                        </li>
+                        <li role="presentation"><a href="#Output" aria-controls="Output" role="tab"
+                                                   data-toggle="tab">Output</a>
+                        </li>
+                        <li role="presentation"><a href="#Log" aria-controls="Log" role="tab"
+                                                   data-toggle="tab">Log</a></li>
+                    </ul>
+
+                    <!-- ------------------ Tab panes ------------------ -->
+                    <div class="tab-content">
+                        <!-- ------------------ Mixed Tab ------------------ -->
+                        <div role="tabpanel" class="tab-pane active" id="Mixed">
+                            <form class="navbar-form navbar-right" role="search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search for...">
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Search</button>
+                          </span>
+                                </div>
+                            </form>
+                            <table class="table table-hover">
+                                <thead>
+
+                                <tr>
+                                    <th>#</th>
+                                    <th>Type</th>
+                                    <th>Device ID</th>
+                                    <th>Module Name</th>
+                                    <th>Content</th>
+                                    <th>Timestamp</th>
+
+
+                                </tr>
+                                </thead>
+                                <tbody id="mixed_table_body">
+
+                                <tr>
+                                    <th scope="row">1</th>
+                                    <td>@fake</td>
+                                    <td>fake123</td>
+                                    <td>faletom</td>
+                                    <td>fakejack</td>
+                                    <td>fakejack</td>
+
+
+                                </tr>
+                                <tr>
+                                    <th scope="row">2</th>
+                                    <td>@fake</td>
+                                    <td>fake123</td>
+                                    <td>faletom</td>
+                                    <td>fakejack</td>
+                                    <td>fakejack</td>
+
+
+                                </tr>
+                                <tr>
+                                    <th scope="row">3</th>
+                                    <td>@fake</td>
+                                    <td>fake123</td>
+                                    <td>faletom</td>
+                                    <td>fakejack</td>
+                                    <td>fakejack</td>
+
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- ------------------ Output Tab ------------------ -->
+                        <div role="tabpanel" class="tab-pane" id="Output">
+                            <form class="navbar-form navbar-right" role="search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search for...">
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Search</button>
+                          </span>
+                                </div>
+                            </form>
+                            <table class="table table-hover">
+                                <thead>
+
+                                <tr>
+                                    <th>#</th>
+                                    <th>Device ID</th>
+                                    <th>Module Name</th>
+                                    <th>Name</th>
+                                    <th>Output Value</th>
+                                    <th>Tag</th>
+                                    <th>Time Stamp</th>
+                                </tr>
+                                </thead>
+                                <tbody id="output_table_body">
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- ------------------ Log Tab ------------------ -->
+                        <div role="tabpanel" class="tab-pane" id="Log">
+
+                            <form class="navbar-form navbar-right" role="search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search for...">
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Search</button>
+                          </span>
+                                </div>
+                            </form>
+                            <br><br><br>
+
+                            <div class="panel-group" id="log_accordion" role="tablist" aria-multiselectable="true">
+
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingOne">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordion"
+                                               href="#collapseOne"
+                                               aria-expanded="true" aria-controls="collapseOne">
+                                                Collapsible Group Item #1
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
+                                         aria-labelledby="headingOne">
+                                        <div class="panel-body">
+                                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry
+                                            richardson ad squid. 3
+                                            wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck
+                                            quinoa
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingTwo">
+                                        <h4 class="panel-title">
+                                            <a class="collapsed" role="button" data-toggle="collapse"
+                                               data-parent="#accordion"
+                                               href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                Collapsible Group Item #2
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
+                                         aria-labelledby="headingTwo">
+                                        <div class="panel-body">
+                                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry
+                                            richardson ad squid. 3
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingThree">
+                                        <h4 class="panel-title">
+                                            <a class="collapsed" role="button" data-toggle="collapse"
+                                               data-parent="#accordion"
+                                               href="#collapseThree" aria-expanded="false"
+                                               aria-controls="collapseThree">
+                                                Collapsible Group Item #3
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel"
+                                         aria-labelledby="headingThree">
+                                        <div class="panel-body">
+                                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry
+                                            richardson ad squid. 3
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+        <!-- DATA TABLE END -->
+
+
+        <div id="test">
+
+        </div>
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+    //  ------------------------------------ amCharts JavaScript ------------------------------------
+    var chart;
+    var chartData = [];
+    var chartCursor;
+    var day = 0;
+    var firstDate = new Date();
+    firstDate.setDate(firstDate.getDate() - 500);
+
+    var graph0; // testing temperature
+
+
+    function drawChart(title, unit, valueName, dataSource) {
+
+    }
+
+    // create chart
+    AmCharts.ready(function () {
+                // generate some data first
+
+
+                // MAKE CHART
+                //chart = new AmCharts.makeChart();
+
+
+                // ----- CHART settings -----
+                chart = new AmCharts.AmSerialChart();
+                chart.marginTop = 0;
+                chart.marginRight = 10;
+                chart.autoMarginOffset = 5;
+                chart.zoomOutButton = {
+                    backgroundColor: '#000000',
+                    backgroundAlpha: 0.15
+                };
+                chart.dataProvider = chartData;
+                chart.categoryField = "time_stamp";
+                chart.startDuration = 2;
+                chart.theme = "light";
+                chart.dataDateFormat = "YYYY-MM-DD";
+                chart.precision = 2;
+
+
+                // ------ AXIS, category settings -----
+                var categoryAxis = chart.categoryAxis;
+                categoryAxis.parseDates = true; // as our data is date-based, we set parseDates to true
+                //categoryAxis.minPeriod = "DD"; // our data is daily, so we set minPeriod to DD
+                categoryAxis.dashLength = 1;
+                //categoryAxis.gridAlpha = 0.15;
+                //categoryAxis.axisColor = "#DADADA";
+
+
+                // ----- Axis0 setting -----
+                var valueAxis0 = new AmCharts.ValueAxis();
+                valueAxis0.id = "v0";
+                valueAxis0.title = "Temperature";
+                valueAxis0.position = "left";
+                valueAxis0.autoGridCount = "false";
+                valueAxis0.labelFunction = function (value) {
+                    return "" + Math.round(value) + "c"
+                }
+
+
+                // legend
+                chart.enabled = true;
+
+                // balloon
+                chart.balloon.shadowAlpha = 10;
+
+                // GRAPH
+                // ----- graph0 setting ------
+                graph0 = new AmCharts.AmGraph();
+                graph0.id = "g0";
+                graph0.valueAxis = "v0";
+                graph0.lineColor = "#62CF73";
+                graph0.fileColor = "#62CF73";
+                graph0.fillAlphas = 1;
+                graph0.type = "column";
+                graph0.title = "temperature";  // at the little spare
+                graph0.valueField = "output_value";
+                graph0.cluestered = false;
+                graph0.columnWidth = 0.3;
+                graph0.legendValueText = "[[value]] celsius";
+                graph0.balloonText = "[[title]]<br/><b style='font-size: 130%'>[[value]] celsius</b>";
+                chart.addGraph(graph0);
+                chart.hideGraph(graph0);
+
+
+                // ----- CURSOR -----
+                var chartCursor = new AmCharts.ChartCursor();
+                chartCursor.pan = true;
+                chartCursor.valueLineEnabled = true;
+                chartCursor.valueLineBalloonEnabled = true;
+                chartCursor.cursorAlpha = 0;
+                chartCursor.valueLineAlpha = 0.2;
+                chartCursor.color = "#FFFFFF"
+                chartCursor.cursorColor = "#000000"
+                //chartCursor.cursorPosition = "mouse";
+                chart.addChartCursor(chartCursor);
+
+                // ----- SCROLLBAR -----
+                var chartScrollbar = new AmCharts.ChartScrollbar();
+                chartScrollbar.graph = "g0"; // register graph0 as thumbnail
+                chartScrollbar.oppositeAxis = false;
+                chartScrollbar.offset = 30;
+                chartScrollbar.scrollbarHeight = 50;
+                chartScrollbar.backgroundAlpha = 0;
+                chartScrollbar.selectedBackgroundAlpha = 0.1;
+                chartScrollbar.selectedBackgroundColor = "#888888";
+                chartScrollbar.graphFillAlpha = 0;
+                chartScrollbar.graphLineAlpha = 0.5;
+                chartScrollbar.selectedGraphFillAlpha = 0;
+                chartScrollbar.selectedGraphLineAlpha = 1;
+                chartScrollbar.autoGridCount = true;
+                chartScrollbar.color = "#AAAAAA";
+
+                chart.addChartScrollbar(chartScrollbar);
+
+                // WRITE
+                chart.write("chartdiv");
+
+
+            }
+    );
+
+
+    // ------------------------------------  Refresh Button  ------------------------------------
+    function refresh() {
+
+        var timeSpan = $('#time_span').val();
+
+// ------------ START testing mixed data for tab table ----------
+        mixed_data = [
+            {
+                'type': 'output',
+                'deivce_id': 'home',
+                'modulename': 'batman',
+                'time_stamp': '2016-04-01',
+                'content': 'name: temperature, value: 22, tag: 1'
+            },
+            {
+                'type': 'log',
+                'deivce_id': 'office',
+                'modulename': 'superman',
+                'time_stamp': '2016-04-02',
+                'content': 'name: normal log, value: Your system went smoothly'
+            },
+            {
+                'type': 'output',
+                'deivce_id': 'office',
+                'modulename': 'batman',
+                'time_stamp': '2016-04-03',
+                'content': 'name: temperature, value: 21, tag: 1'
+            },
+            {
+                'type': 'log',
+                'deivce_id': 'scholl',
+                'modulename': 'superman',
+                'time_stamp': '2016-04-04',
+                'content': 'name: normal log, value: administrator logged in'
+            }
+        ];
+        // ----- showing data in mixed tab table -----
+        $('#mixed_table_body').empty();
+        for (var i = 0; i < mixed_data.length; i++) {
+            var mixed = mixed_data[i];
+            $('#mixed_table_body').append(
+                    '<tr> ' +
+                    '<th scope="row">' + (i + 1) + '</th> ' +
+                    '<td>' + mixed.type + '</td> ' +
+                    '<td>' + mixed.deivce_id + '</td> ' +
+                    '<td>' + mixed.modulename + '</td> ' +
+                    '<td>' + mixed.content + '</td> ' +
+                    '<td>' + mixed.time_stamp + '</td>' +
+                    '</tr>');
+        }
+
+
+// ------------ END testing mixed data for tab table ----------
+
+
+// ------------ START testing output_data for tab and dynamic chart ----------
+        output_data = [
+            {
+                'deivce_id': 'home',
+                'modulename': 'batman',
+                'name': 'temperature',
+                'output_value': 22,
+                'tag': '1',
+                'time_stamp': '2016-04-01'
+            },
+            {
+                'deivce_id': 'office',
+                'modulename': 'batman',
+                'name': 'temperature',
+                'output_value': 26,
+                'tag': '1',
+                'time_stamp': '2016-04-02'
+            },
+            {
+                'deivce_id': 'home',
+                'modulename': 'batman',
+                'name': 'temperature',
+                'output_value': 20,
+                'tag': '1',
+                'time_stamp': '2016-04-03'
+            },
+            {
+                'deivce_id': 'office',
+                'modulename': 'batman',
+                'name': 'temperature',
+                'output_value': 23,
+                'tag': '1',
+                'time_stamp': '2016-04-04'
+            }];
+        // ----- showing data in output tab table -----
+        $('#output_table_body').empty();
+        for (var i = 0; i < output_data.length; i++) {
+            var output = output_data[i];
+            $('#output_table_body').append(
+                    '<tr> ' +
+                    '<th scope="row">' + (i + 1) + '</th> ' +
+                    '<td>' + output.deivce_id + '</td> ' +
+                    '<td>' + output.modulename + '</td> ' +
+                    '<td>' + output.name + '</td> ' +
+                    '<td>' + output.output_value + '</td> ' +
+                    '<td>' + output.tag + '</td>' +
+                    '<td>' + output.time_stamp + '</td>' +
+                    '</tr>');
+        }
+
+
+        //  ---------- showing test output amCharts ----------
+//            drawChart("Temperature", "output_value", "celsius", output_data);
+
+        chart.animateAgain();
+        chart.dataProvider = output_data;  // plugin outputdata here
+        chart.validateData();
+        chart.showGraph(graph0);
+
+        //  ---------- showing test output dygraph ----------
+        dy_plot();
+//// ------------ END testing output_data for tab and dynamic chart ----------
+
+
+// ------------ START testing log_data for tab  ----------
+        log_data = [
+            {
+                'device_id': 'office',
+                'modulename': 'superman',
+                'name': 'normal log',
+                'output_value': 'Your system went smoothly',
+                'time_stamp': '2016-04-01',
+                'log_level': '0'
+            },
+            {
+                'device_id': 'home',
+                'modulename': 'superman',
+                'name': 'normal log',
+                'output_value': 'Your system just got modified',
+                'time_stamp': '2016-04-02',
+                'log_level': '0'
+            },
+            {
+                'device_id': 'office',
+                'modulename': 'superman',
+                'name': 'critical log',
+                'output_value': 'Unauthorized logged in',
+                'time_stamp': '2016-04-03',
+                'log_level': '4'
+            },
+            {
+                'device_id': 'home',
+                'modulename': 'superman',
+                'name': 'normal log',
+                'output_value': 'guest logged in',
+                'time_stamp': '2016-04-04',
+                'log_level': '0'
+            }
+        ];
+
+        $('#log_accordion').empty();
+        for (var i = 0; i < log_data.length; i++) {
+            var log = log_data[i];
+            var use_panel = 'default';
+            if (log.log_level == '4')
+                use_panel = 'warning';
+
+            var content =
+                    '<div class="panel panel-' + use_panel +'">' +
+                    '<div class="panel-heading" role="tab" >' +
+                    '<h4 class="panel-title">' +
+                    '<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + i + '" aria-expanded="false" aria-controls="collapse' + i + '">' +
+
+                    log.device_id + ' : ' + log.modulename + ' : ' + log.name + ' : ' + log.time_stamp +
+
+                    '</a>' +
+                    '</h4>' +
+                    '</div>' +
+                    '<div id="collapse' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">' +
+                    '<div class="panel-body">' +
+
+                    log.output_value
+
+            '</div>' +
+            '</div>' +
+            '</div>';
+
+            $('#log_accordion').append(content);
+
+        }
+
+// ------------ END testing log_data for tab  ----------
+
+
+//            $.ajax({
+//                'url': '/getData',
+//                'type': 'get',
+//                'dataType': 'json',
+//                'data': {'timeSpan': timeSpan},
+//                'error': function () {
+//                    $('#mixed_table_body').empty();
+//                    //alert('Whoops, It seems we got a slight problem here');
+//                    $('#mixed_table_body').append("<tr> <td colspan='3'> We got a problem here </td> </tr>");
+//                },
+//                'success': function (data) {
+//
+//
+//
+//                    // ---------- showing Output tab table ----------
+//                    $('#output_table_body').empty();
+//                    for (var i = 0; i < data.output.length; i++) {
+//                        var o = data.output[i];
+//                        $('#output_table_body').append('<tr> <th scope="row">' + (i + 1) + '</th> <td>' + o.module_name + '</td> <td>' + o.output_value + '</td> <td>' + o.tag + '</td> <td>' + o.time_stamp + '</td></tr>');
+//                    }
+//
+//
+//                    // ---------- showing Log tab table ----------
+//                    $('#log_accordion').empty();
+//                    for (var i = 0; i < data.log.length; i++) {
+//                        var l = data.log[i];
+//                        var content = '<div class="panel panel-default">' +
+//                                '<div class="panel-heading" role="tab" >' +
+//                                '<h4 class="panel-title">' +
+//                                '<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + i + '" aria-expanded="false" aria-controls="collapse' + i + '">' +
+//
+//                                l.module_name + ' : ' + l.time_stamp +
+//
+//                                '</a>' +
+//                                '</h4>' +
+//                                '</div>' +
+//                                '<div id="collapse' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">' +
+//                                '<div class="panel-body">' +
+//
+//                                l.log_message
+//
+//                        '</div>' +
+//                        '</div>' +
+//                        '</div>';
+//                        $('#log_accordion').append(content);
+//
+//                    }
+//
+//
+//
+//                    //  ---------- showing mixed  ----------
+//                    $('#mixed_table_body').empty();
+//                    for (var i = 0; i < data.mixed.length; i++) {
+//                        var t = data.mixed[i];
+//                        $('#mixed_table_body').append('<tr> <th scope="row">' + (i + 1) + '</th> <td>' + t.module_name + '</td> <td>' + t.output_value + '</td> <td>' + t.tag + '</td> <td>' + t.time_stamp + '</td></tr>');
+//                    }
+//
+//
+//                    //  ---------- showing amCharts ----------
+//                    chart.animateAgain();
+//                    chart.dataProvider = data.mixed;
+//                    chart.validateData();
+//                    chart.showGraph(graph0);
+//
+//
+//                }
+//
+//            });
+    }
+
+
+    // ------------------------------------  Tab  ------------------------------------
+    $('#myTabs a').click(function (e) {
+        e.preventDefault()
+        $(this).tab('show')
+    })
+    // ------------  Date Picker  ------------
+    $(function () {
+        $('#time_span').daterangepicker();
+    });
+
+    // ------------  Dygraph testing  ------------
+    function barChartPlotter(e) {
+        var ctx = e.drawingContext;
+        var points = e.points;
+        var y_bottom = e.dygraph.toDomYCoord(0);  // see <a href="http://dygraphs.com/jsdoc/symbols/Dygraph.html#toDomYCoord">jsdoc</a>
+
+        // This should really be based on the minimum gap
+        var bar_width = 2/3 * (points[1].canvasx - points[0].canvasx);
+        ctx.fillStyle = e.color;  // a lighter shade might be more aesthetically pleasing
+
+        // Do the actual plotting.
+        for (var i = 0; i < points.length; i++) {
+            var p = points[i];
+            var center_x = p.canvasx;  // center of the bar
+
+            ctx.fillRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
+            ctx.strokeRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
+        }
+    };
+
+    dy_plot = function(){
+        var graph_com = document.getElementById("graphdiv");
+        var data = "{{=URL('static', 'temper.csv')}}";
+
+
+        // collecting output data
+        if (typeof output_data === "undefined"){
+            console.log('output_data not define yet!');
+            g = new Dygraph(
+                graph_com,
+                data,
+                {
+                    //rollPeriod: 5,
+                    //showRoller: true,
+                    title : 'Temperature Line Chart',
+                    ylabel: 'Temperature (C)',
+                    legend: 'always',
+                    showRangeSelector: true,
+                    rangeSelectorHeight: 30,
+                    rangeSelectorPlotStrokeColor: 'green',
+                    rangeSelectorPlotFillColor: 'lightgreen'
+                }
+            );
+        }
+        else if( output_data.length > 0){
+            var data = "Date, Temperature\n";   //[['Date', 'Temperature']];
+            var dateRange = [];
+            var timeSpan = $('#time_span').val();
+            for (var i = 0; i < output_data.length; i++){
+                var output = output_data[i];
+                data = data + output.time_stamp + ',' + output.output_value.toString() + '\n'
+                if ( i == 0 || i == output_data.length-1)
+                    dateRange.push(output.time_stamp);
+                //data.push([output.time_stamp, output.output_value]);
+            }
+            if (typeof timeSpan !== "undefined"){
+                var time2 = timeSpan.split("-");
+                dateRange = [ Date.parse(time2[0]), Date.parse(time2[1])];
+            }
+
+            g2 = new Dygraph(
+                graph_com,
+                data,
+                {
+                    //labels: ['Date', 'Temperature'],
+                    plotter: barChartPlotter,
+                    title : 'Temperature Bar Chart',
+                    ylabel: 'Temperature (C)',
+                    legend: 'always',
+                    dateWindow: dateRange,
+                    showRangeSelector: true,
+                    rangeSelectorHeight: 30,
+                    rangeSelectorPlotStrokeColor: 'green',
+                    rangeSelectorPlotFillColor: 'lightgreen'
+                    //xTicker: Dygraph.dateTicker
+                }
+            );
+
+        }
+
+    };
+
+    dy_plot();
+
+</script>
+
+<script src="{{=URL('static', 'js/visualize_output.js')}}"></script>
+
+</div>

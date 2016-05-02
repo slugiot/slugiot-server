@@ -8,6 +8,8 @@
 
 # add random log data by populate
 from gluon.contrib.populate import populate
+from gluon import current
+# db = current.db
 db.logs.truncate()
 db.outputs.truncate()
 populate(db.logs, 50)
@@ -41,18 +43,39 @@ def log_report():
     """
     # Construct log data into SQLFORM
     db.logs.id.label = "#"
+    header_dict = {'logs.log_level': 'Level', 'logs.log_message': 'Msg'}
+    fieldID = db.logs.log_level # Use log_levl as id to each row of table and also sorted.
     grid = SQLFORM.grid(db.logs, deletable=False, editable=False, details=False,
-                        create=False, csv=False, paginate=25, formstyle='table3cols')
+                        create=False, csv=False, paginate=20, formstyle='table3cols',
+                        headers=header_dict, field_id=fieldID, orderby=db.logs.id)
+
+    # STYLE(XML('table,td,tr {padding: 50px}'))  <-- testing view API
+    # this work but not useful
+    grid['_style'] = 'padding: 10px'
+    # print type(grid)
+    # Change the height of rows in table
+    tbodys = grid.elements('tbody')
+    for tb in tbodys:
+        tb['_style'] = 'line-height: 2.5'
+    # Change the background color of rows of table depend on log_level
+    tr_3 = grid.elements('tr', _id=3)
+    for tr in tr_3:
+        tr['_style'] = 'background-color: #D9534F'
+    # print len(tr_3)
 
     # Write fake temperature data to a csv file
     import csv
     import os
+    import datetime
+    now = datetime.datetime.utcnow()
+    now -= datetime.timedelta(days=len(k_temp))
     m_path = os.getcwd()
     tot_path = os.path.join(m_path, 'applications', 'server', 'static', 'temper.csv')
     with open(tot_path, 'wb') as csvfile:
         tmpwriter = csv.writer(csvfile, delimiter=',')
         tmpwriter.writerow(['data', 'Kitchen', 'Living_room'])
         for i in range(len(k_temp)):
-            tmpwriter.writerow([str(i), str(k_temp[i].Temperature), str(l_temp[i].Temperature)])
+            now += datetime.timedelta(days=1)
+            tmpwriter.writerow([now.isoformat(), str(k_temp[i].Temperature), str(l_temp[i].Temperature)])
 
     return dict(grid=grid)
