@@ -66,12 +66,16 @@ def log_report():
     # Write fake temperature data to a csv file
     import csv
     import os
+    import datetime
+    now = datetime.datetime.utcnow()
+    now -= datetime.timedelta(days=len(k_temp))
     m_path = os.getcwd()
     tot_path = os.path.join(m_path, 'applications', 'server', 'static', 'temper.csv')
     with open(tot_path, 'wb') as csvfile:
         tmpwriter = csv.writer(csvfile, delimiter=',')
         tmpwriter.writerow(['data', 'Kitchen', 'Living_room'])
         for i in range(len(k_temp)):
-            tmpwriter.writerow([str(i), str(k_temp[i].Temperature), str(l_temp[i].Temperature)])
+            now += datetime.timedelta(days=1)
+            tmpwriter.writerow([now.isoformat(), str(k_temp[i].Temperature), str(l_temp[i].Temperature)])
 
     return dict(grid=grid)

@@ -776,16 +776,30 @@
                 {
                     //rollPeriod: 5,
                     //showRoller: true,
-                    showRangeSelector: true
+                    title : 'Temperature Line Chart',
+                    ylabel: 'Temperature (C)',
+                    legend: 'always',
+                    showRangeSelector: true,
+                    rangeSelectorHeight: 30,
+                    rangeSelectorPlotStrokeColor: 'green',
+                    rangeSelectorPlotFillColor: 'lightgreen'
                 }
             );
         }
         else if( output_data.length > 0){
             var data = "Date, Temperature\n";   //[['Date', 'Temperature']];
+            var dateRange = [];
+            var timeSpan = $('#time_span').val();
             for (var i = 0; i < output_data.length; i++){
                 var output = output_data[i];
                 data = data + output.time_stamp + ',' + output.output_value.toString() + '\n'
+                if ( i == 0 || i == output_data.length-1)
+                    dateRange.push(output.time_stamp);
                 //data.push([output.time_stamp, output.output_value]);
+            }
+            if (typeof timeSpan !== "undefined"){
+                var time2 = timeSpan.split("-");
+                dateRange = [ Date.parse(time2[0]), Date.parse(time2[1])];
             }
 
             g2 = new Dygraph(
@@ -795,7 +809,13 @@
                     //labels: ['Date', 'Temperature'],
                     plotter: barChartPlotter,
                     title : 'Temperature Bar Chart',
-                    showRangeSelector: true
+                    ylabel: 'Temperature (C)',
+                    legend: 'always',
+                    dateWindow: dateRange,
+                    showRangeSelector: true,
+                    rangeSelectorHeight: 30,
+                    rangeSelectorPlotStrokeColor: 'green',
+                    rangeSelectorPlotFillColor: 'lightgreen'
                     //xTicker: Dygraph.dateTicker
                 }
             );
