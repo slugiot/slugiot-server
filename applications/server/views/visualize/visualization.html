@@ -1,0 +1,556 @@
+{{extend 'layout.html'}}
+
+
+<!-- Angular.js Libraries -->
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
+
+
+<!-- Bootstrap CSS & JS-->
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+      integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
+        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+        crossorigin="anonymous"></script>
+
+
+<!-- Bootstrap select -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+
+
+<!-- Date range picker -->
+<!-- Include Required Prerequisites -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<!-- Include Date Range Picker -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+
+<!-- dygraph library -->
+<script src="/server/static/js/dygraph-combined-dev.js"></script>
+
+<div class="visualization">
+
+    <h1>Data Visualization</h1>
+
+
+    <div class="container-fluid">
+
+
+        <!-- DATA VISUALIZATION START -->
+        <div class="panel panel-default" name="dataVisualization">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data Visualization Panel</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+
+                    <!-- ------------------------------------ CONTROL PANEL ------------------------------------ -->
+                    <div class="col-sm-3">
+                        <table>
+                            <tr>
+                                <td>
+                                    <label>Select:</label> <br>
+                                    <select id="select_device" class="selectpicker" data-live-search="true"
+                                            title="Choose Device...">
+                                        <option>Android</option>
+                                        <option>iPhone</option>
+                                        <option>iPad</option>
+                                        <option>Nest</option>
+
+                                    </select>
+                                    <br>
+                                    <select id="select_data_module" class="selectpicker" data-live-search="true"
+                                            title="Choose Data Module...">
+                                        <option value="temperature">temperature</option>
+                                        <option value="pressure">pressure</option>
+                                    </select>
+
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <label>Compare:</label> <br>
+                                    <select class="selectpicker" data-live-search="true" multiple data-max-options="3">
+                                        <optgroup label="Picnic">
+                                            <option>Mustard</option>
+                                            <option>Ketchup</option>
+                                            <option>Relish</option>
+                                        </optgroup>
+                                        <optgroup label="Camping">
+                                            <option>Tent</option>
+                                            <option>Flashlight</option>
+                                            <option>Toilet Paper</option>
+                                        </optgroup>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>Time Span:</label>
+                                    <div>
+                                        <input id="time_span" type="text" class="form-control" name="time_span"
+                                               value="04/01/2016 - 04/10/2016"/>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <br><br>
+
+                                    <button id="refreshButton" onclick="refresh();" type="button"
+                                            class="btn btn-info btn-block">Refresh
+                                    </button>
+                                    <!-- Spinner icon -->
+                                    <div id="result-spinner" class="hidden">
+                                        <i class="fa fa-spinner fa-pulse fa-4x"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- ------------------------------------ DATA VISUALIZATION dyGraph ------------------------------------ -->
+
+                    <div class="col-sm-9">
+                        <div id="chartdiv" style="width: 100%; height: 400px;" class="hidden"></div>
+                        <div id="graphdiv" style="width: 100%; height: 400px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ------------------------------------ DATA DETAIL START ------------------------------------ -->
+
+        <div class="panel panel-default" name="dataDetail" ng-controller="dataDetailController">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data Detail Panel</h3>
+            </div>
+            <div class="panel-body">
+                <!-- Tab -->
+                <div>
+
+                    <!-- ------- Data Detail  Nav tabs  ------- -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#Mixed" aria-controls="Mixed" role="tab"
+                                                                  data-toggle="tab">Mixed</a>
+                        </li>
+                        <li role="presentation"><a href="#Output" aria-controls="Output" role="tab"
+                                                   data-toggle="tab">Output</a>
+                        </li>
+                        <li role="presentation"><a href="#Log" aria-controls="Log" role="tab"
+                                                   data-toggle="tab">Log</a></li>
+                    </ul>
+
+                    <!-- ------------------ Tab panes ------------------ -->
+                    <div class="tab-content">
+                        <!-- ------------------ Mixed Tab ------------------ -->
+                        <div role="tabpanel" class="tab-pane active" id="Mixed">
+                            <form class="navbar-form navbar-right" role="search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search for...">
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Search</button>
+                          </span>
+                                </div>
+                            </form>
+
+
+                            <div id='ractive_mixed_table_container'></div>
+                            <script id='ractive_mixed_table_template' type='text/ractive'>
+
+                        <table class="table table-hover">
+                            <thead>
+
+                                <tr>
+                                    <th>#</th>
+                                    <th>Type</th>
+                                    <th>Device ID</th>
+                                    <th>Module Name</th>
+                                    <th>Content</th>
+                                    <th>Timestamp</th>
+
+
+                                </tr>
+                            </thead>
+                            <tbody id="mixed_table_body">
+                                {% #mixed_data:index %}
+                                <tr>
+                                    <th scope="row">{% index+1 %}</th>
+                                    <td>{% type %}</td>
+                                    <td>{% deivce_id %}</td>
+                                    <td>{% modulename %}</td>
+                                    <td>{% content %}</td>
+                                    <td>{% time_stamp %}</td>
+
+                                </tr>
+                                {% /mixed_data %}
+                            </tbody>
+                        </table>
+
+
+                            </script>
+                        </div>
+
+                        <!-- ------------------ Output Tab ------------------ -->
+                        <div role="tabpanel" class="tab-pane" id="Output">
+                            <form class="navbar-form navbar-right" role="search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search for...">
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Search</button>
+                          </span>
+                                </div>
+                            </form>
+                            <div id='ractive_output_table_container'></div>
+                            <script id='ractive_output_table_template' type='text/ractive'>
+
+                        <table class="table table-hover">
+                            <thead>
+
+                            <tr>
+                                <th>#</th>
+                                <th>Device ID</th>
+                                <th>Module Name</th>
+                                <th>Name</th>
+                                <th>Output Value</th>
+                                <th>Tag</th>
+                                <th>Time Stamp</th>
+                            </tr>
+                            </thead>
+                            <tbody id="output_table_body">
+                                {% #output_data:index %}
+                                <tr>
+                                    <th scope="row">{% index+1 %}</th>
+                                    <td>{% deivce_id %}</td>
+                                    <td>{% modulename %}</td>
+                                    <td>{% name %}</td>
+                                    <td>{% output_value %}</td>
+                                    <td>{% tag %}</td>
+                                    <td>{% time_stamp %}</td>
+
+                                </tr>
+                                {% /output_data %}
+
+                            </tbody>
+                        </table>
+
+
+                            </script>
+
+                        </div>
+
+                        <!-- ------------------ Log Tab ------------------ -->
+                        <div role="tabpanel" class="tab-pane" id="Log">
+
+                            <form class="navbar-form navbar-right" role="search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search for...">
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Search</button>
+                          </span>
+                                </div>
+                            </form>
+                            <br><br><br>
+
+                            <div id='ractive_log_table_container'></div>
+                            <script id='ractive_log_table_template' type='text/ractive'>
+
+                        <div class="panel-group" id="log_accordion" role="tablist" aria-multiselectable="true">
+
+                            {% #log_data:index %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="heading{% index %}">
+                                    <h4 class="panel-title">
+                                        <a role="button" data-toggle="collapse" data-parent="#accordion"
+                                           href="#collapse{% index %}"
+                                           aria-expanded="true" aria-controls="collapse{% index %}">
+                                             {% device_id %} : [ {% time_stamp %}] - [ level : {% log_level %} ]
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse{% index %}" class="panel-collapse collapse" role="tabpanel"
+                                     aria-labelledby="headingOne">
+                                    <div class="panel-body">
+                                        [{% modulename %}] - [{% name %} : {% output_value %} ]
+                                    </div>
+                                </div>
+                            </div>
+                            {% /log_data %}
+
+
+                        </div>
+
+
+                            </script>
+
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+    <!-- DATA TABLE END -->
+
+
+</div>
+
+
+</div>
+
+<script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
+<script>
+
+    _mixed_data = [
+        {
+            'type': 'output',
+            'deivce_id': 'home',
+            'modulename': 'batman',
+            'time_stamp': '2016-04-01',
+            'content': 'name: temperature, value: 22, tag: 1'
+        },
+        {
+            'type': 'log',
+            'deivce_id': 'office',
+            'modulename': 'superman',
+            'time_stamp': '2016-04-02',
+            'content': 'name: normal log, value: Your system went smoothly'
+        },
+        {
+            'type': 'output',
+            'deivce_id': 'office',
+            'modulename': 'batman',
+            'time_stamp': '2016-04-03',
+            'content': 'name: temperature, value: 21, tag: 1'
+        },
+        {
+            'type': 'log',
+            'deivce_id': 'scholl',
+            'modulename': 'superman',
+            'time_stamp': '2016-04-04',
+            'content': 'name: normal log, value: administrator logged in'
+        }
+    ];
+
+    _output_data = [
+        {
+            'deivce_id': 'home',
+            'modulename': 'batman',
+            'name': 'temperature',
+            'output_value': 22,
+            'tag': '1',
+            'time_stamp': '2016-04-01'
+        },
+        {
+            'deivce_id': 'office',
+            'modulename': 'batman',
+            'name': 'temperature',
+            'output_value': 26,
+            'tag': '1',
+            'time_stamp': '2016-04-02'
+        },
+        {
+            'deivce_id': 'home',
+            'modulename': 'batman',
+            'name': 'temperature',
+            'output_value': 20,
+            'tag': '1',
+            'time_stamp': '2016-04-03'
+        },
+        {
+            'deivce_id': 'office',
+            'modulename': 'batman',
+            'name': 'temperature',
+            'output_value': 23,
+            'tag': '1',
+            'time_stamp': '2016-04-04'
+        }];
+
+    _log_data = [
+        {
+            'device_id': 'office',
+            'modulename': 'superman',
+            'name': 'normal log',
+            'output_value': 'Your system went smoothly',
+            'time_stamp': '2016-04-01',
+            'log_level': '0'
+        },
+        {
+            'device_id': 'home',
+            'modulename': 'superman',
+            'name': 'normal log',
+            'output_value': 'Your system just got modified',
+            'time_stamp': '2016-04-02',
+            'log_level': '0'
+        },
+        {
+            'device_id': 'office',
+            'modulename': 'superman',
+            'name': 'critical log',
+            'output_value': 'Unauthorized logged in',
+            'time_stamp': '2016-04-03',
+            'log_level': '4'
+        },
+        {
+            'device_id': 'home',
+            'modulename': 'superman',
+            'name': 'normal log',
+            'output_value': 'guest logged in',
+            'time_stamp': '2016-04-04',
+            'log_level': '0'
+        }
+    ];
+
+    var ractive_mixed_table = new Ractive({
+        el: '#ractive_mixed_table_container',
+        template: '#ractive_mixed_table_template',
+        delimiters: ['{%', '%}'],
+        data: {
+            mixed_data: []
+
+        }
+    });
+
+    var ractive_output_table = new Ractive({
+        el: '#ractive_output_table_container',
+        template: '#ractive_output_table_template',
+        delimiters: ['{%', '%}'],
+        data: {
+            output_data: []
+        }
+    });
+
+    var ractive_log_table = new Ractive({
+        el: '#ractive_log_table_container',
+        template: '#ractive_log_table_template',
+        delimiters: ['{%', '%}'],
+        data: {
+            log_data: []
+        }
+    });
+    // ------------------------------------  Refresh Button  ------------------------------------
+    function refresh() {
+
+        var timeSpan = $('#time_span').val();
+        ractive_mixed_table.set({mixed_data: _mixed_data});
+        ractive_output_table.set({output_data: _output_data});
+        ractive_log_table.set({log_data: _log_data});
+
+
+        //  ---------- showing test output dygraph ----------
+        dy_plot();
+
+//            $.ajax({
+//                'url': '/getData',
+//                'type': 'get',
+//                'dataType': 'json',
+//                'data': {'timeSpan': timeSpan},
+//                'error': function () {
+//                    $('#mixed_table_body').empty();
+//                    //alert('Whoops, It seems we got a slight problem here');
+//                    $('#mixed_table_body').append("<tr> <td colspan='3'> We got a problem here </td> </tr>");
+//                },
+//                'success': function (data) {
+//
+//
+//                }
+//
+//            });
+    }
+
+
+    // ------------------------------------  Tab  ------------------------------------
+    $('#myTabs a').click(function (e) {
+        e.preventDefault()
+        $(this).tab('show')
+    })
+    // ------------  Date Picker  ------------
+    $(function () {
+        $('#time_span').daterangepicker();
+    });
+
+    // ------------  Dygraph testing  ------------
+    function barChartPlotter(e) {
+        var ctx = e.drawingContext;
+        var points = e.points;
+        var y_bottom = e.dygraph.toDomYCoord(0);  // see <a href="http://dygraphs.com/jsdoc/symbols/Dygraph.html#toDomYCoord">jsdoc</a>
+
+        // This should really be based on the minimum gap
+        var bar_width = 2 / 3 * (points[1].canvasx - points[0].canvasx);
+        ctx.fillStyle = e.color;  // a lighter shade might be more aesthetically pleasing
+
+        // Do the actual plotting.
+        for (var i = 0; i < points.length; i++) {
+            var p = points[i];
+            var center_x = p.canvasx;  // center of the bar
+
+            ctx.fillRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
+            ctx.strokeRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
+        }
+    }
+    ;
+
+    dy_plot = function () {
+        var graph_com = document.getElementById("graphdiv");
+        var data = "{{=URL('static', 'temper.csv')}}";
+
+
+        // collecting output data
+        if (typeof _output_data === "undefined") {
+            console.log('output_data not define yet!');
+            g = new Dygraph(
+                    graph_com,
+                    data,
+                    {
+                        //rollPeriod: 5,
+                        //showRoller: true,
+                        showRangeSelector: true
+                    }
+            );
+        }
+        else if (_output_data.length > 0) {
+            var data = "Date, Temperature\n";   //[['Date', 'Temperature']];
+            for (var i = 0; i < _output_data.length; i++) {
+                var output = _output_data[i];
+                data = data + output.time_stamp + ',' + output.output_value.toString() + '\n'
+                //data.push([output.time_stamp, output.output_value]);
+            }
+
+            g2 = new Dygraph(
+                    graph_com,
+                    data,
+                    {
+                        //labels: ['Date', 'Temperature'],
+                        plotter: barChartPlotter,
+                        title: 'Temperature Bar Chart',
+                        showRangeSelector: true
+                        //xTicker: Dygraph.dateTicker
+                    }
+            );
+
+        }
+
+    };
+
+    dy_plot();
+
+</script>
+
+<script src="{{=URL('static', 'js/visualize_output.js')}}"></script>
+
+</div>
