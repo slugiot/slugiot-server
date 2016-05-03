@@ -1,3 +1,82 @@
 {{extend 'layout.html'}}
 
- <!-- This will be where we can add/remove/see/update procedures within the web UI later on -->
+<div id="target"></div>
+<script id="template" type="text/ractive">
+    {% #unless loading %}
+    <div class="col-sm-3 col-md-2 col-lg-2 fill sidebar" style="margin-top: -20">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="{{=URL('default', 'add_new_procedure', vars=dict(device=val))}}">{{=(icon_add + string_add_short)}} <span class="sr-only">(current)</span></a></li>
+            {% #each procedure_dict:device_id %}
+                <li><a href="#" on-click="set_val:{% device_id %}, {% id %}">{% name %}</a></li>
+            {% /each %}
+          </ul>
+    </div>
+    {% /unless %}
+
+    <div class="main">
+        <div id="middle_bar" class="col-sm-9 col-md-10 col-lg-10" align="center">
+            <div class="centered" align="center">
+                {% #if loading %}
+                    <h1>{{=icon_loading}}</h1>
+                {% else %}
+                    {{if len(procedures_list) == 0:}}
+                        <a href="{{=URL('default', 'add_new_procedure', vars=dict(device=val))}}">{{=icon_add_big}}</a><br>
+                        <h3><a href="{{=URL('default', 'add_new_procedure', vars=dict(device=val))}}">{{=string_add_script}}</a></h3>
+                    {{else:}}
+                        {% #if selection_value == -1 %}
+                           {{=icon_left_big}}
+                           <h3>{{=string_get_started_script}}</h3>
+                        {% else %}
+                           {{=icon_edit_big}}
+                           <h3>{{=string_start_edit}}</h3>
+                           <a href="{{=URL('default', 'edit_procedure')}}?procedure_id={% selection_id %}&stable=false">{{=icon_add_big}}</a><br>
+                           <h3><a href="{{=URL('default', 'edit_procedure')}}?procedure_id={% selection_id %}&stable=false">{{=string_add_script}}</a></h3>
+                        {% /if %}
+                    {{pass}}
+                {% /if %}
+            </div>
+        </div>
+    </div>
+</script>
+
+<script>
+$(function() {
+    // Ractive object
+    var ractive2 = new Ractive({
+        el: '#target',
+        template: '#template',
+        delimiters: ['{%', '%}'],
+        tripleDelimiters: ['{%%', '%%}'],
+        data: {
+            procedure_dict: {},
+            delete_devices: [],
+            loading: true,
+            sign_uuid: "{{=sign_uuid}}",
+            selection_value: -1,
+            selection_id: 1
+        }
+    });
+
+    // Refreshes device list every time function is called
+    function get_procedures(){
+        $.ajax("{{=URL('default', 'read_procedures', vars=dict(device=val))}}",
+                {
+                    method: 'POST',
+                    success: function (data) {
+                        ractive2.set('procedure_dict', data['procedure_dict']);
+                        ractive2.set('loading', false);
+                    }
+                }
+        );
+        console.log("{{=URL('default', 'read_procedures', args=val)}}");
+    }
+
+    // Call load_devices() initially when the page first loads
+    get_procedures();
+
+    ractive2.on("set_val", function(e, value, sid){
+        ractive2.set('selection_value', value);
+        ractive2.set('selection_id', sid);
+    });
+});
+</script>
