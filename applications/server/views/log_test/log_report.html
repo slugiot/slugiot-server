@@ -9,6 +9,10 @@
         <div class="panel-body">
             <center>
                 <div id="graphdiv" style="width: 600px; height: 400px"></div>
+                <div id="result-spinner">
+                    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+                    <p style="font-size:36px;">{{=T("Now Loading")}}</p>
+                </div>
             </center>
         </div>
     </div>
@@ -41,6 +45,11 @@
 
 
 <script type="text/javascript">
+    $(document).ready(function()
+    {
+        $("#result-spinner").delay(2000).hide();
+    });
+
     g = new Dygraph(
         document.getElementById("graphdiv"),
         "{{=URL('static', 'temper.csv')}}",
@@ -56,4 +65,5 @@
             rangeSelectorPlotFillColor: 'lightgreen'
         }
     );
+
 </script>
