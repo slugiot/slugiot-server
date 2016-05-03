@@ -63,9 +63,10 @@ def add():
 @auth.requires_login()
 def add_new_procedure():
     """
-    Description: Controller for the add page, which lets you add a device into the DB
+    Description: Controller for the add page, which lets you add a device into the DB.
     Returns: A form that lets you add things into db.devices (use by including {{=form}} in add.html)
     """
+    # Device ID should not be changeable
     db.procedures.device_id.writable = False
     val = request.vars['device']
     if val is None:
@@ -75,32 +76,30 @@ def add_new_procedure():
         db.procedures.device_id.default = val
     form = SQLFORM(db.procedures)
 
-    dbc = current.db
-    proc_table = dbc.procedures
-    revisions_table = dbc.procedure_revisions
-    dbc(proc_table).delete()
-    dbc(revisions_table).delete()
-
-    # set logger
+    # set the logger logger
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
     logger.addHandler(ch)
 
+    # initialize name variable
     name = ""
-    # add permission for the user management
+
+    # Generate a name to be passed on to add_permission
     if db(db.device.device_id == val).select():
         name = db(db.device.device_id == val).select()[0].name + " procedure"
-
 
     if form.process().accepted:
         access.add_permission(val, auth.user.email, perm_type="a")
         proc_id = proc_harness_module.create_procedure(name, val)
-        print proc_id
-        proc_harness_module.save(proc_id, "This is your new (stable) procedure. Happy coding!", True)
+        # Initialize some starter Python code
+        proc_harness_module.save(proc_id, "#This is your new (stable) procedure. Happy coding!", True)
+        # Sleep a little bit to allow it to successfully save
         time.sleep(2)
-        proc_harness_module.save(proc_id, "This is your new (temporary) procedure. Happy coding!", False)
+        # Initalize the draft Python ocde as well
+        proc_harness_module.save(proc_id, "#This is your new (temporary) procedure. Happy coding!", False)
+        # Sleep a little bit again
         time.sleep(2)
-        print "STAND" + str(proc_id) + proc_harness_module.get_procedure_data(proc_id, False)
+        # Go back to the home page.
         session.flash = "Procedure added!"
         redirect(URL('default', 'index'))
     return dict(form=form)
@@ -108,6 +107,10 @@ def add_new_procedure():
 
 @auth.requires_login()
 def edit_device():
+    """
+    Controller for the page that lets you edit a device.
+    :return: a form
+    """
     val = request.vars['device']
     table_id = DeviceIDVerification().__call__(val)
     if table_id is None:
@@ -122,6 +125,10 @@ def edit_device():
 
 @auth.requires_login()
 def manage():
+    """
+    Controller for the procedure manager page.
+    :return: procedure_list, uuid, and vars for URL
+    """
     val = request.vars['device']
     sign_uuid = gluon_utils.web2py_uuid()
     procedure_list = db(db.procedures.device_id == val).select()
@@ -130,12 +137,16 @@ def manage():
 
 @auth.requires_login()
 def edit_procedure():
+    """
+    Description: Passed procedure ID and stability mode to the editor to use
+    :return: procedure_id and stable
+    """
     # get the procedure_id and stable statues of procedure in TABLE procedure
     procedure_id = int(request.vars['procedure_id'])
     stable = request.vars['stable']
     print stable
-    if procedure_id or stable is None:
-        session.flash = T('No such ID')
+    #if procedure_id or stable is None:
+        #session.flash = T('No such ID')
         # redirect(URL('default', 'index'))
     return dict(procedure_id=procedure_id, stable=stable)
 

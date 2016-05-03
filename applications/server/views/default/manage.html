@@ -78,31 +78,5 @@ $(function() {
         ractive2.set('selection_value', value);
         ractive2.set('selection_id', sid);
     });
-
-    // Delete logic
-    ractive2.on("delete", function(e, device_id){
-        if(device_id == -1){
-            alert("You are trying to delete with no selection.");
-            return;
-        }
-        var delete_devices = ractive.get('delete_devices');
-        if(delete_devices.indexOf(device_id) == -1) delete_devices.push(device_id);
-        else delete_devices.pop(device_id);
-        ractive2.set('delete_list', delete_devices);
-        $.ajax("{{=URL('default', 'delete_devices', user_signature=True)}}",
-                {
-                    data: { delete_devices: delete_devices },
-                    method: 'POST',
-                    success: function() {},
-                    error: function() {}
-                }
-        );
-        ractive2.set('delete_list', []);
-        reloadPage();
-    });
-
-    function reloadPage() {
-        location.reload();
-    }
 });
 </script>
