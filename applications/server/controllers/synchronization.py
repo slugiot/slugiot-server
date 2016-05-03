@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
 
-@request.restful()
-def receive_logs():
-    """
-    This method is to recieve log data.  It accepts two HTTP methods:
+"""
+ This method is to recieve log data.  It accepts two HTTP methods:
         GET: returns the latest three log entries.  planning on adding
             filtering based on device_id, and how many records to return
         POST: accepts a JSON document with the log entries to ingest.  an
@@ -17,7 +15,13 @@ def receive_logs():
                         {"modulename":"my_module","log_level":2,"log_message":"some other message","time_stamp":"2016-03-19 20:49:41"}
                     ]
             }
-    """
+
+   :return: Dictionary containing whether the request posted is a success or not and the latest synchronization time_stamp
+   :rtype: Dictionary
+"""
+
+@request.restful()
+def receive_logs():
     def GET(*args, **vars):
         logs = db(db.logs).select(orderby="received_time_stamp DESC",limitby=(0,3))
         return response.json(logs)
@@ -51,25 +55,27 @@ def receive_logs():
     return locals()
 
 
-@request.restful()
-def receive_outputs():
-    """
-    This method is to recieve output data.  It accepts two HTTP methods:
-        GET: returns the latest output entries.  planning on adding
-            filtering based on device_id, and how many records to return
-        POST: accepts a JSON document with the output entries to ingest.  an
-            example document is described below:
-            {
-                "device_id":"my_device",
-                "output":
-                    [
-                        {"modulename":"my_module","name":"variable","output_value":"10","tag":"example","time_stamp":"2016-03-19 20:48:41"}
-                    ]
-            }
-    """
+"""
+ This method is to recieve output data.  It accepts two HTTP methods:
+     GET: returns the latest output entries.  planning on adding
+         filtering based on device_id
+     POST: accepts a JSON document with the output entries to ingest.  an
+         example document is described below:
+         {
+             "device_id":"my_device",
+             "output":
+                 [
+                     {"modulename":"my_module","name":"variable","output_value":"10","tag":"example","time_stamp":"2016-03-19 20:48:41"}
+                 ]
+         }
+:return: Responds with a JSON object of saved settings from the server when a user posts using this function ands gets validated updated output_values from the server
+:rtype: JSON object
+ """
 
+@request.restful()
+def receive_outputs(no_of_records):
     def GET(*args, **vars):
-        logs = db(db.outputs).select(orderby="received_time_stamp DESC", limitby=(0, 3))
+        logs = db(db.outputs).select(orderby="received_time_stamp DESC", limitby=(0, no_of_records))
         return response.json(logs)
 
     def POST(*args, **vars):
@@ -100,10 +106,7 @@ def receive_outputs():
 
     return locals()
 
-
-@request.restful()
-def receive_values():
-    """
+"""
     This method is to receive value data.  It accepts two HTTP methods:
         GET: returns all the current output entries (for the device id)
         POST: accepts a JSON document with the value entries to ingest.
@@ -118,7 +121,13 @@ def receive_values():
                         {"procedure_id":"proc2","name":"some_other_name","output_value":"some_other_value"}
                     ]
             }
-    """
+ :return: Responds with a JSON object of saved settings from the server when a user posts using this function ands gets validated updated module_values from the server
+   :rtype: JSON object
+"""
+
+@request.restful()
+def receive_values():
+
 
     def GET(*args, **vars):
         if (vars == None or not vars.has_key('device_id')):
@@ -158,24 +167,29 @@ def receive_values():
     return locals()
 
 
+"""
+This method is to receive setting data.  Given a device_id, it returns
+all the setting information that the client needs.  If the parameter
+'last_updated' is set, it will only select changed settings
+since that time
+
+If you POST to this endpoint, it will save posted settings to the DB.
+This is intended to be used for debugging:
+{
+  "device_id":"trevor",
+  "settings":[
+        {"procedure_id":"proc1","setting_name":"some_setting","setting_value":"42"},
+        {"setting_name":"some_global_setting","setting_value":True}
+  ]
+}
+
+   :return: Responds with a JSON object of saved settings from the server when a user posts using this function ands gets validated updated settings from the server
+   :rtype: JSON object
+"""
+
 @request.restful()
 def get_settings():
-    """
-    This method is to receive setting data.  Given a device_id, it returns
-    all the setting information that the client needs.  If the parameter
-    'last_updated' is set, it will only select changed settings
-    since that time
 
-    If you POST to this endpoint, it will save posted settings to the DB.
-    This is intended to be used for debugging:
-    {
-      "device_id":"trevor",
-      "settings":[
-            {"procedure_id":"proc1","setting_name":"some_setting","setting_value":"42"},
-            {"setting_name":"some_global_setting","setting_value":True}
-      ]
-    }
-    """
 
     def GET(*args, **vars):
         if (vars == None or not vars.has_key('device_id')):
@@ -225,12 +239,20 @@ def get_settings():
 
     return locals()
 
+"""
+This function takes in the data and ensures that it has the right format along with a device id  - {{"James",9001},{"Jo",3474},{"Jack",323}}
 
-def __get_valdiated_data(request_body, data_key):
+   :param p1: request_body for the data to be formatted properly
+   :type p1: str
+   :param p1: data_key
+   :type p1: str
+   :return: Data in a dictionary containing json-formatted data that has a device_id
+   :rtype: Dictionary
+"""
+
+def __get_validated_data(request_body, data_key):
     if (not request_body):
         raise HTTP(400, "no data was included")
-
-    # get json and validate structure
     try:
         data = json.loads(request_body)
     except:
@@ -259,19 +281,7 @@ def __get_last_synchronized(table_name):
         return datetime.datetime.fromtimestamp(0)
     return timestamp[0].time_stamp
 
-"""
-   This method checks the last timestamp that is stored in the server against the timestamp stored in the client
-   and puts all the unsycnhed information into the server database, after which, it sends a response if successful
-"""
 
-def synch():
-
-#Retreiving last timestamp from the three tables to be synched to server from client
-    a = __get_last_synchronized(db.logs)
-    b = __get_last_synchronized(db.outputs)
-    c = __get_last_synchronized(db.module_values)
-
-#Retreiving last timestamp from the three tables in client
 
 
 
