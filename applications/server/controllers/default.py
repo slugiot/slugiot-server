@@ -91,15 +91,16 @@ def add_new_procedure():
     if db(db.device.device_id == val).select():
         name = db(db.device.device_id == val).select()[0].name + " procedure"
 
-    uid = str(uuid.uuid4().int & (1 << 64) - 1)
 
     if form.process().accepted:
-        access.add_permission(val, auth.user.email, perm_type="a", procedure_id=uid)
-        proc_id = proc_harness_module.create_procedure(name, uid)
-        proc_harness_module.save(proc_id, "# This is your new (stable) procedure. Happy coding!", True)
+        access.add_permission(val, auth.user.email, perm_type="a")
+        proc_id = proc_harness_module.create_procedure(name, val)
+        print proc_id
+        proc_harness_module.save(proc_id, "This is your new (stable) procedure. Happy coding!", True)
         time.sleep(2)
-        proc_harness_module.save(proc_id, "# This is your new (temporary) procedure. Happy coding!", False)
+        proc_harness_module.save(proc_id, "This is your new (temporary) procedure. Happy coding!", False)
         time.sleep(2)
+        print "STAND" + str(proc_id) + proc_harness_module.get_procedure_data(proc_id, False)
         session.flash = "Procedure added!"
         redirect(URL('default', 'index'))
     return dict(form=form)

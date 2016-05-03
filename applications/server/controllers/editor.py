@@ -18,15 +18,18 @@ def edit_procedure():
     preferences={'theme':'web2py', 'editor': 'default', 'closetag': 'true', 'codefolding': 'false', 'tabwidth':'4', 'indentwithtabs':'false', 'linenumbers':'true', 'highlightline':'true'}
 
     # get the procedure_id and stable state of procedure in TABLE procedure
-    procedure_id = request.vars.procedure_id
-    stable = request.vars.stable
+    procedure_id = request.vars['procedure_id']
+    stable = request.vars['stable']
 
     # the final edition will use Team 2 API "get_procedure_data(procedure_id, stable)"  to get the data
     #data = db(db.coding.id == procedure_id).select(db.coding.procedures).first().procedures
     if stable == 'false':
         data = proc_harness_module.get_procedure_data(procedure_id,False)
+        #data = "hello world"
     else:
         data = proc_harness_module.get_procedure_data(procedure_id,True)
+
+    print data
 
     file_details = dict(
                     editor_settings=preferences,     # the option parameters used for setting editor feature.
