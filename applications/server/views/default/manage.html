@@ -23,15 +23,15 @@
                         <a href="{{=URL('default', 'add_new_procedure', vars=dict(device=val))}}">{{=icon_add_big}}</a><br>
                         <h3><a href="{{=URL('default', 'add_new_procedure', vars=dict(device=val))}}">{{=string_add_script}}</a></h3>
                     {{else:}}
-                        {% #if selection_value == -1 %}
-                           {{=icon_left_big}}
-                           <h3>{{=string_get_started_script}}</h3>
-                        {% else %}
-                           {{=icon_edit_big}}
-                           <h3>{{=string_start_edit}}</h3>
-                           <a href="{{=URL('default', 'edit_procedure')}}?procedure_id={% selection_id %}&stable=false">{{=icon_add_big}}</a><br>
-                           <h3><a href="{{=URL('default', 'edit_procedure')}}?procedure_id={% selection_id %}&stable=false">{{=string_add_script}}</a></h3>
-                        {% /if %}
+                        <div id="centerblock">
+                            {% #if selection_value == -1 %}
+                               {{=icon_left_big}}
+                               <h3>{{=string_get_started_script}}</h3>
+                            {% else %}
+                               <a href="{{=URL('default', 'edit_procedure')}}?procedure_id={% selection_id %}&stable=false">{{=icon_edit_big}}</a><br>
+                               <h3><a href="{{=URL('default', 'edit_procedure')}}?procedure_id={% selection_id %}&stable=false">{{=string_start_edit}}</a></h3>
+                            {% /if %}
+                        </div>
                     {{pass}}
                 {% /if %}
             </div>
