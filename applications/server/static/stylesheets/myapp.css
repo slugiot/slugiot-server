@@ -1,13 +1,19 @@
+/* line 1, ../sass/_sidebar.scss */
+.fill {
+  height: 100%;
+  width: 100%;
+}
+
 /*
  * Top navigation
  * Hide default border to remove 1px line.
  */
-/* line 6, ../sass/_sidebar.scss */
+/* line 12, ../sass/_sidebar.scss */
 .navbar-fixed-top {
   border: 0;
 }
 
-/* line 10, ../sass/_sidebar.scss */
+/* line 16, ../sass/_sidebar.scss */
 .sidebar {
   display: none;
   height: 100%;
@@ -15,7 +21,7 @@
 }
 
 @media (min-width: 768px) {
-  /* line 16, ../sass/_sidebar.scss */
+  /* line 22, ../sass/_sidebar.scss */
   .sidebar {
     position: fixed;
     bottom: 0;
@@ -33,20 +39,20 @@
   }
 }
 /* Sidebar navigation */
-/* line 33, ../sass/_sidebar.scss */
+/* line 39, ../sass/_sidebar.scss */
 .nav-sidebar {
   margin-right: -21px;
   /* 20px padding + 1px border */
   margin-left: -20px;
 }
 
-/* line 37, ../sass/_sidebar.scss */
+/* line 43, ../sass/_sidebar.scss */
 .nav-sidebar > li > a {
   padding-right: 20px;
   padding-left: 20px;
 }
 
-/* line 41, ../sass/_sidebar.scss */
+/* line 47, ../sass/_sidebar.scss */
 .nav-sidebar > .active > a,
 .nav-sidebar > .active > a:hover,
 .nav-sidebar > .active > a:focus {
@@ -58,19 +64,19 @@
 /*
  * Main content
  */
-/* line 53, ../sass/_sidebar.scss */
+/* line 59, ../sass/_sidebar.scss */
 .main {
   padding: 20px;
 }
 
 @media (min-width: 768px) {
-  /* line 57, ../sass/_sidebar.scss */
+  /* line 63, ../sass/_sidebar.scss */
   .main {
     padding-right: 40px;
     padding-left: 40px;
   }
 }
-/* line 62, ../sass/_sidebar.scss */
+/* line 68, ../sass/_sidebar.scss */
 .main .page-header {
   margin-top: 0;
 }

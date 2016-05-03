@@ -2,53 +2,52 @@
 
 <div id="target"></div>
 <script id="template" type="text/ractive">
-    <!-- Banner alert if the user has no devices. It asks them to register a new device. -->
     {% #unless loading %}
-        {{if len(device_list) == 0:}}
-            <div class="alert alert-warning alert-dismissible" role="alert" align="center">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <a href={{=URL('default', 'add')}}>{{=string_add_long}}</a>
-            </div>
-        {{pass}}
-    {% /unless %}
-
-    <div class="col-sm-3 col-md-2 sidebar" style="margin-top: -20">
+    <div class="col-sm-3 col-md-2 col-lg-2 fill sidebar" style="margin-top: -20">
           <ul class="nav nav-sidebar">
             <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
             <li><a href="{{=URL('default', 'add')}}">{{=(icon_add + string_add_short)}}</a></li>
             {% #each device_dict:device_id %}
                 <li><a href="#{% device_id %}" on-click="set_val:{% device_id %}">{% name %}</a></li>
             {% /each %}
+            <div class="spacer"></div>
           </ul>
     </div>
+    {% /unless %}
+
     <div class="main">
-        <!-- This where the charts and logs from the data viz team would go
-              For now, we're just fine with leaving a loading animation in here. -->
-        <div id="middle_bar" class="col-sm-5 col-md-7" align="center">
-            {% #if loading %}
-                <div id="load_spinner" class="centered">
-                    <div class="showbox">
-                      <div class="loader">
-                        <svg class="circular" viewBox="25 25 50 50">
-                          <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>
-                        </svg>
-                      </div>
-                    </div>
-                </div>
-            {% /if %}
+        <div id="middle_bar" class="col-sm-5 col-md-7 col-lg-7" align="center">
+            <div class="centered" align="center">
+                {% #if loading %}
+                    <h1>{{=icon_loading}}</h1>
+                {% else %}
+                    {{if len(device_list) == 0:}}
+                        <a href="{{=URL('default', 'add')}}">{{=icon_sad_big}}</a><br>
+                        <h3><a href="{{=URL('default', 'add')}}">{{=string_no_device}}</a></h3>
+                    {{else:}}
+                        {% #if selection_value == -1 %}
+                           {{=icon_rocket_big}}
+                           <h3>{{=string_get_started}}</h3>
+                        {% else %}
+                           {{=icon_graph_big}}
+                           <h3>{{=string_no_data}}</h3>
+                        {% /if %}
+                    {{pass}}
+                {% /if %}
+            </div>
         </div>
 
         {% #unless loading %}
-            <div id="device_info" class="col-sm-4 col-md-3" align="center">
+            <div id="device_info" class="col-sm-4 col-md-3 col-lg-3" align="center">
                 <h2>Configuration</h2><br/>
                 {% #if selection_value == -1 %}
                     <button type="button" class="btn btn-primary disabled">{{=string_manage}}</button>
+                    <button type="button" class="btn btn-warning disabled">{{=string_edit}}</button>
                     <button type="button" class="btn btn-danger disabled"
                         on-click="delete:{% selection_value %}">{{=string_delete}}</button><br><br>
                 {% else %}
-                    <a href="{{=URL('default', 'manage')}}?{% selection_value %}" class="btn btn-primary">{{=string_manage}}</a>
+                    <a href="{{=URL('default', 'manage')}}?device={% selection_value %}" class="btn btn-primary">{{=string_manage}}</a>
+                    <a href="{{=URL('default', 'edit_device')}}?device={% selection_value %}" class="btn btn-warning">{{=string_edit}}</a>
                     <button type="button" class="btn btn-danger"
                         on-click="delete:{% selection_value %}">{{=string_delete}}</button><br><br>
                 {% /if %}
@@ -140,7 +139,11 @@ $(function() {
                 }
         );
         ractive.set('delete_list', []);
-        load_devices();
+        reloadPage();
     });
+
+    function reloadPage() {
+        location.reload();
+    }
 });
 </script>

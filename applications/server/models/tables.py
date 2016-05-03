@@ -53,6 +53,8 @@ db.define_table('procedure_revisions',
                 Field('stable_version', 'boolean', required=True) # True for stable False for not stable
                 )
 
+db.device.id.readable = False
+
 ##############
 # Permission table.
 

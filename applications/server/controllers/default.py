@@ -10,6 +10,20 @@ from gluon import utils as gluon_utils
 import time, access, proc_harness_module
 
 
+class DeviceIDVerification:
+    """
+    This is used for device edits. Accepts device ID as an argument.
+    Returns: The web2py table ID for the particular device.
+    """
+    def __init__(self, error_message='Could not verify device'):
+        self.e = error_message
+
+    def __call__(self, device_id):
+        if db(db.device.device_id == device_id).select():
+            return db(db.device.device_id == device_id).select()[0].id
+        return device_id
+
+
 def index():
     """
     Description: Controller for the home page.
@@ -42,6 +56,20 @@ def add():
     form = SQLFORM(db.device)
     if form.process().accepted:
         session.flash = "Device added!"
+        redirect(URL('default', 'index'))
+    return dict(form=form)
+
+
+@auth.requires_login()
+def edit_device():
+    val = request.vars['device']
+    table_id = DeviceIDVerification().__call__(val)
+    if table_id is None:
+        session.flash = T('No such device')
+        redirect(URL('default', 'index'))
+    form = SQLFORM(db.device, record=int(table_id))
+    if form.process().accepted:
+        session.flash = T('Device edited')
         redirect(URL('default', 'index'))
     return dict(form=form)
 
@@ -104,17 +132,6 @@ def delete_devices():
         for i in delete_devices:
             db(db.device.device_id == i).delete()
     return "ok"
-
-
-def manage():
-    device_id = request.args(0)
-    s = SHOP_LIST.get(sid)
-    logger.info("Found the store: %r" % s)
-    if s is None:
-        session.message = T('No such store')
-        redirect(URL('default', 'index'))
-    session.pasta_sauce = "Pesto"  # Not used.
-    return dict(shop=s)
 
 
 def user():
