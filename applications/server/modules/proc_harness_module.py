@@ -189,15 +189,26 @@ def save(procedure_id, procedure_data, is_stable):
 
 class TestProcedureHarness(unittest.TestCase):
     def setUp(self):
-        os.system("rm -rf ../testdatabases")
+        #os.system("rm -rf ../testdatabases")
+        try:
+            os.remove("../testdatabases")
+        except:
+            pass
+        pdir = os.getcwd()
         os.system("cp -r ../databases ../testdatabases")
         #os.system("python ../../../scripts/cpdb.py -f ../databases -F ../testdatabases -y 'sqlite://storage.sqlite' -Y 'sqlite://storage.sqlite' -d ../../../gluon")
-        current.db = DAL('sqlite://../testdatabases/storage.sqlite',
+        # This approach won't work for GAE because it isn't using SQLite.
+        current.db = DAL('sqlite://storage.sqlite', folder = '../testdatabases/',
                       pool_size="10",
                       migrate_enabled="true",
                       check_reserved=['all']
                       )
         self.db = current.db
+        db = self.db
+        # The database will be empty until we populate it with table structure
+        filename = "../models/tables.py"
+        with open(filename, 'rb+') as input:
+            eval(input.read())
         print "tables!!", self.db.tables
         self.proc_table = self.db.procedures
         self.revisions_table = self.db.procedure_revisions
