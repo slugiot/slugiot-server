@@ -61,6 +61,51 @@ def add():
 
 
 @auth.requires_login()
+def add_new_procedure():
+    """
+    Description: Controller for the add page, which lets you add a device into the DB
+    Returns: A form that lets you add things into db.devices (use by including {{=form}} in add.html)
+    """
+    db.procedures.device_id.writable = False
+    val = request.vars['device']
+    if val is None:
+        session.flash = T('No such device')
+        redirect(URL('default', 'index'))
+    else:
+        db.procedures.device_id.default = val
+    form = SQLFORM(db.procedures)
+
+    dbc = current.db
+    proc_table = dbc.procedures
+    revisions_table = dbc.procedure_revisions
+    dbc(proc_table).delete()
+    dbc(revisions_table).delete()
+
+    # set logger
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    logger.addHandler(ch)
+
+    name = ""
+    # add permission for the user management
+    if db(db.device.device_id == val).select():
+        name = db(db.device.device_id == val).select()[0].name + " procedure"
+
+    uid = str(uuid.uuid4().int & (1 << 64) - 1)
+
+    if form.process().accepted:
+        access.add_permission(val, auth.user.email, perm_type="a", procedure_id=uid)
+        proc_id = proc_harness_module.create_procedure(name, uid)
+        proc_harness_module.save(proc_id, "# This is your new (stable) procedure. Happy coding!", True)
+        time.sleep(2)
+        proc_harness_module.save(proc_id, "# This is your new (temporary) procedure. Happy coding!", False)
+        time.sleep(2)
+        session.flash = "Procedure added!"
+        redirect(URL('default', 'index'))
+    return dict(form=form)
+
+
+@auth.requires_login()
 def edit_device():
     val = request.vars['device']
     table_id = DeviceIDVerification().__call__(val)
@@ -75,34 +120,27 @@ def edit_device():
 
 
 @auth.requires_login()
-def add_procedure():
-    db = current.db
-    proc_table = db.procedures
-    revisions_table = db.procedure_revisions
-    db(proc_table).delete()
-    db(revisions_table).delete()
+def manage():
+    val = request.vars['device']
+    sign_uuid = gluon_utils.web2py_uuid()
+    procedure_list = db(db.procedures.device_id == val).select()
+    return dict(procedures_list=procedure_list, sign_uuid=sign_uuid, val=val)
 
-    # set logger
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    logger.addHandler(ch)
 
-    # add permission for the user management
-    access.add_permission("1", auth.user.email, perm_type="a")
-
-    # create procedure name=demo_1 for the device whose id = 1 and saved it
-    proc_id = proc_harness_module.create_procedure("demo_1", "1")
-    proc_harness_module.save(proc_id, "# This is your new (stable) procedure. Happy coding!", True)
-    time.sleep(2)
-    proc_harness_module.save(proc_id, "This is your new (temporary) procedure. Happy coding!", False)
-    time.sleep(2)
-
-    return "ok"
+@auth.requires_login()
+def edit_procedure():
+    # get the procedure_id and stable statues of procedure in TABLE procedure
+    procedure_id = int(request.vars['procedure_id'])
+    stable = request.vars['stable']
+    print stable
+    if procedure_id or stable is None:
+        session.flash = T('No such ID')
+        # redirect(URL('default', 'index'))
+    return dict(procedure_id=procedure_id, stable=stable)
 
 
 @auth.requires_login()
 def load_devices():
-    # TODO: Condense "rows" to just for that one specific user instead of ALL devices
     """
     Description: Returns a list of devices to show on index.html. This is called from the JS.
     Returns: A JSON with a dictionary of all the devices and their database fields.
@@ -115,6 +153,21 @@ def load_devices():
                        'id': r.id}
          for r in rows}
     return response.json(dict(device_dict=d))
+
+
+@auth.requires_login()
+def read_procedures():
+    """
+    Description: Returns a list of devices to show on index.html. This is called from the JS.
+    Returns: A JSON with a dictionary of all the devices and their database fields.
+    """
+    val = request.vars['device']
+    rows = db(db.procedures.device_id == val).select()
+    time.sleep(1)  # so we can some time to stare at the pretty animation :-)
+    d = {r.device_id: {'name': r.name,
+                       'id': r.id}
+         for r in rows}
+    return response.json(dict(procedure_dict=d))
 
 
 @auth.requires_login()

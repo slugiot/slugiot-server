@@ -24,9 +24,10 @@ def create_procedure(procedure_name, device_id):
     auth = Auth(globals(), db)
     proc_table = db.procedures
 
-    user_email = "blah@blah.com" #auth.auth.user_email
+    user_email = auth.user.email
 
     if not access.can_create_procedure(device_id, user_email):
+        print "YOOOOOOOOO DAWG"
         return None
 
     pid = proc_table.insert(device_id = device_id, name = procedure_name)
@@ -47,7 +48,7 @@ def get_procedures_for_edit(device_id):
     auth = Auth(globals(), db)
     proc_table = db.procedures
 
-    user_email = "blah@blah.com" #auth.auth.user_email
+    user_email = auth.user.email
 
     # Get all relevant records for user_email
     records = db(proc_table.device_id == device_id).select()
@@ -76,7 +77,7 @@ def get_procedures_for_view(device_id):
     proc_table = db.procedures
 
     # Get all relevant records for user_email
-    user_email = "blah@blah.com" #auth.auth.user_email
+    user_email = auth.user.email
     records = db(proc_table.device_id == device_id).select()
 
     # Create list of procedure IDs from records

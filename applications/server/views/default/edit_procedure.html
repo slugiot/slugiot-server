@@ -1,0 +1,26 @@
+{{extend 'layout.html'}}
+
+<!-- the editor html part used which can be integrated to UI team web page-->
+<div id="editor_area" class="row-fluid">
+    <div class="span12" id="edit_placeholder">
+        <div id="myTabContent" class="tab-content">
+        </div>
+    </div>
+</div>
+
+<!-- the save button example integrated to UI team web page-->
+<button type="button" class="btn btn-warning" onclick="save_procedure('{{=URL('save_procedure')}}',{{=procedure_id}}, false)">Save Draft</button>
+<button type="button" class="btn btn-success" onclick="save_procedure('{{=URL('save_procedure')}}',{{=procedure_id}}, true)">Submit</button>
+
+<!-- the text area to show the saving state for editor-->
+<div style="margin: 15px 0px 0px 0px;">
+    <a class="list-group-item active" id="save_result"><div></div></a>
+</div>
+
+<script>
+
+$(document).ready(function() {
+    load_procedure('/editor/edit_procedure',{{=procedure_id}}, {{=stable}});
+});
+
+</script>
