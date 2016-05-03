@@ -1,13 +1,11 @@
 import datetime
 import access
 import unittest
-from gluon.contrib.appconfig import AppConfig
 
 import time
 import os
-from gluon import current, DAL
+from gluon import current, DAL, Field
 from gluon.tools import Auth
-
 
 #auth = Auth(globals(), current.db)
 
@@ -187,6 +185,47 @@ def save(procedure_id, procedure_data, is_stable):
 
 ####################### TEST CODE #######################
 
+def run_test():
+    """
+    test code refered and edited from proc_harness_module.py
+    this is only used for demo in the next class and will be deleted later
+    :return:
+    """
+    import access
+    import time
+    db = current.db
+    proc_table = db.procedures
+    revisions_table = db.procedure_revisions
+    db(proc_table).delete()
+    db(revisions_table).delete()
+
+    print "hey"
+
+    # add permission for the usermanagement
+    access.add_permission("1","blah@blah.com",perm_type="a")
+
+    # create procedure name=demo_1 for the device whose id = 1 and saved it
+    proc_id = create_procedure("demo_1", "1")
+    print "proc_id", proc_id, type(proc_id)
+    save(proc_id, "#demo1 stable edition code", True)
+    time.sleep(2)
+    save(proc_id, "#demo1 temporary edition code", False)
+    time.sleep(2)
+    # create procedure name=demo_2 for the device whose id = 1 and saved it
+    proc_id2 = create_procedure("demo_2", "1")
+    save(proc_id2, "#demo2 stable edition code", True)
+    time.sleep(2)
+    save(proc_id2, "#demo2 temporary edition code", False)
+
+    # get the list of procedure_id from device whose id = 1
+    proc_list1 = get_procedures_for_edit("1")
+    proc_list2 = get_procedures_for_edit("1")
+
+    # get the data of procedure
+    data1 = get_procedure_data(proc_list1[0], True)
+    data2 = get_procedure_data(proc_list2[0], False)
+    return "ok"
+
 class TestProcedureHarness(unittest.TestCase):
     def setUp(self):
         #os.system("rm -rf ../testdatabases")
@@ -207,8 +246,8 @@ class TestProcedureHarness(unittest.TestCase):
         db = self.db
         # The database will be empty until we populate it with table structure
         filename = "../models/tables.py"
-        with open(filename, 'rb+') as input:
-            eval(input.read())
+        with open(filename, 'rb+') as tables_code:
+            exec(tables_code.read())
         print "tables!!", self.db.tables
         self.proc_table = self.db.procedures
         self.revisions_table = self.db.procedure_revisions
@@ -237,5 +276,5 @@ class TestProcedureHarness(unittest.TestCase):
         self.assertEqual("blahblah2", val3)
         self.assertEqual("blahblah3", val4)
 
-if __name__ == '__main__':
-    unittest.main() # runs all unit tests
+#if __name__ == '__main__':
+#    unittest.main() # runs all unit tests

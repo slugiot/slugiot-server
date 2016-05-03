@@ -13,11 +13,9 @@ import proc_harness_module as phm
 proc_table = db.procedures
 revisions_table = db.procedure_revisions
 
-
 ####### API FOR PROCEDURE HARNESS TEAM ##########
 
-
-def get_procedure_status(device_id):
+def get_procedure_status():
     """
     Called upon client request for procedure info
 
@@ -27,21 +25,21 @@ def get_procedure_status(device_id):
                     that specifies the last save time for each procedure associated with the device
     :rtype:
     """
+    device_id = request.args(0) if request.args else None
 
     # Get all procedure_ids for the device_id
-    procedure_ids = db((devices.device_id == device_id) &
-                       (devices.user_email == proc_table.user_email)).select(proc_table.procedure_id)
+    procedure_rows = db(proc_table.device_id == device_id).select(proc_table.id)
 
     # Build dictionary containing last_update date for each procedure_id
     procedure_info = {}
-    for proc in procedure_ids:
-        pid = proc.procedure_id
+    for row in procedure_rows:
+        pid = row.id
         procedure_info[pid] = db(revisions_table.procedure_id == pid).select(revisions_table.last_update).first().last_update
 
     return procedure_info
 
 
-def get_procedure_data(procedure_id_lst):
+def get_procedure_data():
     """
     Called in response to client request for procedures to be synced
 
@@ -50,6 +48,9 @@ def get_procedure_data(procedure_id_lst):
     :return: Dict of the format {procedure_id: procedure_data}
     :rtype:
     """
+
+    procedure_id_lst = request.args(0) if request.args else None
+
     # Build dictionary containing data for each procedure_id
     procedures_for_update = {}
     for proc in procedure_id_lst:
@@ -58,7 +59,7 @@ def get_procedure_data(procedure_id_lst):
     return procedures_for_update
 
 
-def get_procedure_names(procedure_id_lst):
+def get_procedure_names():
     """
     Called in response to client request for procedures to be synced
 
@@ -67,6 +68,8 @@ def get_procedure_names(procedure_id_lst):
     :return: Dict of the format {procedure_id: procedure_data}
     :rtype:
     """
+    procedure_id_lst = request.args(0) if request.args else None
+
     # Build dictionary containing data for each procedure_id
     procedures_for_update = {}
     for proc in procedure_id_lst:
