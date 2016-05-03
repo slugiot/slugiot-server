@@ -1,0 +1,7 @@
+string_add_long = "Hey! Looks like you haven't added any devices to your account, do that first."
+string_manage = "Manage Procedures"
+string_delete = "Delete Device"
+string_add_short = "Add a Device"
+string_undefined = "Undefined"
+string_device_id = "Device ID: "
+string_no_status = "Nothing to report status on"

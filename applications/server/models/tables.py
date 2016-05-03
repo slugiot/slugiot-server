@@ -19,19 +19,24 @@
 # auth.enable_record_versioning(db)
 
 from datetime import datetime
+import uuid
 
 
 #########################
 # Server organization tables.
 
+if auth.user is None:
+    identifier = ''
+else:
+    identifier = auth.user.email
+
 # Keeps track of devices.
 db.define_table('device',
                 # if we give the device an ID, we can do checks to verify devices belong to which device
-                Field('device_id', 'string', required=True),
-                Field('user_email', 'string', default=db.auth_user.email),
-                Field('name', 'string', required=True, default='Unknown Device'), # Name of device
-                Field('description', 'text', default=''),
-                Field('device_icon', 'string', required=True, default='fa-globe')  # FA ID needed by UI team
+                Field('device_id', 'string', writable=False, required=True, default=uuid.uuid4()),
+                Field('user_email', 'string', writable=False, required=True, default=identifier),
+                Field('name', 'string', required=True, default='Enter a name here'),  # Name of device
+                Field('description', 'text', default='Enter a description here')
                 )
 
 # with this new split table definition it makes sense to just use the automatic id in this table as the procedure_id
