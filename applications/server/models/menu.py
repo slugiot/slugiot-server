@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-# this file is released under public domain and you can use without limitations
 
 #########################################################################
 ## Customize your APP title, subtitle and menus here
 #########################################################################
-response.logo = A(B('web',SPAN(2),'py'),XML('&trade;&nbsp;'),
-                  _class="navbar-brand",_href="http://www.web2py.com/",
-                  _id="web2py-logo")
+response.logo = response.logo = A(IMG(_src=URL('static', 'images/logo.png')), _id="web2py-logo",
+                                  _href=URL('default', 'index'), _class="navbar-brand")
+
 response.title = request.application.replace('_',' ').title()
 response.subtitle = ''
 
@@ -23,11 +22,17 @@ response.google_analytics_id = None
 ## this is the main application menu add/remove items as required
 #########################################################################
 
-response.menu = [
-    (T('Home'), False, URL('default', 'index'), []),
-    (T('Add New Device'), False, URL('default', 'add'), []),
-    (T('Help'), False, URL('default', 'help'), [])
-]
+# We don't the user to see things like "add new device" if they're not logged in
+if auth.user_id is not None:
+    response.menu = [
+        (T('Devices'), False, URL('default', 'add'), []),
+        (T('Procedures'), False, URL('default', 'manage'), []),
+        (T('Help'), False, URL('default', 'help'), [])
+    ]
+else:
+    response.menu = [
+        (T('Help'), False, URL('default', 'help'), [])
+    ]
 
 DEVELOPMENT_MENU = False
 

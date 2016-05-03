@@ -1,7 +1,7 @@
 /******************* Bootstrap Banners *******************/
 
 .close {
-    color: #fff;
+    color: $clrWhite;
     opacity: 1;
 }
 
@@ -15,17 +15,9 @@
   transform: translate(-50%, -50%);
 }
 
-/* http://codepen.io/jczimm/pen/vEBpoL */
-$green: #008744;
-$blue: #0057e7;
-$red: #d62d20;
-$yellow: #ffa700;
-$white: #ffffff;
-
-$width: 100px;
 
 body {
-  background-color: $white;
+  background-color: $clrWhite;
 }
 
 // demo-specific
@@ -40,7 +32,7 @@ body {
 
 .loader {
   position: relative;
-  margin: 0px auto;
+  margin: 0 auto;
   width: $width;
   &:before {
     content:'';
