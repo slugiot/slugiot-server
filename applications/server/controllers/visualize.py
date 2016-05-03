@@ -19,6 +19,11 @@ def test_fill():
                           name=out_var,
                           timestamp=now - datetime.timedelta(hours=i),
                           output_value=random.random())
+        db.logs.insert(device_id=device_id,
+                        modulename=module,
+                        time_stamp=now - datetime.timedelta(hours=i),
+                        log_level=log_level,
+                        log_message='This is message' + str(i) + '.')
 
 
 # @auth.requires_signature()
