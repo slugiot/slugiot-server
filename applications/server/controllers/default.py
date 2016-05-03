@@ -6,12 +6,12 @@ from gluon import utils as gluon_utils
 # Needed to slow down time in load_devices()
 import time
 
-
 def index():
     """
     Description: Controller for the home page.
     Returns: a redirect to the splash page if not logged in or a list of the devices + UUID to index.html if you are.
     """
+
     if auth.user_id is None:
         redirect(URL('default', 'login.html'))
         return dict(message=T('Please sign in!'))

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 
-
-
 @request.restful()
 def receive_logs():
     """
@@ -120,4 +118,37 @@ def __get_valdiated_data(request_body, data_key):
         raise HTTP(400, "data needs to have string device id as 'device_id'")
 
     return data
+
+"""
+This function takes in a table_name (logs, outputs, etc) and returns the latest timestamp the data was synchronized
+
+   :param p1: table_name
+   :type p1: str
+   :return: Timestamp of latest entry in a database table
+   :rtype: datetime
+"""
+
+def __get_last_synchronized(table_name):
+    timestamp =  db(db.table_name == table_name).select(db.time_stamp, orderby="time_stamp DESC", limitby=(0, 1))
+    if (not timestamp):
+        return datetime.datetime.fromtimestamp(0)
+    return timestamp[0].time_stamp
+
+"""
+   This method checks the last timestamp that is stored in the server against the timestamp stored in the client
+   and puts all the unsycnhed information into the server database, after which, it sends a response if successful
+"""
+
+def synch():
+
+#Retreiving last timestamp from the three tables to be synched to server from client
+    a = __get_last_synchronized(db.logs)
+    b = __get_last_synchronized(db.outputs)
+    c = __get_last_synchronized(db.module_values)
+
+#Retreiving last timestamp from the three tables in client
+
+
+
+
 
