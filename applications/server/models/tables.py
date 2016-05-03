@@ -84,7 +84,7 @@ db.define_table('client_setting',
 # Synched client -> server
 db.define_table('logs',
                 Field('device_id'),
-                Field('procedure_id'),
+                Field('modulename'),
                 Field('log_level', 'integer'), #  int, 0 = most important.
                 Field('log_message', 'text'),
                 Field('logged_time_stamp', 'datetime'),
@@ -106,19 +106,13 @@ db.define_table('outputs',
 # Synched client -> server
 db.define_table('module_values',
                 Field('device_id'),
-                Field('time_stamp', 'datetime', default=datetime.utcnow()),
                 Field('procedure_id'),
                 Field('name'),  # Name of variable
                 Field('output_value', 'text'),  # Json, short please
+                Field('value_time_stamp', 'datetime'),
+                Field('received_time_stamp', 'datetime', default=datetime.utcnow())
                 )
 
-
-
-
-# db.logs.log_level.requires = IS_INT_IN_RANGE(0, 4)  # limit log type to 5 (INFO, WARNING, DEBUG, ERROR, CRITICAL)
-# db.logs.time_stamp.writable=False                   # can not manual change log data (time, log_level, log_message)
-# db.logs.log_level.writable=False
-# db.logs.log_message.writable=False
 
 ## TODO: define the tables that need to be synched "down", for settings, and procedures.
 
