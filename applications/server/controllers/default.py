@@ -52,7 +52,7 @@ def add():
     Description: Controller for the add page, which lets you add a device into the DB
     Returns: A form that lets you add things into db.devices (use by including {{=form}} in add.html)
     """
-    db.device.device_id.writable = True
+    db.device.device_id.writable = False
     form = SQLFORM(db.device)
     if form.process().accepted:
         session.flash = "Device added!"

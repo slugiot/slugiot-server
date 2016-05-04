@@ -35,9 +35,12 @@ db.define_table('device',
                 # if we give the device an ID, we can do checks to verify devices belong to which device
                 Field('device_id', 'string', writable=False, required=True, default=uuid.uuid4()),
                 Field('user_email', 'string', writable=False, required=True, default=identifier),
-                Field('name', 'string', required=True, default='Enter a name here'),  # Name of device
-                Field('description', 'text', default='Enter a description here')
+                Field('name', 'string', required=True),  # Name of device
+                Field('description', 'text')
                 )
+
+db.device.name.widget = lambda f, v: SQLFORM.widgets.string.widget(f, v, _placeholder='Enter the name of device')
+db.device.description.widget = lambda f, v: SQLFORM.widgets.string.widget(f, v, _placeholder='Enter a description here')
 
 # with this new split table definition it makes sense to just use the automatic id in this table as the procedure_id
 db.define_table('procedures',
