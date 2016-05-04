@@ -158,11 +158,44 @@ def get_data():
     print 1
     # dd = db(db.outpts).select()
     print 3
-    row1 = db(db.outputs).select().as_dict
-    row2 = db(db.logs).select().as_dict
+
+    # s = request.get('start')
+    # e = request.get('end')
+    #
+    # print s
+    # print e
+    s = request.vars.start
+    e = request.vars.end
+
+    print s
+    # start = datetime.strptime("2016-05-03 21:20:20", "%Y-%m-%d %H:%M:%S")
+    start_year = int(s[0:4])
+    start_month = int(s[5:7])
+    start_day = int(s[8:10])
+    start_hour = int(s[11:13])
+    start_minute = int(s[14:16])
+    start_second = int(s[17:19])
+
+    end_year = int(e[0:4])
+    end_month = int(e[5:7])
+    end_day = int(e[8:10])
+    end_hour = int(e[11:13])
+    end_minute = int(e[14:16])
+    end_second = int(e[17:19])
+
+    start = datetime.datetime(start_year, start_month, start_day, start_hour, start_minute, start_second)
+    end = datetime.datetime(end_year, end_month, end_day, end_hour, end_minute, end_second)
+    print start
+    print end
+    print s
+
+    output_data = db((db.outputs.time_stamp >= start) &
+                     (db.outputs.time_stamp <= end)).select()
+    log_data = db((db.logs.time_stamp >= start) &
+                  (db.logs.time_stamp <= end)).select()
     mixed_data = []
 
-    for row in db(db.outputs).select(orderby=db.outputs.time_stamp):
+    for row in db((db.outputs.time_stamp >= start) & (db.outputs.time_stamp <= end)).select(orderby=db.outputs.time_stamp):
         type = 'output'
         device_id = row.device_id
         modulename = row.modulename
@@ -171,7 +204,8 @@ def get_data():
         value = row.output_value
         tag = row.tag
         content = 'name: ' + str(name) + ', value: ' + str(value) + ', tag: ' + str(tag)
-        mixed_data.append({'type': type, 'device_id': device_id, 'modulename': modulename, 'time_stamp': time_stamp, 'content': content})
+        mixed_data.append({'type': type, 'device_id': device_id, 'modulename': modulename, 'time_stamp': time_stamp,
+                           'content': content})
         print "before mixed"
         # db.mixed_data.insert(device_type=type,
         #                      device_id=device_id,
@@ -185,7 +219,7 @@ def get_data():
         #             'time_stamp': '2016-04-04',
         #             'content': 'name: normal log, value: administrator logged in'
     # add log_data in
-    for row in db(db.logs).select(orderby=db.logs.time_stamp):
+    for row in db((db.logs.time_stamp >= start) & (db.logs.time_stamp <= end)).select(orderby=db.logs.time_stamp):
         type = 'log'
         device_id = row.device_id
         modulename = row.modulename
@@ -193,7 +227,8 @@ def get_data():
         log_level = row.log_level
         log_message = row.log_message
         content = 'name: ' + str(log_level) + ', value: ' + str(log_message)
-        mixed_data.append({'type': type, 'device_id': device_id, 'modulename': modulename, 'time_stamp': time_stamp, 'content': content})
+        mixed_data.append({'type': type, 'device_id': device_id, 'modulename': modulename, 'time_stamp': time_stamp,
+                           'content': content})
         # db.mixed_data.insert(device_type=type,
         #                      device_id=device_id,
         #                      modulename=modulename,
@@ -210,11 +245,12 @@ def get_data():
     #                        'content': content})
     # print log_data
     print 222
-    print mixed_data
-    mixed_data.sort(key=lambda r:r['time_stamp'])
+    # sorted(mixed_data, key=mixed_data.time_stamp, reverse=False)
+    mixed_data.sort(key=lambda r: r['time_stamp'])
     # print "the size of the mixed_data is " + str(mixed_data.count())
+    print mixed_data
     print 333
-    # result = {'output_data': output_data, 'log_data': log_data, 'mixed_data': mixed_data}
+    result = {'output_data': output_data, 'log_data': log_data, 'mixed_data': mixed_data}
 
     return response.json(result)
 

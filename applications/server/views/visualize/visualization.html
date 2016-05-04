@@ -362,11 +362,17 @@
         //  ---------- showing test output dygraph ----------
         dy_plot();
 
+
+        // ----------- get the parameter in the control panel --------------------------
+        var start = "2016-05-03 21:20:20";
+        var end = "2016-05-03 23:20:20";
+
         $.ajax({
             'url': 'get_data',
-            'type': 'get',
+            'type': 'post',
             'dataType': 'json',
-            'data': {},
+            'data': {start: start, end: end},
+//            'data':"start=" + start,
             'success': function (data) {
 
                 ractive_mixed_table.set({mixed_data: data.mixed_data});
