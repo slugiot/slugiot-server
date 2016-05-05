@@ -2,6 +2,7 @@ import datetime
 
 from gluon import current
 from gluon.tools import Auth
+import access
 
 #auth = Auth(globals(), current.db)
 
@@ -23,13 +24,13 @@ def create_procedure(procedure_name, device_id):
     auth = Auth(globals(), db)
     proc_table = db.procedures
 
-    user_email = auth.user.email
-
+    user_email = "test@test.com" #auth.user.email
     if not access.can_create_procedure(device_id, user_email):
         return None
 
     pid = proc_table.insert(device_id = device_id, name = procedure_name)
     access.add_permission(device_id = device_id, user_email = user_email, procedure_id = pid)
+    save(pid, "", False)
     return pid
 
 

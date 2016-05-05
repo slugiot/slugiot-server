@@ -10,10 +10,44 @@ import time
 from gluon import current
 from gluon.tools import Auth
 
+test_device_id = "test"
+
 def index():
     test = ProcHarnessTest()
     test.run_editor_api_test()
     return "Ran Unit Tests for Procedure Harness"
+
+def create_new_proc_for_synch():
+    random.seed(time.time())
+    name = "new_procedure" + str(random.randint(0,10000))
+
+    db = current.db
+    auth = Auth(globals(), db)
+    test_user_email = "test@test.com" #auth.user.email
+    access.add_permission(test_device_id, test_user_email, perm_type="a")
+    proc_id = phm.create_procedure(name, test_device_id)
+    phm.save(proc_id, "SOME DATA!", True)
+    print "look for proc_id and name: ", proc_id, name
+
+
+def update_proc_for_synch():
+    db = current.db
+    proc_table = db.procedures
+
+    proc_id = db(proc_table).select(id).first().id
+    new_data = "new_data\n" + str(random.randint())
+    phm.save(proc_id, new_data, True)
+    print "look for proc_id, data : ", proc_id, new_data
+
+
+def update_proc_not_for_synch():
+    db = current.db
+    proc_table = db.proceudres
+
+    proc_id = db(proc_table).select(id).first().id
+    new_data = "new_data\n" + str(random.randint())
+    phm.save(proc_id, new_data, False)
+    print "should not see: ", proc_id, new_data
 
 class ProcHarnessTest:
     def __init__(self):
@@ -40,6 +74,7 @@ class ProcHarnessTest:
         #print "tables!!", self.db.tables
 
         self.test_device_id = "test"
+        auth = Auth(globals(), self.db)
         self.test_user_email = auth.user.email
         access.add_permission(self.test_device_id, self.test_user_email, perm_type="a")
 
@@ -88,20 +123,3 @@ class ProcHarnessTest:
 
         print data1 #should be test_data_1
         print "Editor test complete"
-
-    def create_new_proc_for_synch(self):
-        name = "new_procedure" + str(random.randint())
-        proc_id = phm.create_procedure(name, self.test_device_id)
-        print "look for proc_id and name: ", proc_id, name
-
-    def update_proc_for_synch(self):
-        proc_id = self.db(self.proc_table).select(id).first().id
-        new_data = "new_data\n" + str(random.randint())
-        phm.save(proc_id, new_data, True)
-        print "look for proc_id, data : ", proc_id, new_data
-
-    def update_proc_not_for_synch(self):
-        proc_id = self.db(self.proc_table).select(id).first().id
-        new_data = "new_data\n" + str(random.randint())
-        phm.save(proc_id, new_data, False)
-        print "should not see: ", proc_id, new_data

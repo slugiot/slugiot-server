@@ -34,10 +34,13 @@ def get_procedure_status():
     procedure_info = {}
     for row in procedure_rows:
         pid = row.id
-        procedure_info[pid] = db(revisions_table.procedure_id == pid).select(revisions_table.last_update).first().last_update
+        query = db((revisions_table.procedure_id == pid) &
+                  (revisions_table.is_stable == True))
+        if not query.isempty():
+            date = query.select(revisions_table.last_update).first().last_update
+            procedure_info[pid] = date
 
     return response.json(procedure_info)
-
 
 def get_procedure_data():
     """
@@ -50,7 +53,6 @@ def get_procedure_data():
     """
 
     procedure_id_lst = json.loads(request.vars.items()[0][0])
-
     # Build dictionary containing data for each procedure_id
     procedures_for_update = {}
     for proc in procedure_id_lst:
