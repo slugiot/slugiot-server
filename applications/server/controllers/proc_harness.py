@@ -37,7 +37,8 @@ def get_procedure_status():
         query = db((revisions_table.procedure_id == pid) &
                   (revisions_table.is_stable == True))
         if not query.isempty():
-            date = query.select(revisions_table.last_update).first().last_update
+            max = revisions_table.last_update.max()
+            date = query.select(max).first()[max]
             procedure_info[pid] = date
 
     return response.json(procedure_info)

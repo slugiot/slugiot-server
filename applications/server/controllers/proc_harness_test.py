@@ -34,18 +34,20 @@ def update_proc_for_synch():
     db = current.db
     proc_table = db.procedures
 
-    proc_id = db(proc_table).select(id).first().id
-    new_data = "new_data\n" + str(random.randint())
+    proc_id = db(proc_table.id).select().first().id
+    random.seed(time.time())
+    new_data = "new_data" + str(random.randint(0,10000))
     phm.save(proc_id, new_data, True)
     print "look for proc_id, data : ", proc_id, new_data
 
 
 def update_proc_not_for_synch():
     db = current.db
-    proc_table = db.proceudres
+    proc_table = db.procedures
 
-    proc_id = db(proc_table).select(id).first().id
-    new_data = "new_data\n" + str(random.randint())
+    proc_id = db(proc_table.id).select().first().id
+    random.seed(time.time())
+    new_data = "new_data" + str(random.randint(0,10000))
     phm.save(proc_id, new_data, False)
     print "should not see: ", proc_id, new_data
 
