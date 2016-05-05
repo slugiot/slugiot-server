@@ -27,9 +27,10 @@ def create_procedure(procedure_name, device_id):
     auth = Auth(globals(), db)
     proc_table = db.procedures
 
-    user_email = "blah@blah.com" #auth.auth.user_email
+    user_email = "blah@blah.com"
 
     if not access.can_create_procedure(device_id, user_email):
+        print "YOOOOOOOOO DAWG"
         return None
 
     pid = proc_table.insert(device_id = device_id, name = procedure_name)
@@ -50,7 +51,7 @@ def get_procedures_for_edit(device_id):
     auth = Auth(globals(), db)
     proc_table = db.procedures
 
-    user_email = "blah@blah.com" #auth.auth.user_email
+    user_email = "blah@blah.com"
 
     # Get all relevant records for user_email
     records = db(proc_table.device_id == device_id).select()
@@ -79,7 +80,7 @@ def get_procedures_for_view(device_id):
     proc_table = db.procedures
 
     # Get all relevant records for user_email
-    user_email = "blah@blah.com" #auth.auth.user_email
+    user_email = auth.user.email
     records = db(proc_table.device_id == device_id).select()
 
     # Create list of procedure IDs from records
@@ -127,8 +128,7 @@ def get_procedure_data(procedure_id, is_stable):
     date = __get_most_recent_date__(procedure_id, is_stable)
 
     # Return the data corresponding the procedure ID and determined date
-    return db((revisions_table.procedure_id == procedure_id) &
-              (revisions_table.last_update == date)).select(revisions_table.procedure_data).first().procedure_data
+    return db((revisions_table.procedure_id == procedure_id) & (revisions_table.last_update == date)).select(revisions_table.procedure_data).first().procedure_data
 
 #@auth.requires_login()
 def get_procedure_name(procedure_id):

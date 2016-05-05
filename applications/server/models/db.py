@@ -62,6 +62,10 @@ response.form_label_separator = myconf.get('forms.separator') or ''
 #########################################################################
 
 from gluon.tools import Auth, Service, PluginManager
+try:
+    from gravatar import Gravatar
+except ImportError:
+    from gluon.contrib.gravatar import Gravatar
 
 # host names must be a list of allowed host names (glob syntax allowed)
 auth = Auth(db, host_names=myconf.get('host.names'))
@@ -70,6 +74,10 @@ plugins = PluginManager()
 
 ## create all tables needed by auth if not custom tables
 auth.define_tables(username=False, signature=False)
+
+## turn off logged in and logged out messages, since they contrast with bootstrap alerts
+auth.messages.logged_in = None
+auth.messages.logged_out = None
 
 ## configure email
 mail = auth.settings.mailer
