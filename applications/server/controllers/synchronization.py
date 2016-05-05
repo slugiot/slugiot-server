@@ -1,174 +1,32 @@
 # -*- coding: utf-8 -*-
-import json
+import json_plus
 
-"""
- This method is to recieve log data.  It accepts two HTTP methods:
-        GET: returns the latest three log entries.  planning on adding
-            filtering based on device_id, and how many records to return
-        POST: accepts a JSON document with the log entries to ingest.  an
-            example document is described below:
-            {
-                "device_id":"my_device",
-                "logs":
-                    [
-                        {"modulename":"my_module","log_level":3,"log_message":"some message","time_stamp":"2016-03-19 20:48:41"},
-                        {"modulename":"my_module","log_level":2,"log_message":"some other message","time_stamp":"2016-03-19 20:49:41"}
-                    ]
-            }
-
-   :return: Dictionary containing whether the request posted is a success or not and the latest synchronization time_stamp
-   :rtype: Dictionary
-"""
 
 @request.restful()
-def receive_logs():
+def synchronization():
     def GET(*args, **vars):
         logs = db(db.logs).select(orderby="received_time_stamp DESC",limitby=(0,3))
         return response.json(logs)
 
-    def POST(*args, **vars):
-        # get the log data from the request and validate
-        request_body = request.body.read()
-        log_data = __get_valdiated_data(request_body, "logs")
+    def POST(device_id, table_name):
+        """The call is to receive_logs/device_id, and should contain a list of log data."""
+        # Sanity check.
+        if table_name not in ['logs', 'outputs', 'module_values']:
+            raise HTTP(403, 'Cannot synch this table')
+        # Get the rows.
+        rows = json_plus.Serializable.loads(request.body.read())
+        # We need to add the device id to reach row.
+        for r in rows:
+            del r['id']
+            r['device_id'] = device_id
+        # Now the rows are good to insert.
+        db[table_name].bulk_insert(rows)
+        return "ok"
 
-        # get information from document
-        device_id = log_data.get('device_id')
-        logs = log_data.get('logs')
-
-        for log in logs:
-            if (not isinstance(log, dict)):
-                raise HTTP(400, "all log entries must be of type 'dict'")
-            log["device_id"] = device_id
-            if (log.get('time_stamp')):
-                log["logged_time_stamp"] = log.get('time_stamp')
-                del log['time_stamp']
-            if (log.get('id')):
-                del log['id']
-
-        try:
-            db.logs.bulk_insert(logs)
-        except Exception as e:
-            raise HTTP(400, "there was an error saving log data: " + e.message)
-
-        return response.json({"saved_logs":logs})
-
-    return locals()
 
 
 """
- This method is to recieve output data.  It accepts two HTTP methods:
-     GET: returns the latest output entries.  planning on adding
-         filtering based on device_id
-     POST: accepts a JSON document with the output entries to ingest.  an
-         example document is described below:
-         {
-             "device_id":"my_device",
-             "output":
-                 [
-                     {"modulename":"my_module","name":"variable","output_value":"10","tag":"example","time_stamp":"2016-03-19 20:48:41"}
-                 ]
-         }
-:return: Responds with a JSON object of saved settings from the server when a user posts using this function ands gets validated updated output_values from the server
-:rtype: JSON object
- """
-
-@request.restful()
-def receive_outputs(no_of_records):
-    def GET(*args, **vars):
-        logs = db(db.outputs).select(orderby="received_time_stamp DESC", limitby=(0, no_of_records))
-        return response.json(logs)
-
-    def POST(*args, **vars):
-        # get the log data from the request and validate
-        request_body = request.body.read()
-        output_data = __get_valdiated_data(request_body, 'outputs')
-
-        # get information from document
-        device_id = output_data.get('device_id')
-        output = output_data.get('outputs')
-
-        for out in output:
-            if (not isinstance(out, dict)):
-                raise HTTP(400, "all output entries must be of type 'dict'")
-            out["device_id"] = device_id
-            if (out.get('time_stamp')):
-                out["output_time_stamp"] = out.get('time_stamp')
-                del out['time_stamp']
-            if (out.get('id')):
-                del out['id']
-
-        try:
-            db.outputs.bulk_insert(output)
-        except Exception as e:
-            raise HTTP(400, "there was an error saving log data: " + e.message)
-
-        return response.json({"saved_logs": output})
-
-    return locals()
-
-"""
-    This method is to receive value data.  It accepts two HTTP methods:
-        GET: returns all the current output entries (for the device id)
-        POST: accepts a JSON document with the value entries to ingest.
-            all current entries (for the device_id) will be removed and replaced
-            with the ones submitted.
-            an example document is described below:
-            {
-                "device_id":"my_device",
-                "values":
-                    [
-                        {"procedure_id":"proc1","name":"some_name","output_value":"some_value","time_stamp":"2016-04-19 01:04:25"},
-                        {"procedure_id":"proc2","name":"some_other_name","output_value":"some_other_value"}
-                    ]
-            }
- :return: Responds with a JSON object of saved settings from the server when a user posts using this function ands gets validated updated module_values from the server
-   :rtype: JSON object
-"""
-
-@request.restful()
-def receive_values():
-
-
-    def GET(*args, **vars):
-        if (vars == None or not vars.has_key('device_id')):
-            raise HTTP(400, "Please specify 'device_id' as a parameter to retrieve values")
-        device_id = vars['device_id']
-        vars = db(db.module_values.device_id == device_id).select()
-        return response.json(vars)
-
-    def POST(*args, **vars):
-        # get the log data from the request and validate
-        request_body = request.body.read()
-        values_data = __get_valdiated_data(request_body, 'values')
-
-        # get information from document
-        device_id = values_data.get('device_id')
-        values = values_data.get('values')
-
-        for value in values:
-            if (not isinstance(value, dict)):
-                raise HTTP(400, "all value entries must be of type 'dict'")
-            value["device_id"] = device_id
-            if (value.get('time_stamp')):
-                value["value_time_stamp"] = value.get('time_stamp')
-                del value['time_stamp']
-            if (value.get('id')):
-                del value['id']
-
-        try:
-            db(db.module_values.device_id == device_id).delete()
-            db.module_values.bulk_insert(values)
-        except Exception as e:
-            db.rollback()
-            raise HTTP(400, "there was an error saving value data: " + e.message)
-
-        return response.json({"saved_values": values})
-
-    return locals()
-
-
-"""
-This method is to receive setting data.  Given a device_id, it returns
+This method is to give setting data to the device.  Given a device_id, it returns
 all the setting information that the client needs.  If the parameter
 'last_updated' is set, it will only select changed settings
 since that time
