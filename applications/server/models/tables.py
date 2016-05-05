@@ -42,7 +42,7 @@ db.define_table('device',
 # with this new split table definition it makes sense to just use the automatic id in this table as the procedure_id
 db.define_table('procedures',
                 Field('device_id', 'string', required=True),
-                Field('name', 'string', required=True)  # Name of procedure
+                Field('name', 'string', required=True)  # Name of procedure used for file on client should be unique per device_id
                 )
 
 db.define_table('procedure_revisions',
@@ -50,7 +50,7 @@ db.define_table('procedure_revisions',
                 Field('procedure_data', 'text', required=True),  # Actual code for procedure - is check IS_LENGTH(65536) ok?
                 # Otherwise use string and specifiy larger length
                 Field('last_update', 'datetime', default=datetime.utcnow(), required=True),
-                Field('stable_version', 'boolean', required=True) # True for stable False for not stable
+                Field('is_stable', 'boolean', required=True) # True for stable False for not stable
                 )
 
 db.device.id.readable = False

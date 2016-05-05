@@ -1,10 +1,9 @@
 import datetime
-import access
-import unittest
+
 from gluon import current
 from gluon.tools import Auth
 
-auth = Auth(globals(), current.db)
+#auth = Auth(globals(), current.db)
 
 ####### API FOR EDITOR TEAM ##########
 
@@ -24,10 +23,9 @@ def create_procedure(procedure_name, device_id):
     auth = Auth(globals(), db)
     proc_table = db.procedures
 
-    user_email = "blah@blah.com"
+    user_email = auth.user.email
 
     if not access.can_create_procedure(device_id, user_email):
-        print "YOOOOOOOOO DAWG"
         return None
 
     pid = proc_table.insert(device_id = device_id, name = procedure_name)
@@ -48,7 +46,7 @@ def get_procedures_for_edit(device_id):
     auth = Auth(globals(), db)
     proc_table = db.procedures
 
-    user_email = "blah@blah.com"
+    user_email = auth.user.email
 
     # Get all relevant records for user_email
     records = db(proc_table.device_id == device_id).select()
@@ -78,21 +76,36 @@ def get_procedures_for_view(device_id):
 
     # Get all relevant records for user_email
     user_email = auth.user.email
+
     records = db(proc_table.device_id == device_id).select()
 
     # Create list of procedure IDs from records
     procedure_ids = []
     for row in records:
-        if (not access.can_edit_procedure(user_email, device_id, row.id)) and\
-                access.can_view_procedure(user_email, device_id, row.id):
+        if ((not access.can_edit_procedure(user_email, device_id, row.id)) and
+            access.can_view_procedure(user_email, device_id, row.id)):
             procedure_ids.append(row.id)
 
     return procedure_ids
 
 
+def __get_most_recent_date__(procedure_id, is_stable):
+    db = current.db
+    revisions_table = db.procedure_revisions
+
+    # Get the most recent date, either stable or absolute
+    max = revisions_table.last_update.max()
+    if is_stable:
+        date = db((revisions_table.procedure_id == procedure_id) &
+                  (revisions_table.is_stable == is_stable)).select(max).first()[max]
+    else:
+        date = db(revisions_table.procedure_id == procedure_id).select(max).first()[max]
+
+    return date
+
 
 #@auth.requires_login()
-def get_procedure_data(procedure_id, stable):
+def get_procedure_data(procedure_id, is_stable):
     """
     Returns actual code that corresponds to a given procedure ID.
     Returns either the most recent stable version or the most recent absolute version.
@@ -108,19 +121,34 @@ def get_procedure_data(procedure_id, stable):
     db = current.db
     revisions_table = db.procedure_revisions
 
-    # Get the most recent date, either stable or absolute
-    max = revisions_table.last_update.max()
-    if stable:
-        date = db((revisions_table.procedure_id == procedure_id) &
-                  (revisions_table.stable_version == stable)).select(max).first()[max]
-    else:
-        date = db(revisions_table.procedure_id == procedure_id).select(max).first()[max]
+    date = __get_most_recent_date__(procedure_id, is_stable)
 
     # Return the data corresponding the procedure ID and determined date
     return db((revisions_table.procedure_id == procedure_id) & (revisions_table.last_update == date)).select(revisions_table.procedure_data).first().procedure_data
 
 #@auth.requires_login()
-def save(procedure_id, procedure_data, stable):
+def get_procedure_name(procedure_id):
+    """
+    Returns actual code that corresponds to a given procedure ID.
+    Returns either the most recent stable version or the most recent absolute version.
+
+    :param procedure_id: Procedure ID for which code should be fetched
+    :type procedure_id: long
+    :param stable: Flag that determines whether the code returned should be most recent stable or just the most recent
+    :type stable: bool
+    :return: Data stored for the procedure
+    :rtype: str
+    """
+
+    db = current.db
+    proc_table = db.procedures
+
+    # Return the data corresponding the procedure ID and determined date
+    return db(proc_table.id == procedure_id).select(proc_table.name).first().name
+
+
+#@auth.requires_login()
+def save(procedure_id, procedure_data, is_stable):
     """
     Save code corresponding to a procedure ID as either a stable version or a temporary version
 
@@ -139,81 +167,10 @@ def save(procedure_id, procedure_data, stable):
     revisions_table.insert(procedure_id = procedure_id,
                            procedure_data = procedure_data,
                            last_update = datetime.datetime.utcnow(),
-                           stable_version = stable)
+                           is_stable = is_stable)
 
     # Only keep temporary revisions until next stable revision comes in
     # Clean up old temporary revisions upon stable save
-    if stable:
+    if is_stable:
         db((revisions_table.procedure_id == procedure_id) &
-           (revisions_table.stable_version == False)).delete()
-
-
-####################### TEST CODE #######################
-
-def run_test():
-    db = current.db
-    proc_table = db.procedures
-    revisions_table = db.procedure_revisions
-
-    print "test1"
-    db(proc_table).delete()
-    print "test2"
-    db(revisions_table).delete()
-
-    access.add_permission("1","blah@blah.com",perm_type="a")
-
-    print "test3"
-    proc_id = create_procedure("blah", "1")
-    print "test4"
-    save(proc_id, "blahblah", True)
-    proc_id2 = create_procedure("blah2", "1")
-    save(proc_id2, "blahblah2", False)
-    save(proc_id2, "blahblah3", False)
-
-    proc_list1 = get_procedures_for_edit("1")
-    proc_list2 = get_procedures_for_edit("1")
-
-    print "procs", proc_list1, "two", proc_list2
-
-    for row in db(revisions_table).select():
-        print row.procedure_id, row.procedure_data, row.last_update, row.stable_version
-
-    print "first", get_procedure_data(proc_list1[0], True)
-    print "second", get_procedure_data(proc_list2[0], False)
-
-
-class TestProcedureHarness(unittest.TestCase):
-    def setUp(self):
-        # os.copy('mysafecopy.sql', 'myfile.sql')
-        # test_db = DAL('sqlite:myfile.sql')
-        # current.db = test_db
-        # import mymodule
-        # mymodule.foo()
-
-        # eventually want to get db instance of SQL lite and dump database
-        self.db = current.db
-        self.proc_table = self.db.procedures
-        self.revisions_table = self.db.procedure_revisions
-
-        self.db(self.proc_table).delete()
-        self.db(self.revisions_table).delete()
-
-    #@unittest.skip("later")
-    def testBasicSave(self):
-        proc_id = create_procedure("blah", "blah@blah", 1)
-        save(proc_id, "blahblah", True)
-        proc_id2 = create_procedure("blah2", "blah2@blah", 1)
-        save(proc_id2, "blahblah2", False)
-        save(proc_id2, "blahblah3", False)
-
-        proc_list1 = get_procedures_for_edit("blah@blah", 1)
-        proc_list2 = get_procedures_for_view("blah2@blah", 1)
-
-        for row in self.db(self.revisions_table).select():
-            print row.procedure_id, row.procedure_data, row.last_update, row.stable_version
-
-        print "first", get_procedure_data(proc_list1[0], True)
-        print "second", get_procedure_data(proc_list2[0], False)
-
-#if __name__ == '__main__':
-#    unittest.main() # runs all unit tests
+           (revisions_table.is_stable == False)).delete()
