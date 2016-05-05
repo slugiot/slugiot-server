@@ -82,16 +82,29 @@
   margin-top: 0;
 }
 
-/******************* Bootstrap Banners *******************/
-/* line 3, ../sass/_main.scss */
-.close {
-  color: #fff;
-  opacity: 1;
+/* line 2, ../sass/_main.scss */
+.img-circle {
+  border-radius: 50%;
 }
 
-/******************* Loading Animation  *******************/
+/* line 7, ../sass/_main.scss */
+.navbar-nav > li > a.profile-image {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* line 13, ../sass/_main.scss */
+.navbar {
+  /* fallback for old browsers */
+  background: #C04848;
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: -webkit-linear-gradient(to left, #C04848, #480048);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(to left, #c04848, #480048);
+}
+
 /* https://css-tricks.com/quick-css-trick-how-to-center-an-object-exactly-in-the-center/ */
-/* line 11, ../sass/_main.scss */
+/* line 23, ../sass/_main.scss */
 .centered {
   position: fixed;
   top: 45%;
@@ -99,7 +112,7 @@
   transform: translate(-50%, -50%);
 }
 
-/* line 19, ../sass/_main.scss */
+/* line 31, ../sass/_main.scss */
 body {
   background-color: #fff;
 }

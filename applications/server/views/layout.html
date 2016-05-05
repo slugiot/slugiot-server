@@ -94,13 +94,7 @@
     <!-- Navbar =======================================
     http://web2py.com/books/default/chapter/29/05/the-views#Customizing-the-default-layout -->
     <style>
-        .navbar{
 
-
-background: #C04848; /* fallback for old browsers */
-background: -webkit-linear-gradient(to left, #C04848 , #480048); /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to left, #C04848 , #480048); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-         }
     </style>
     <div class="navmenu navmenu-default navmenu-fixed-left navmenu-inverse offcanvas">
       <a class="navmenu-brand" href="#">Project name</a>
@@ -147,7 +141,7 @@ background: linear-gradient(to left, #C04848 , #480048); /* W3C, IE 10+/ Edge, F
             {{='auth' in globals() and auth.navbar('Welcome',mode='dropdown') or ''}}
           </ul>
           {{if response.menu:}}
-          {{=MENU(response.menu, _class='nav navbar-nav',li_class='dropdown',ul_class='dropdown-menu')}}
+              {{=MENU(response.menu, _class='nav navbar-nav',li_class='dropdown',ul_class='dropdown-menu')}}
           {{pass}}
         </div>
       </div>
@@ -166,7 +160,7 @@ background: linear-gradient(to left, #C04848 , #480048); /* W3C, IE 10+/ Edge, F
        </div>
     </div>
 
-    {{block footer}} <!-- this is default footer -->      
+    {{block footer}} <!-- this is default footer -->
     <footer class="footer">
       <div class="container-fluid">
         <div class="copyright pull-left">{{=T('Copyright')}} &#169; {{=request.now.year}}</div>

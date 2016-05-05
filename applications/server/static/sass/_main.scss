@@ -1,11 +1,23 @@
-/******************* Bootstrap Banners *******************/
-
-.close {
-    color: $clrWhite;
-    opacity: 1;
+// Makes images with the img-circle class into a circle
+.img-circle {
+    border-radius: 50%;
 }
 
-/******************* Loading Animation  *******************/
+// Stuff for Bootstrap nav bar profile pictures
+.navbar-nav>li>a.profile-image {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+// Navbar/theme colors
+.navbar{
+    /* fallback for old browsers */
+    background: $clrPink;
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(to left, $clrPink, $clrPurple);
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to left, $clrPink, $clrPurple);
+ }
 
 /* https://css-tricks.com/quick-css-trick-how-to-center-an-object-exactly-in-the-center/ */
 .centered {
@@ -15,7 +27,7 @@
   transform: translate(-50%, -50%);
 }
 
-
+// Self explanatory
 body {
   background-color: $clrWhite;
 }
