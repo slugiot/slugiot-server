@@ -24,12 +24,9 @@ def edit_procedure():
     # the final edition will use Team 2 API "get_procedure_data(procedure_id, stable)"  to get the data
     #data = db(db.coding.id == procedure_id).select(db.coding.procedures).first().procedures
     if stable == 'false':
-        data = proc_harness_module.get_procedure_data(procedure_id,False)
-        #data = "hello world"
+        data = proc_harness_module.get_procedure_data(procedure_id, False)
     else:
-        data = proc_harness_module.get_procedure_data(procedure_id,True)
-
-    print data
+        data = proc_harness_module.get_procedure_data(procedure_id, True)
 
     file_details = dict(
                     editor_settings=preferences,     # the option parameters used for setting editor feature.
