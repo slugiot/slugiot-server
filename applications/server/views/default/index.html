@@ -21,8 +21,8 @@
                     <h1>{{=icon_loading}}</h1>
                 {% else %}
                     {{if len(device_list) == 0:}}
-                        <a href="{{=URL('default', 'add')}}">{{=icon_sad_big}}</a><br>
-                        <h3><a href="{{=URL('default', 'add')}}">{{=string_no_device}}</a></h3>
+                        <a style="color: #842448;" href="{{=URL('default', 'add')}}">{{=icon_sad_big}}</a><br>
+                        <h3><a style="color: #842448;" href="{{=URL('default', 'add')}}">{{=string_no_device}}</a></h3>
                     {{else:}}
                         {% #if selection_value == -1 %}
                            {{=icon_rocket_big}}

@@ -54,6 +54,7 @@ def add():
     """
     db.device.device_id.writable = False
     form = SQLFORM(db.device)
+    form.custom.widget.name['requires'] = IS_NOT_EMPTY()
     if form.process().accepted:
         session.flash = "Device added!"
         redirect(URL('default', 'index'))
@@ -117,6 +118,7 @@ def edit_device():
         session.flash = T('No such device')
         redirect(URL('default', 'index'))
     form = SQLFORM(db.device, record=int(table_id))
+    form.custom.widget.name['requires'] = IS_NOT_EMPTY()
     if form.process().accepted:
         session.flash = T('Device edited')
         redirect(URL('default', 'index'))
