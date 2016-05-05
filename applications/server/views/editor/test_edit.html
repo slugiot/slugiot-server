@@ -34,21 +34,24 @@
 <link rel="stylesheet" href="{{=css_url}}/web2py-codemirror.css">
 
 <!-- the editor html part used which can be integrated to UI team web page-->
-<div id="editor_area" class="row-fluid">
-    <div class="span12" id="edit_placeholder">
-        <div id="myTabContent" class="tab-content">
+
+<div style="width: 100%; height: 100vh;">
+    <div id="editor_area" class="row-fluid" style="height:80%;">
+        <div class="span12" id="edit_placeholder" style="height: 100%;">
+            <div id="myTabContent" class="tab-content" style="height: 100%;">
+            </div>
         </div>
     </div>
+    <br>
+    <!-- the save button example integrated to UI team web page-->
+    <button type="button" class="btn btn-primary" onclick="save_procedure('{{=URL('save_procedure')}}',{{=procedure_id}}, false)">save temporary</button>
+    <button type="button" class="btn btn-info" onclick="save_procedure('{{=URL('save_procedure')}}',{{=procedure_id}}, true)">save stable</button>
 
-</div>
-
-<!-- the save button example integrated to UI team web page-->
-<button type="button" class="btn btn-primary" onclick="save_procedure('{{=URL('save_procedure')}}',{{=procedure_id}}, false)">save temporary</button>
-<button type="button" class="btn btn-info" onclick="save_procedure('{{=URL('save_procedure')}}',{{=procedure_id}}, true)">save stable</button>
-
-<!-- the text area to show the saving state for editor-->
-<div style="margin: 15px 0px 0px 0px;">
-    <a class="list-group-item active" id="save_result"><div></div></a>
+    <!-- the text area to show the saving state for editor-->
+    <div style="margin: 15px 0px 0px 0px;">
+        <a class="list-group-item active" id="save_result"><div></div></a>
+    </div>
+    <br>
 </div>
 
 <script>

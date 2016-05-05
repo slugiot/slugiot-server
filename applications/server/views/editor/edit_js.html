@@ -1,29 +1,32 @@
 <!-- Used for generate html content inside the editor-->
-<form method="post" name="editform" id="editform" class="form-inline row-fluid">
+<form method="post" name="editform" id="editform" class="form-inline row-fluid"></form>
 
 </div>
 
-    <textarea style=" height:100%; direction:ltr;" id="textarea_{{=id}}" class="input-block-level" name="data" >{{=data}}</textarea>
+    <textarea style="direction:ltr;" id="textarea_{{=id}}" class="input-block-level" name="data" >{{=data}}</textarea>
     <script>
-    var editor = CodeMirror.fromTextArea(document.getElementById("textarea_{{=id}}"),{
-
-        mode: { name: 'python',version: 2,singleLineStringErrors: false, },
-        lineNumbers: {{=editor_settings['linenumbers']}},
-        indentUnit: {{=editor_settings['tabwidth']}},
-        indentWithTabs: {{=editor_settings['indentwithtabs']}},
-        tabSize: {{=editor_settings['tabwidth']}},
-        styleActiveLine: {{=editor_settings['highlightline']}},
-        autoCloseTags: {{=editor_settings['closetag']}},
-        theme: "{{=editor_settings['theme']}}",
-        lineWrapping: true,
-        foldGutter: {{=editor_settings['codefolding']}},
-        gutters: ["CodeMirror-linenumbers", "breakpoints", "CodeMirror-foldgutter"],
-        keyMap: "{{=editor_settings['editor']}}",
-        matchBrackets: true,
-        autofocus: false,
-        height: "350px",
-        showTrailingSpace: true
-    });
+        var editor = CodeMirror.fromTextArea(document.getElementById("textarea_{{=id}}"), {
+            mode: {
+                name: 'python',
+                version: 2,
+                singleLineStringErrors: false,
+            },
+            lineNumbers: {{=editor_settings['linenumbers']}},
+            indentUnit: {{=editor_settings['tabwidth']}},
+            indentWithTabs: {{=editor_settings['indentwithtabs']}},
+            tabSize: {{=editor_settings['tabwidth']}},
+            styleActiveLine: {{=editor_settings['highlightline']}},
+            autoCloseTags: {{=editor_settings['closetag']}},
+            theme: "{{=editor_settings['theme']}}",
+            lineWrapping: true,
+            foldGutter: {{=editor_settings['codefolding']}},
+            gutters: ["CodeMirror-linenumbers", "breakpoints", "CodeMirror-foldgutter"],
+            keyMap: "{{=editor_settings['editor']}}",
+            matchBrackets: true,
+            autofocus: false,
+            height: "350px",
+            showTrailingSpace: true
+        });
 
 
         // must be here or break emmet/zencoding for python
@@ -73,6 +76,3 @@
 
     </script>
 
-
-    <br/>
-  </form>
