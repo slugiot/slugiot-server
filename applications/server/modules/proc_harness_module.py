@@ -1,10 +1,6 @@
 import datetime
-import access
-import unittest
 
-import time
-import os
-from gluon import current, DAL, Field
+from gluon import current
 from gluon.tools import Auth
 
 #auth = Auth(globals(), current.db)
@@ -27,10 +23,9 @@ def create_procedure(procedure_name, device_id):
     auth = Auth(globals(), db)
     proc_table = db.procedures
 
-    user_email = "blah@blah.com"
+    user_email = auth.user.email
 
     if not access.can_create_procedure(device_id, user_email):
-        print "YOOOOOOOOO DAWG"
         return None
 
     pid = proc_table.insert(device_id = device_id, name = procedure_name)
@@ -51,7 +46,7 @@ def get_procedures_for_edit(device_id):
     auth = Auth(globals(), db)
     proc_table = db.procedures
 
-    user_email = "blah@blah.com"
+    user_email = auth.user.email
 
     # Get all relevant records for user_email
     records = db(proc_table.device_id == device_id).select()
@@ -81,13 +76,14 @@ def get_procedures_for_view(device_id):
 
     # Get all relevant records for user_email
     user_email = auth.user.email
+
     records = db(proc_table.device_id == device_id).select()
 
     # Create list of procedure IDs from records
     procedure_ids = []
     for row in records:
-        if (not access.can_edit_procedure(user_email, device_id, row.id)) and\
-                access.can_view_procedure(user_email, device_id, row.id):
+        if ((not access.can_edit_procedure(user_email, device_id, row.id)) and
+            access.can_view_procedure(user_email, device_id, row.id)):
             procedure_ids.append(row.id)
 
     return procedure_ids
@@ -178,100 +174,3 @@ def save(procedure_id, procedure_data, is_stable):
     if is_stable:
         db((revisions_table.procedure_id == procedure_id) &
            (revisions_table.is_stable == False)).delete()
-
-
-####################### TEST CODE #######################
-
-def run_test():
-    """
-    test code refered and edited from proc_harness_module.py
-    this is only used for demo in the next class and will be deleted later
-    :return:
-    """
-    import access
-    import time
-    db = current.db
-    proc_table = db.procedures
-    revisions_table = db.procedure_revisions
-    db(proc_table).delete()
-    db(revisions_table).delete()
-
-    print "hey"
-
-    # add permission for the usermanagement
-    access.add_permission("1","blah@blah.com",perm_type="a")
-
-    # create procedure name=demo_1 for the device whose id = 1 and saved it
-    proc_id = create_procedure("demo_1", "1")
-    print "proc_id", proc_id, type(proc_id)
-    save(proc_id, "#demo1 stable edition code", True)
-    time.sleep(2)
-    save(proc_id, "#demo1 temporary edition code", False)
-    time.sleep(2)
-    # create procedure name=demo_2 for the device whose id = 1 and saved it
-    proc_id2 = create_procedure("demo_2", "1")
-    save(proc_id2, "#demo2 stable edition code", True)
-    time.sleep(2)
-    save(proc_id2, "#demo2 temporary edition code", False)
-
-    # get the list of procedure_id from device whose id = 1
-    proc_list1 = get_procedures_for_edit("1")
-    proc_list2 = get_procedures_for_edit("1")
-
-    # get the data of procedure
-    data1 = get_procedure_data(proc_list1[0], True)
-    data2 = get_procedure_data(proc_list2[0], False)
-    return "ok"
-
-class TestProcedureHarness(unittest.TestCase):
-    def setUp(self):
-        #os.system("rm -rf ../testdatabases")
-        try:
-            os.remove("../testdatabases")
-        except:
-            pass
-        pdir = os.getcwd()
-        os.system("cp -r ../databases ../testdatabases")
-        #os.system("python ../../../scripts/cpdb.py -f ../databases -F ../testdatabases -y 'sqlite://storage.sqlite' -Y 'sqlite://storage.sqlite' -d ../../../gluon")
-        # This approach won't work for GAE because it isn't using SQLite.
-        current.db = DAL('sqlite://storage.sqlite', folder = '../testdatabases/',
-                      pool_size="10",
-                      migrate_enabled="true",
-                      check_reserved=['all']
-                      )
-        self.db = current.db
-        db = self.db
-        # The database will be empty until we populate it with table structure
-        filename = "../models/tables.py"
-        with open(filename, 'rb+') as tables_code:
-            exec(tables_code.read())
-        print "tables!!", self.db.tables
-        self.proc_table = self.db.procedures
-        self.revisions_table = self.db.procedure_revisions
-
-        access.add_permission("test", "test@test.com", perm_type="a")
-
-    #@unittest.skip("later")
-    def testBasicFlow(self):
-        proc_id = create_procedure("blah", "blah@blah", "test")
-        save(proc_id, "blahblah", True)
-        proc_id2 = create_procedure("blah2", "blah2@blah", "test")
-        save(proc_id2, "blahblah2", True)
-        time.sleep(2)
-        save(proc_id2, "blahblah3", False)
-
-        proc_list1 = get_procedures_for_edit("test")
-
-        val1 = get_procedure_data(proc_list1[0], True)
-        val2 = get_procedure_data(proc_list1[0], False)
-
-        val3 = get_procedure_data(proc_list1[1], True)
-        val4 = get_procedure_data(proc_list1[1], False)
-
-        self.assertEqual("blahblah", val1)
-        self.assertEqual("blahblah", val2)
-        self.assertEqual("blahblah2", val3)
-        self.assertEqual("blahblah3", val4)
-
-#if __name__ == '__main__':
-#    unittest.main() # runs all unit tests
