@@ -37,7 +37,7 @@ db.define_table('device',
 # with this new split table definition it makes sense to just use the automatic id in this table as the procedure_id
 db.define_table('procedures',
                 Field('device_id', 'string', required=True),
-                Field('name', 'string')  # Name of procedure
+                Field('name', 'string', required=True)  # Name of procedure used for file on client should be unique per device_id
                 )
 
 db.define_table('procedure_revisions',

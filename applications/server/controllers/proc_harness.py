@@ -8,7 +8,7 @@
 #########################################################################
 
 import proc_harness_module as phm
-
+import json
 
 proc_table = db.procedures
 revisions_table = db.procedure_revisions
@@ -36,7 +36,7 @@ def get_procedure_status():
         pid = row.id
         procedure_info[pid] = db(revisions_table.procedure_id == pid).select(revisions_table.last_update).first().last_update
 
-    return procedure_info
+    return response.json(procedure_info)
 
 
 def get_procedure_data():
@@ -49,14 +49,14 @@ def get_procedure_data():
     :rtype:
     """
 
-    procedure_id_lst = request.args(0) if request.args else None
+    procedure_id_lst = json.loads(request.vars.items()[0][0])
 
     # Build dictionary containing data for each procedure_id
     procedures_for_update = {}
     for proc in procedure_id_lst:
-        procedures_for_update[proc.procedure_id] = phm.get_procedure_data(proc, True)
+        procedures_for_update[proc] = phm.get_procedure_data(proc, True)
 
-    return procedures_for_update
+    return response.json(procedures_for_update)
 
 
 def get_procedure_names():
@@ -68,11 +68,11 @@ def get_procedure_names():
     :return: Dict of the format {procedure_id: procedure_data}
     :rtype:
     """
-    procedure_id_lst = request.args(0) if request.args else None
+    procedure_id_lst = json.loads(request.vars.items()[0][0])
 
     # Build dictionary containing data for each procedure_id
     procedures_for_update = {}
     for proc in procedure_id_lst:
-        procedures_for_update[proc.procedure_id] = phm.get_procedure_name(proc, True)
+        procedures_for_update[proc] = phm.get_procedure_name(proc)
 
-    return procedures_for_update
+    return response.json(procedures_for_update)
