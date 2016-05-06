@@ -3,20 +3,18 @@
 
 <div id="target"></div>
 <script id="template" type="text/ractive">
-    {% #unless loading %}
-    <div class="col-sm-3 col-md-2 col-lg-2 fill sidebar" style="margin-top: -20">
-          <ul class="nav nav-sidebar">
-            <li class="active"><a href="{{=URL('default', 'add')}}">{{=(icon_add + string_add_short)}} <span class="sr-only">(current)</span></a></li>
+    <div class="navmenu navmenu-default navmenu-fixed-left navmenu-inverse offcanvas">
+        <a class="navmenu-brand" href="#">{{=response.title}}</a>
+        <ul class="nav navmenu-nav">
+            <li class="active"><a href="./">Home</a></li>
             {% #each device_dict:device_id %}
                 <li><a href="#" on-click="set_val:{% device_id %}, {% name %}, {% description %}">{% name %}</a></li>
             {% /each %}
-            <div class="spacer"></div>
-          </ul>
+        </ul>
     </div>
-    {% /unless %}
 
     <div class="main">
-        <div id="middle_bar" class="col-sm-5 col-md-7 col-lg-7" align="center">
+        <div id="middle_bar" class="col-sm-8 col-md-9 col-lg-9" align="center">
             <div class="centered" align="center">
                 {% #if loading %}
                     <h1>{{=icon_loading}}</h1>

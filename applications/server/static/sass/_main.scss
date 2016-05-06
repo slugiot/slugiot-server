@@ -3,10 +3,29 @@
     border-radius: 50%;
 }
 
-// Stuff for Bootstrap nav bar profile pictures
-.navbar-nav>li>a.profile-image {
-    padding-top: 10px;
-    padding-bottom: 10px;
+img.resize{
+    width:40px; /* you can use % */
+    height: auto;
+}
+
+.selectpicker{
+    background: yellow !important;
+    color:#FFF;
+    text-shadow:0 1px 0 rgba(0,0,0,0.4);
+}
+
+.selectpicker option:not(:checked) {
+    background-color: white;
+    color:#000;
+}
+
+#web2py-logo{
+    font-size: 150%;
+}
+
+.border-c{
+  background-color: #fff;
+  padding: 2px;
 }
 
 // Navbar/theme colors

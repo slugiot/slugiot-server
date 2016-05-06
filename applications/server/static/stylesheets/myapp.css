@@ -87,13 +87,38 @@
   border-radius: 50%;
 }
 
-/* line 7, ../sass/_main.scss */
-.navbar-nav > li > a.profile-image {
-  padding-top: 10px;
-  padding-bottom: 10px;
+/* line 6, ../sass/_main.scss */
+img.resize {
+  width: 40px;
+  /* you can use % */
+  height: auto;
 }
 
-/* line 13, ../sass/_main.scss */
+/* line 11, ../sass/_main.scss */
+.selectpicker {
+  background: yellow !important;
+  color: #FFF;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* line 17, ../sass/_main.scss */
+.selectpicker option:not(:checked) {
+  background-color: white;
+  color: #000;
+}
+
+/* line 22, ../sass/_main.scss */
+#web2py-logo {
+  font-size: 150%;
+}
+
+/* line 26, ../sass/_main.scss */
+.border-c {
+  background-color: #fff;
+  padding: 2px;
+}
+
+/* line 32, ../sass/_main.scss */
 .navbar {
   /* fallback for old browsers */
   background: #C04848;
@@ -104,7 +129,7 @@
 }
 
 /* https://css-tricks.com/quick-css-trick-how-to-center-an-object-exactly-in-the-center/ */
-/* line 23, ../sass/_main.scss */
+/* line 42, ../sass/_main.scss */
 .centered {
   position: fixed;
   top: 45%;
@@ -112,7 +137,7 @@
   transform: translate(-50%, -50%);
 }
 
-/* line 31, ../sass/_main.scss */
+/* line 50, ../sass/_main.scss */
 body {
   background-color: #fff;
 }
