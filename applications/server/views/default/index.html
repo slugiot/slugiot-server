@@ -28,8 +28,9 @@
                            {{=icon_rocket_big}}
                            <h3>{{=string_get_started}}</h3>
                         {% else %}
-                           {{=icon_graph_big}}
-                           <h3>{% selection_name %} {{=string_no_data}}</h3>
+                            <!-- Data Viz Begin -->
+                            {{include 'viz.html'}}
+                            <!-- Data Viz End --->
                         {% /if %}
                     {{pass}}
                 {% /if %}
