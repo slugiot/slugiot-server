@@ -7,7 +7,9 @@ gluon_utils: Used to generate UUID passed to index for signature
 proc_harness_module: Used for adding procedures
 """
 from gluon import utils as gluon_utils
-import time, access, proc_harness_module
+import time
+import access
+import proc_harness_module
 
 
 class DeviceIDVerification:
@@ -217,6 +219,8 @@ def user():
     to decorate functions that need access control
     also notice there is http://..../[app]/appadmin/manage/auth to allow administrator to manage users
     """
+    if request.args(0) == 'profile':
+        db.auth_user.email.writable = False
     return dict(form=auth())
 
 

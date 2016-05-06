@@ -139,3 +139,9 @@ body {
 .footer {
   background: #222222;
 }
+
+/* line 50, ../sass/_main.scss */
+.panel-footer.panel-custom {
+  background: #222222;
+  color: #222222;
+}
