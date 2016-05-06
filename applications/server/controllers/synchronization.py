@@ -29,7 +29,7 @@ def receive_logs():
     def POST(*args, **vars):
         # get the log data from the request and validate
         request_body = request.body.read()
-        log_data = __get_valdiated_data(request_body, "logs")
+        log_data = __get_validated_data(request_body, "logs")
 
         # get information from document
         device_id = log_data.get('device_id')
@@ -81,7 +81,7 @@ def receive_outputs(no_of_records):
     def POST(*args, **vars):
         # get the log data from the request and validate
         request_body = request.body.read()
-        output_data = __get_valdiated_data(request_body, 'outputs')
+        output_data = __get_validated_data(request_body, 'outputs')
 
         # get information from document
         device_id = output_data.get('device_id')
@@ -139,7 +139,7 @@ def receive_values():
     def POST(*args, **vars):
         # get the log data from the request and validate
         request_body = request.body.read()
-        values_data = __get_valdiated_data(request_body, 'values')
+        values_data = __get_validated_data(request_body, 'values')
 
         # get information from document
         device_id = values_data.get('device_id')
@@ -205,7 +205,7 @@ def get_settings():
     def POST(*args, **vars):
         # get the log data from the request and validate
         request_body = request.body.read()
-        values_data = __get_valdiated_data(request_body, 'settings')
+        values_data = __get_validated_data(request_body, 'settings')
 
         # get information from document
         device_id = values_data.get('device_id')
