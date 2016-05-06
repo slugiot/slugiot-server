@@ -91,10 +91,10 @@ db.define_table('client_setting',
 # Synched client -> server
 db.define_table('logs',
                 Field('device_id'),
-                Field('modulename'),
+                Field('procedure_id'), ## MOVE TO procedure_id
                 Field('log_level', 'integer'), #  int, 0 = most important.
                 Field('log_message', 'text'),
-                Field('logged_time_stamp', 'datetime'),
+                Field('time_stamp', 'datetime'),
                 Field('received_time_stamp', 'datetime', default=datetime.utcnow()),
 
                 )
@@ -106,7 +106,7 @@ db.define_table('outputs',
                 Field('name'), # Name of variable
                 Field('output_value', 'text'), # Json, short please
                 Field('tag'),
-                Field('output_time_stamp', 'datetime'),
+                Field('time_stamp', 'datetime'),
                 Field('received_time_stamp', 'datetime', default=datetime.utcnow()),
 )
 
@@ -116,7 +116,7 @@ db.define_table('module_values',
                 Field('procedure_id'),
                 Field('name'),  # Name of variable
                 Field('output_value', 'text'),  # Json, short please
-                Field('value_time_stamp', 'datetime'),
+                Field('time_stamp', 'datetime'),
                 Field('received_time_stamp', 'datetime', default=datetime.utcnow())
                 )
 

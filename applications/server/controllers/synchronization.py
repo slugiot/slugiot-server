@@ -1,31 +1,14 @@
 # -*- coding: utf-8 -*-
+
+import json_plus
 import json
 
-"""
- This method is to recieve log data.  It accepts two HTTP methods:
-        GET: returns the latest three log entries.  planning on adding
-            filtering based on device_id, and how many records to return
-        POST: accepts a JSON document with the log entries to ingest.  an
-            example document is described below:
-            {
-                "device_id":"my_device",
-                "logs":
-                    [
-                        {"modulename":"my_module","log_level":3,"log_message":"some message","time_stamp":"2016-03-19 20:48:41"},
-                        {"modulename":"my_module","log_level":2,"log_message":"some other message","time_stamp":"2016-03-19 20:49:41"}
-                    ]
-            }
-
-   :return: Dictionary containing whether the request posted is a success or not and the latest synchronization time_stamp
-   :rtype: Dictionary
-"""
 
 @request.restful()
 def receive_logs():
     def GET(*args, **vars):
         logs = db(db.logs).select(orderby="received_time_stamp DESC",limitby=(0,3))
         return response.json(logs)
-
     def POST(*args, **vars):
         # get the log data from the request and validate
         request_body = request.body.read()
@@ -39,9 +22,6 @@ def receive_logs():
             if (not isinstance(log, dict)):
                 raise HTTP(400, "all log entries must be of type 'dict'")
             log["device_id"] = device_id
-            if (log.get('time_stamp')):
-                log["logged_time_stamp"] = log.get('time_stamp')
-                del log['time_stamp']
             if (log.get('id')):
                 del log['id']
 
@@ -91,9 +71,6 @@ def receive_outputs(no_of_records):
             if (not isinstance(out, dict)):
                 raise HTTP(400, "all output entries must be of type 'dict'")
             out["device_id"] = device_id
-            if (out.get('time_stamp')):
-                out["output_time_stamp"] = out.get('time_stamp')
-                del out['time_stamp']
             if (out.get('id')):
                 del out['id']
 
@@ -127,8 +104,6 @@ def receive_outputs(no_of_records):
 
 @request.restful()
 def receive_values():
-
-
     def GET(*args, **vars):
         if (vars == None or not vars.has_key('device_id')):
             raise HTTP(400, "Please specify 'device_id' as a parameter to retrieve values")
@@ -149,9 +124,6 @@ def receive_values():
             if (not isinstance(value, dict)):
                 raise HTTP(400, "all value entries must be of type 'dict'")
             value["device_id"] = device_id
-            if (value.get('time_stamp')):
-                value["value_time_stamp"] = value.get('time_stamp')
-                del value['time_stamp']
             if (value.get('id')):
                 del value['id']
 
@@ -168,7 +140,7 @@ def receive_values():
 
 
 """
-This method is to receive setting data.  Given a device_id, it returns
+This method is to give setting data to the device.  Given a device_id, it returns
 all the setting information that the client needs.  If the parameter
 'last_updated' is set, it will only select changed settings
 since that time
@@ -189,8 +161,6 @@ This is intended to be used for debugging:
 
 @request.restful()
 def get_settings():
-
-
     def GET(*args, **vars):
         if (vars == None or not vars.has_key('device_id')):
             raise HTTP(400, "Please specify 'device_id' as a parameter to retrieve settings")
