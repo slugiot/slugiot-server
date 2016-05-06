@@ -15,6 +15,7 @@ revisions_table = db.procedure_revisions
 
 ####### API FOR PROCEDURE HARNESS TEAM ##########
 
+#@auth.requires_signature()
 def get_procedure_status():
     """
     Called upon client request for procedure info
@@ -25,7 +26,7 @@ def get_procedure_status():
                     that specifies the last save time for each procedure associated with the device
     :rtype:
     """
-    device_id = request.args(0) if request.args else None
+    device_id = request.args(0)
 
     # Get all procedure_ids for the device_id
     procedure_rows = db(proc_table.device_id == device_id).select(proc_table.id)
@@ -43,6 +44,7 @@ def get_procedure_status():
 
     return response.json(procedure_info)
 
+#@auth.requires_signature()
 def get_procedure_data():
     """
     Called in response to client request for procedures to be synced
@@ -61,7 +63,7 @@ def get_procedure_data():
 
     return response.json(procedures_for_update)
 
-
+#@auth.requires_signature()
 def get_procedure_names():
     """
     Called in response to client request for procedures to be synced

@@ -91,7 +91,7 @@ def get_procedures_for_view(device_id):
     return procedure_ids
 
 
-def __get_most_recent_date__(procedure_id, is_stable):
+def _get_most_recent_date_(procedure_id, is_stable):
     db = current.db
     revisions_table = db.procedure_revisions
 
@@ -123,7 +123,7 @@ def get_procedure_data(procedure_id, is_stable):
     db = current.db
     revisions_table = db.procedure_revisions
 
-    date = __get_most_recent_date__(procedure_id, is_stable)
+    date = _get_most_recent_date_(procedure_id, is_stable)
 
     # Return the data corresponding the procedure ID and determined date
     return db((revisions_table.procedure_id == procedure_id) & (revisions_table.last_update == date)).select(revisions_table.procedure_data).first().procedure_data
