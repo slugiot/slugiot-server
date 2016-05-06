@@ -224,7 +224,7 @@ def __get_validated_data(request_body, data_key):
     if (not request_body):
         raise HTTP(400, "no data was included")
     try:
-        data = json.loads(request_body)
+        data = json_plus.Serializable.loads(request_body)
     except:
         raise HTTP(400, "data was not json-formatted")
     if (not isinstance(data, dict)):
