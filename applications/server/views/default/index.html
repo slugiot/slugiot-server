@@ -103,6 +103,9 @@ $(function() {
             selection_value: -1,
             selection_name: "",
             selection_desc: "",
+            mixed_data: [],
+            output_data: [],
+            log_data: []
         }
     });
 
@@ -158,5 +161,111 @@ $(function() {
         ractive.set('delete_list', []);
         location.reload();
     });
+
+    function refresh() {
+        var timeSpan = $('#time_span').val();
+        // showing test output dygraph
+        dy_plot();
+        // get the parameter in the control panel
+        var start = "2016-05-03 21:20:20";
+        var end = "2016-05-03 23:20:20";
+        $.ajax({
+            'url': 'get_data',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {start: start, end: end},
+            // 'data':"start=" + start,
+            'success': function (data) {
+                ractive.set({mixed_data: data.mixed_data});
+                ractive.set({output_data: data.output_data});
+                ractive.set({log_data: data.log_data});
+            }
+        });
+    }
+
+    $('#myTabs a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show')
+    });
+
+    $(function () {
+        $('#time_span').daterangepicker();
+    });
+
+    function barChartPlotter(e) {
+        var ctx = e.drawingContext;
+        var points = e.points;
+        // see <a href="http://dygraphs.com/jsdoc/symbols/Dygraph.html#toDomYCoord">jsdoc</a>
+        var y_bottom = e.dygraph.toDomYCoord(0);
+        // This should really be based on the minimum gap
+        var bar_width = 2 / 3 * (points[1].canvasx - points[0].canvasx);
+        ctx.fillStyle = e.color;  // a lighter shade might be more aesthetically pleasing
+        // Do the actual plotting.
+        for (var i = 0; i < points.length; i++) {
+            var p = points[i];
+            var center_x = p.canvasx;  // center of the bar
+            ctx.fillRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
+            ctx.strokeRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
+        }
+    }
+
+    var dy_plot = function () {
+        var graph_com = document.getElementById("graphdiv");
+        var data = "{{=URL('static', 'temper.csv')}}";
+        // collecting output data
+        if (typeof output_data === "undefined") {
+            console.log('output_data not define yet!');
+            g = new Dygraph(
+                graph_com,
+                data,
+                {
+                    //rollPeriod: 5,
+                    //showRoller: true,
+                    title: 'Temperature Line Chart',
+                    ylabel: 'Temperature (C)',
+                    legend: 'always',
+                    showRangeSelector: true,
+                    rangeSelectorHeight: 30,
+                    rangeSelectorPlotStrokeColor: 'green',
+                    rangeSelectorPlotFillColor: 'lightgreen'
+                }
+            );
+        }
+        else if (output_data.length > 0) {
+            var data = "Date, Temperature\n";   //[['Date', 'Temperature']];
+            var dateRange = [];
+            var timeSpan = $('#time_span').val();
+            for (var i = 0; i < output_data.length; i++){
+                var output = output_data[i];
+                data = data + output.time_stamp + ',' + output.output_value.toString() + '\n'
+                if ( i == 0 || i == output_data.length-1)
+                    dateRange.push(output.time_stamp);
+                //data.push([output.time_stamp, output.output_value]);
+            }
+            if (typeof timeSpan !== "undefined"){
+                var time2 = timeSpan.split("-");
+                dateRange = [ Date.parse(time2[0]), Date.parse(time2[1])];
+            }
+            var g2 = new Dygraph(
+                graph_com,
+                data,
+                {
+                    //labels: ['Date', 'Temperature'],
+                    plotter: barChartPlotter,
+                    title: 'Temperature Bar Chart',
+                    ylabel: 'Temperature (C)',
+                    legend: 'always',
+                    dateWindow: dateRange,
+                    showRangeSelector: true,
+                    rangeSelectorHeight: 30,
+                    rangeSelectorPlotStrokeColor: 'green',
+                    rangeSelectorPlotFillColor: 'lightgreen'
+                    //xTicker: Dygraph.dateTicker
+                }
+            );
+        }
+    };
+
+    dy_plot();
 });
 </script>
