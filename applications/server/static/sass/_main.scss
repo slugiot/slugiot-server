@@ -8,15 +8,9 @@ img.resize{
     height: auto;
 }
 
-.selectpicker{
-    background: yellow !important;
-    color:#FFF;
-    text-shadow:0 1px 0 rgba(0,0,0,0.4);
-}
-
-.selectpicker option:not(:checked) {
-    background-color: white;
-    color:#000;
+html, body, #wrapper {
+width:100%;
+height:100%;
 }
 
 #web2py-logo{
@@ -50,3 +44,5 @@ img.resize{
 body {
   background-color: $clrWhite;
 }
+
+.footer { background: #222222; }
