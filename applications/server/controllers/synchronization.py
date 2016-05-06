@@ -53,9 +53,9 @@ def receive_logs():
  """
 
 @request.restful()
-def receive_outputs(no_of_records):
+def receive_outputs():
     def GET(*args, **vars):
-        logs = db(db.outputs).select(orderby="received_time_stamp DESC", limitby=(0, no_of_records))
+        logs = db(db.outputs).select(orderby="received_time_stamp DESC", limitby=(0, 3))
         return response.json(logs)
 
     def POST(*args, **vars):
