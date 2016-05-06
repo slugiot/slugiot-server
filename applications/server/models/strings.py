@@ -13,3 +13,5 @@ string_start_edit = "Click here to start editing this script."
 string_add_script = "Click here to add a new procedure for this device."
 string_get_started_script = "Click any script on the left to get started."
 string_desc = "Description: "
+string_refresh = "Refresh to see data graph"
+

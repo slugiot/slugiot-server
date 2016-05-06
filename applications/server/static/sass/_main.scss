@@ -22,6 +22,11 @@ height:100%;
   padding: 2px;
 }
 
+.gravimg{
+  line-height: 40px;
+  vertical-align: middle;
+}
+
 // Navbar/theme colors
 .navbar{
     /* fallback for old browsers */
@@ -50,4 +55,11 @@ body {
 .panel-footer.panel-custom {
     background: #222222;;
     color: #222222;;
+}
+
+.container-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
 }

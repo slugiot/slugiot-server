@@ -1,76 +1,19 @@
-<div class="panel panel-default" name="dataVisualization">
+<!-- Data Viz Begin -->
+<div class="panel panel-default" name="dataVisualization" align="left">
     <div class="panel-heading">
         <h3 class="panel-title">Data Visualization Panel</h3>
     </div>
     <div class="panel-body">
-        <div class="row">
-            <!-- CONTROL PANEL -->
-            <div class="col-sm-3">
-                <table>
-                    <tr>
-                        <td>
-                            <label>Select:</label> <br>
-                            <select id="select_device" class="selectpicker" data-live-search="true"
-                                    title="Choose Device...">
-                                <option>Android</option>
-                                <option>iPhone</option>
-                                <option>iPad</option>
-                                <option>Nest</option>
-                            </select>
-                            <br>
-                            <select id="select_data_module" class="selectpicker" data-live-search="true"
-                                    title="Choose Data Module...">
-                                <option value="temperature">temperature</option>
-                                <option value="pressure">pressure</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label>Compare:</label> <br>
-                            <select class="selectpicker" data-live-search="true" multiple data-max-options="3">
-                                <optgroup label="Picnic">
-                                    <option>Mustard</option>
-                                    <option>Ketchup</option>
-                                    <option>Relish</option>
-                                </optgroup>
-                                <optgroup label="Camping">
-                                    <option>Tent</option>
-                                    <option>Flashlight</option>
-                                    <option>Toilet Paper</option>
-                                </optgroup>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label>Time Span:</label>
-                            <div>
-                                <input id="time_span" type="text" class="form-control" name="time_span"
-                                       value="04/01/2016 - 04/10/2016"/>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <br><br>
-                            <button id="refreshButton" onclick="refresh();" type="button"
-                                    class="btn btn-info btn-block">Refresh
-                            </button>
-                            <!-- Spinner icon -->
-                            <div id="result-spinner" class="hidden">
-                                <i class="fa fa-spinner fa-pulse fa-4x"></i>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-
-            <!--  DATA VISUALIZATION dyGraph  -->
-
-            <div class="col-sm-9">
-                <div id="chartdiv" style="width: 100%; height: 400px;" class="hidden"></div>
-                <div id="graphdiv" style="width: 100%; height: 400px"></div>
+        <div class="col-sm-12">
+            <div id="chartdiv" style="width: 100%; height: 400px;" class="hidden"></div>
+            <div id="graph_div" style="width: 100%; height: 400px">
+                {% #if refresh_selected %}
+                {% else %}
+                    <div class="container-text" align="center">
+                        <a style="color: #842448;" href="#" on-click="refresh">{{=icon_refresh_big}}</a><br>
+                        <h3><a style="color: #842448;" href="#" on-click="refresh">{{=string_refresh}}</a></h3>
+                    </div>
+                {% /if %}
             </div>
         </div>
     </div>
@@ -78,7 +21,7 @@
 
 <!-- DATA DETAIL START  -->
 
-<div class="panel panel-default" name="dataDetail" ng-controller="dataDetailController">
+<div class="panel panel-default" name="dataDetail" ng-controller="dataDetailController" align="left">
     <div class="panel-heading">
         <h3 class="panel-title">Data Detail Panel</h3>
     </div>
@@ -125,7 +68,7 @@
                             <tr>
                                 <th scope="row">{% index+1 %}</th>
                                 <td>{% type %}</td>
-                                <td>{% dece_id %}</td>
+                                <td>{% device_id %}</td>
                                 <td>{% modulename %}</td>
                                 <td>{% content %}</td>
                                 <td>{% time_stamp %}</td>
@@ -161,7 +104,7 @@
                             {% #output_data:index %}
                             <tr>
                                 <th scope="row">{% index+1 %}</th>
-                                <td>{% deivce_id %}</td>
+                                <td>{% device_id %}</td>
                                 <td>{% modulename %}</td>
                                 <td>{% name %}</td>
                                 <td>{% output_value %}</td>
@@ -209,3 +152,4 @@
         </div>
     </div>
 </div>
+<!-- Data Viz End --->

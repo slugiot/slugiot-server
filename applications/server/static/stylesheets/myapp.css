@@ -111,7 +111,13 @@ html, body, #wrapper {
   padding: 2px;
 }
 
-/* line 26, ../sass/_main.scss */
+/* line 25, ../sass/_main.scss */
+.gravimg {
+  line-height: 40px;
+  vertical-align: middle;
+}
+
+/* line 31, ../sass/_main.scss */
 .navbar {
   /* fallback for old browsers */
   background: #C04848;
@@ -122,7 +128,7 @@ html, body, #wrapper {
 }
 
 /* https://css-tricks.com/quick-css-trick-how-to-center-an-object-exactly-in-the-center/ */
-/* line 36, ../sass/_main.scss */
+/* line 41, ../sass/_main.scss */
 .centered {
   position: fixed;
   top: 45%;
@@ -130,18 +136,26 @@ html, body, #wrapper {
   transform: translate(-50%, -50%);
 }
 
-/* line 44, ../sass/_main.scss */
+/* line 49, ../sass/_main.scss */
 body {
   background-color: #fff;
 }
 
-/* line 48, ../sass/_main.scss */
+/* line 53, ../sass/_main.scss */
 .footer {
   background: #222222;
 }
 
-/* line 50, ../sass/_main.scss */
+/* line 55, ../sass/_main.scss */
 .panel-footer.panel-custom {
   background: #222222;
   color: #222222;
+}
+
+/* line 60, ../sass/_main.scss */
+.container-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
 }

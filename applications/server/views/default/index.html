@@ -15,253 +15,51 @@
     </div>
 
     <div class="main">
-        <div id="middle_bar" class="col-sm-8 col-md-9 col-lg-9" align="center">
-            <div class="centered" align="center">
+        <div id="middle_bar" class="col-sm-8 col-md-9 col-lg-9">
+            <div class="centered" id="mainthing">
                 {% #if loading %}
                     <h1>{{=icon_loading}}</h1>
                 {% else %}
                     {{if len(device_list) == 0:}}
-                        <a style="color: #842448;" href="{{=URL('default', 'add')}}">{{=icon_sad_big}}</a><br>
-                        <h3><a style="color: #842448;" href="{{=URL('default', 'add')}}">{{=string_no_device}}</a></h3>
+                        <div align="center">
+                            <a style="color: #842448;" href="{{=URL('default', 'add')}}">{{=icon_sad_big}}</a><br>
+                            <h3><a style="color: #842448;" href="{{=URL('default', 'add')}}">{{=string_no_device}}</a></h3>
+                        </div>
                     {{else:}}
                         {% #if selection_value == -1 %}
-                           {{=icon_rocket_big}}
-                           <h3>{{=string_get_started}}</h3>
+                           <div align="center container-text" align="center">
+                               {{=icon_rocket_big}}
+                               <h3>{{=string_get_started}}</h3>
+                           </div>
                         {% else %}
-                            <!-- Data Viz Begin -->
-                            <div class="panel panel-default" name="dataVisualization">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">Data Visualization Panel</h3>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="row">
-                                        <!-- CONTROL PANEL -->
-                                        <div class="col-sm-3">
-                                            <table>
-                                                <tr>
-                                                    <td>
-                                                        <label>Select:</label> <br>
-                                                        <select id="select_device" class="selectpicker" data-live-search="true"
-                                                                title="Choose Device...">
-                                                            <option>Android</option>
-                                                            <option>iPhone</option>
-                                                            <option>iPad</option>
-                                                            <option>Nest</option>
-                                                        </select>
-                                                        <br>
-                                                        <select id="select_data_module" class="selectpicker" data-live-search="true"
-                                                                title="Choose Data Module...">
-                                                            <option value="temperature">temperature</option>
-                                                            <option value="pressure">pressure</option>
-                                                        </select>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <label>Compare:</label> <br>
-                                                        <select class="selectpicker" data-live-search="true" multiple data-max-options="3">
-                                                            <optgroup label="Picnic">
-                                                                <option>Mustard</option>
-                                                                <option>Ketchup</option>
-                                                                <option>Relish</option>
-                                                            </optgroup>
-                                                            <optgroup label="Camping">
-                                                                <option>Tent</option>
-                                                                <option>Flashlight</option>
-                                                                <option>Toilet Paper</option>
-                                                            </optgroup>
-                                                        </select>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <label>Time Span:</label>
-                                                        <div>
-                                                            <input id="time_span" type="text" class="form-control" name="time_span"
-                                                                   value="04/01/2016 - 04/10/2016"/>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <br><br>
-                                                        <button id="refreshButton" onclick="refresh()" type="button"
-                                                                class="btn btn-info btn-block">Refresh
-                                                        </button>
-                                                        <!-- Spinner icon -->
-                                                        <div id="result-spinner" class="hidden">
-                                                            <i class="fa fa-spinner fa-pulse fa-4x"></i>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </div>
-
-                                        <!--  DATA VISUALIZATION dyGraph  -->
-
-                                        <div class="col-sm-9">
-                                            <div id="chartdiv" style="width: 100%; height: 400px;" class="hidden"></div>
-                                            <div id="graph_div" style="width: 100%; height: 400px"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- DATA DETAIL START  -->
-
-                            <div class="panel panel-default" name="dataDetail" ng-controller="dataDetailController">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">Data Detail Panel</h3>
-                                </div>
-                                <div class="panel-body">
-                                    <!-- Tab -->
-                                    <div>
-                                        <!-- ------- Data Detail  Nav tabs  ------- -->
-                                        <ul class="nav nav-tabs" role="tablist">
-                                            <li role="presentation" class="active">
-                                                <a href="#Mixed" aria-controls="Mixed" role="tab" data-toggle="tab">Mixed</a>
-                                            </li>
-                                            <li role="presentation">
-                                                <a href="#Output" aria-controls="Output" role="tab" data-toggle="tab">Output</a>
-                                            </li>
-                                            <li role="presentation">
-                                                <a href="#Log" aria-controls="Log" role="tab" data-toggle="tab">Log</a>
-                                            </li>
-                                        </ul>
-                                        <!-- Tab panes  -->
-                                        <div class="tab-content">
-                                            <!-- ------------------ Mixed Tab ------------------ -->
-                                            <div role="tabpanel" class="tab-pane active" id="Mixed">
-                                                <form class="navbar-form navbar-right" role="search">
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control" placeholder="Search for...">
-                                                        <span class="input-group-btn">
-                                                            <button class="btn btn-default" type="button">Search</button>
-                                                        </span>
-                                                    </div>
-                                                </form>
-                                                <table class="table table-hover">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>#</th>
-                                                            <th>Type</th>
-                                                            <th>Device ID</th>
-                                                            <th>Module Name</th>
-                                                            <th>Content</th>
-                                                            <th>Timestamp</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="mixed_table_body">
-                                                        {% #mixed_data:index %}
-                                                        <tr>
-                                                            <th scope="row">{% index+1 %}</th>
-                                                            <td>{% type %}</td>
-                                                            <td>{% device_id %}</td>
-                                                            <td>{% modulename %}</td>
-                                                            <td>{% content %}</td>
-                                                            <td>{% time_stamp %}</td>
-                                                        </tr>
-                                                        {% /mixed_data %}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-
-                                            <!-- ------------------ Output Tab ------------------ -->
-                                            <div role="tabpanel" class="tab-pane" id="Output">
-                                                <form class="navbar-form navbar-right" role="search">
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control" placeholder="Search for...">
-                                                        <span class="input-group-btn">
-                                                            <button class="btn btn-default" type="button">Search</button>
-                                                        </span>
-                                                    </div>
-                                                </form>
-                                                <table class="table table-hover">
-                                                    <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>Device ID</th>
-                                                        <th>Module Name</th>
-                                                        <th>Name</th>
-                                                        <th>Output Value</th>
-                                                        <th>Tag</th>
-                                                        <th>Time Stamp</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody id="output_table_body">
-                                                        {% #output_data:index %}
-                                                        <tr>
-                                                            <th scope="row">{% index+1 %}</th>
-                                                            <td>{% device_id %}</td>
-                                                            <td>{% modulename %}</td>
-                                                            <td>{% name %}</td>
-                                                            <td>{% output_value %}</td>
-                                                            <td>{% tag %}</td>
-                                                            <td>{% time_stamp %}</td>
-                                                        </tr>
-                                                        {% /output_data %}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-
-                                            <!-- ------------------ Log Tab ------------------ -->
-                                            <div role="tabpanel" class="tab-pane" id="Log">
-                                                <form class="navbar-form navbar-right" role="search">
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control" placeholder="Search for...">
-                                                        <span class="input-group-btn">
-                                                            <button class="btn btn-default" type="button">Search</button>
-                                                        </span>
-                                                    </div>
-                                                </form><br><br><br>
-                                                <div class="panel-group" id="log_accordion" role="tablist" aria-multiselectable="true">
-                                                    {% #log_data:index %}
-                                                    <div class="panel panel-default">
-                                                        <div class="panel-heading" role="tab" id="heading{% index %}">
-                                                            <h4 class="panel-title">
-                                                                <a role="button" data-toggle="collapse" data-parent="#accordion"
-                                                                   href="#collapse{% index %}"
-                                                                   aria-expanded="true" aria-controls="collapse{% index %}">
-                                                                     {% device_id %} : [ {% time_stamp %}] - [ level : {% log_level %} ]
-                                                                </a>
-                                                            </h4>
-                                                        </div>
-                                                        <div id="collapse{% index %}" class="panel-collapse collapse" role="tabpanel"
-                                                             aria-labelledby="headingOne">
-                                                            <div class="panel-body">
-                                                                [{% modulename %}] - [{% name %} : {% output_value %} ]
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    {% /log_data %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Data Viz End --->
+                            <!-- The visualisation team's HTML code...too large/bulky to add directly here -->
+                            {{include 'viz.html'}}
                         {% /if %}
                     {{pass}}
                 {% /if %}
             </div>
         </div>
 
+        <!-- Let's hide this section as well until we have a device list populated -->
         {% #unless loading %}
             <div id="device_info" class="col-sm-4 col-md-3 col-lg-3" align="center">
                 <h2>{% selection_name %} Configuration</h2><br/>
+                <!-- Show buttons as disabled if there is no device selected -->
                 {% #if selection_value == -1 %}
                     <button type="button" class="btn btn-primary disabled">{{=string_manage}}</button>
                     <button type="button" class="btn btn-warning disabled">{{=string_edit}}</button>
                     <button type="button" class="btn btn-danger disabled"
                         on-click="delete:{% selection_value %}">{{=string_delete}}</button><br><br>
+                <!-- Enable the buttons once we have a selected device ID -->
                 {% else %}
                     <a href="{{=URL('default', 'manage')}}?device={% selection_value %}" class="btn btn-primary">{{=string_manage}}</a>
                     <a href="{{=URL('default', 'edit_device')}}?device={% selection_value %}" class="btn btn-warning">{{=string_edit}}</a>
                     <button type="button" class="btn btn-danger"
                         on-click="delete:{% selection_value %}">{{=string_delete}}</button><br><br>
                 {% /if %}
+                <!-- Status panel for the device, listing name, status, ID , and description -->
                 <ul class="list-group">
+                    <!-- Tell the user we don't know anything if there is no selection ID -->
                     {% #if selection_value == -1 %}
                         <li class="list-group-item clearfix">
                             <span class="pull-left">{{=string_no_status}}</span>
@@ -274,6 +72,7 @@
                                 {{=string_device_id + string_undefined}}
                             </span>
                         </li>
+                    <!-- Display device info if we DO know the device ID -->
                     {% else %}
                         <li class="list-group-item clearfix">
                             <span class="pull-left">Status: OK</span>
@@ -317,7 +116,8 @@
                 mixed_data: [],
                 output_data: [],
                 log_data: [],
-                text_output: []
+                text_output: [],
+                refresh_selected: false
             }
         });
 
@@ -350,6 +150,11 @@
                     e.preventDefault();
                 });
             });
+        });
+
+        ractive.on("refresh", function(){
+            ractive.set('refresh_selected', true);
+            refresh();
         });
 
         // Delete logic
@@ -400,7 +205,9 @@
             }
         }
 
-        dy_plot();
+        window.onload = function() {
+            refresh();
+        };
     });
 
     function refresh() {
@@ -433,7 +240,6 @@
             window.onload = function() {
                 graph_com = document.getElementById('graph_div');
             };
-            console.log("test" + graph_com);
             g = new Dygraph(
                 graph_com,
                 data,
