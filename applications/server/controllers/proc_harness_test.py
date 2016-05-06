@@ -9,13 +9,25 @@ import access
 import time
 from gluon import current
 from gluon.tools import Auth
+import logging
 
 test_device_id = "test"
+logger = logging.getLogger("web2py.app.server")
+logger.setLevel(logging.INFO)
 
+auth = Auth(globals(), current.db)
+
+#@auth.requires_login()
 def index():
     test = ProcHarnessTest()
     test.run_editor_api_test()
     return "Ran Unit Tests for Procedure Harness"
+
+def clear_tables():
+    db = current.db
+    db.procedures.truncate()
+    db.procedure_revisions.truncate()
+    logger.info("Tables cleared on server")
 
 def create_new_proc_for_synch():
     random.seed(time.time())
@@ -24,10 +36,16 @@ def create_new_proc_for_synch():
     db = current.db
     auth = Auth(globals(), db)
     test_user_email = "test@test.com" #auth.user.email
+    logger.info("test_user_email" + str(test_user_email))
+
     access.add_permission(test_device_id, test_user_email, perm_type="a")
+    logger.info("added perm")
+
     proc_id = phm.create_procedure(name, test_device_id)
+    logger.info("created proc")
+
     phm.save(proc_id, "SOME DATA!", True)
-    print "look for proc_id and name: ", proc_id, name
+    logger.info("look for proc_id and name: " + str(proc_id) + " " + str(name))
 
 
 def update_proc_for_synch():
@@ -35,10 +53,12 @@ def update_proc_for_synch():
     proc_table = db.procedures
 
     proc_id = db(proc_table.id).select().first().id
+    proc_name = db(proc_table.id == proc_id).select().first().name
     random.seed(time.time())
     new_data = "new_data" + str(random.randint(0,10000))
+
     phm.save(proc_id, new_data, True)
-    print "look for proc_id, data : ", proc_id, new_data
+    logger.info("look for proc_id, name, data : " + str(proc_id) + " " + str(proc_name) + " " + str(new_data))
 
 
 def update_proc_not_for_synch():
@@ -46,10 +66,11 @@ def update_proc_not_for_synch():
     proc_table = db.procedures
 
     proc_id = db(proc_table.id).select().first().id
+    proc_name = db(proc_table.id == proc_id).select().first().name
     random.seed(time.time())
     new_data = "new_data" + str(random.randint(0,10000))
     phm.save(proc_id, new_data, False)
-    print "should not see: ", proc_id, new_data
+    logger.info("should not see data : " + str(new_data) + " for id, name " + str(proc_id) + " " + str(proc_name))
 
 class ProcHarnessTest:
     def __init__(self):
@@ -85,14 +106,14 @@ class ProcHarnessTest:
 
     def run_editor_api_test(self):
 
-        self.db(self.proc_table).delete()
-        self.db(self.revisions_table).delete()
+        self.proc_table.truncate()
+        self.revisions_table.truncate()
 
         name = "test_name"
         proc_id = phm.create_procedure(name, self.test_device_id)
 
         for row in self.db(self.proc_table).select():
-            print row
+            logging.debug(str(row))
 
         test_data = "#let's do a test with a newline\n how much text do we have?"
         phm.save(proc_id, test_data, True)
@@ -102,7 +123,7 @@ class ProcHarnessTest:
         time.sleep(2)
 
         for row in self.db(self.revisions_table).select():
-            print row
+            logger.debug(str(row))
 
         name2 = "second_test_name"
         proc_id2 = phm.create_procedure(name2, self.test_device_id)
@@ -117,11 +138,11 @@ class ProcHarnessTest:
         proc_list1 = phm.get_procedures_for_edit(self.test_device_id)
         proc_list2 = phm.get_procedures_for_view(self.test_device_id)
 
-        print "proc list 1", proc_list1
-        print "proc list 2", proc_list2 # should be empty
+        logger.debug("proc list 1 " + str(proc_list1))
+        logger.debug("proc list 2 " + str(proc_list2))
 
         # get the data of procedure
         data1 = phm.get_procedure_data(proc_list1[0], True)
 
-        print data1 #should be test_data_1
-        print "Editor test complete"
+        logger.debug(data1) #should be test_data_1
+        logger.debug("Editor test complete")
