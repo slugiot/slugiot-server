@@ -104,7 +104,7 @@ def receive_outputs():
             an example document is described below:
             {
                 "device_id":"my_device",
-                "values":
+                "module_values":
                     [
                         {"procedure_id":"proc1","name":"some_name","output_value":"some_value","time_stamp":"2016-04-19 01:04:25"},
                         {"procedure_id":"proc2","name":"some_other_name","output_value":"some_other_value"}
@@ -115,7 +115,7 @@ def receive_outputs():
 """
 
 @request.restful()
-def receive_values():
+def receive_module_values():
     def GET(*args, **vars):
         if (vars == None or not vars.has_key('device_id')):
             raise HTTP(400, "Please specify 'device_id' as a parameter to retrieve values")
@@ -126,21 +126,22 @@ def receive_values():
     def POST(*args, **vars):
         # get the log data from the request and validate
         request_body = request.body.read()
-        values_data = __get_validated_data(request_body, 'values')
+        values_data = __get_validated_data(request_body, 'module_values')
 
         # get information from document
         device_id = values_data.get('device_id')
-        values = values_data.get('values')
+        values = values_data.get('module_values')
 
         for value in values:
             if (not isinstance(value, dict)):
-                raise HTTP(400, "all value entries must be of type 'dict'")
+                raise HTTP(400, "all module_values entries must be of type 'dict'")
             value["device_id"] = device_id
             if (value.get('id')):
                 del value['id']
 
         try:
-            db(db.module_values.device_id == device_id).delete()
+            # we may want to delete these in some cases
+            # db(db.module_values.device_id == device_id).delete()
             db.module_values.bulk_insert(values)
         except Exception as e:
             db.rollback()

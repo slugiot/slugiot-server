@@ -115,7 +115,7 @@ db.define_table('module_values',
                 Field('device_id'),
                 Field('procedure_id'),
                 Field('name'),  # Name of variable
-                Field('output_value', 'text'),  # Json, short please
+                Field('module_value', 'text'),  # Json, short please
                 Field('time_stamp', 'datetime'),
                 Field('received_time_stamp', 'datetime', default=datetime.utcnow())
                 )
