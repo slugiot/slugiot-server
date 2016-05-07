@@ -2,7 +2,15 @@
 
 import json_plus
 
-
+"""
+ This method is to recieve log data.  It accepts two HTTP methods:
+     GET: returns the latest log entries.  The 'limit' parameter limits
+        number of results returned
+     POST: accepts a JSON document with the output entries to ingest.  an
+         example document is described below:
+:return: Responds with a JSON object of saved settings from the server when a user posts using this function ands gets validated updated output_values from the server
+:rtype: JSON object
+ """
 @request.restful()
 def receive_logs():
     def GET(*args, **vars):
@@ -53,7 +61,6 @@ def receive_logs():
 :return: Responds with a JSON object of saved settings from the server when a user posts using this function ands gets validated updated output_values from the server
 :rtype: JSON object
  """
-
 @request.restful()
 def receive_outputs():
     def GET(*args, **vars):
@@ -103,8 +110,8 @@ def receive_outputs():
                         {"procedure_id":"proc2","name":"some_other_name","output_value":"some_other_value"}
                     ]
             }
- :return: Responds with a JSON object of saved settings from the server when a user posts using this function ands gets validated updated module_values from the server
-   :rtype: JSON object
+    :return: Responds with a JSON object of saved settings from the server when a user posts using this function ands gets validated updated module_values from the server
+    :rtype: JSON object
 """
 
 @request.restful()
@@ -145,25 +152,22 @@ def receive_values():
 
 
 """
-This method is to give setting data to the device.  Given a device_id, it returns
-all the setting information that the client needs.  If the parameter
-'last_updated' is set, it will only select changed settings
-since that time
+    This method is to give setting data to the device.  Given a device_id, it returns
+        all the setting information that the client needs.  If the parameter last_updated is set
+        it will return only settings changed since that time
 
-If you POST to this endpoint, it will save posted settings to the DB.
-This is intended to be used for debugging:
-{
-  "device_id":"trevor",
-  "settings":[
-        {"procedure_id":"proc1","setting_name":"some_setting","setting_value":"42"},
-        {"setting_name":"some_global_setting","setting_value":True}
-  ]
-}
-
-   :return: Responds with a JSON object of saved settings from the server when a user posts using this function ands gets validated updated settings from the server
-   :rtype: JSON object
+        GET: returns all the setting data as described above
+        POST: a mechanism to actually set settings.  This is intended to be used for debugging
+            {
+              "device_id":"trevor",
+              "settings":[
+                    {"procedure_id":"proc1","setting_name":"some_setting","setting_value":"42"},
+                    {"setting_name":"some_global_setting","setting_value":True}
+              ]
+            }
+    :return: Responds with a JSON object of saved settings from the server when a user posts using this function ands gets validated updated module_values from the server
+    :rtype: JSON object
 """
-
 @request.restful()
 def get_settings():
     def GET(*args, **vars):
@@ -224,7 +228,6 @@ This function takes in the data and ensures that it has the right format along w
    :return: Data in a dictionary containing json-formatted data that has a device_id
    :rtype: Dictionary
 """
-
 def __get_validated_data(request_body, data_key):
     if (not request_body):
         raise HTTP(400, "no data was included")
@@ -241,20 +244,7 @@ def __get_validated_data(request_body, data_key):
 
     return data
 
-"""
-This function takes in a table_name (logs, outputs, etc) and returns the latest timestamp the data was synchronized
 
-   :param p1: table_name
-   :type p1: str
-   :return: Timestamp of latest entry in a database table
-   :rtype: datetime
-"""
-
-def __get_last_synchronized(table_name):
-    timestamp =  db(db.table_name == table_name).select(db.time_stamp, orderby="time_stamp DESC", limitby=(0, 1))
-    if (not timestamp):
-        return datetime.datetime.fromtimestamp(0)
-    return timestamp[0].time_stamp
 
 
 
