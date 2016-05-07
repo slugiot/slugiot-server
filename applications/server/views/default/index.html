@@ -139,6 +139,9 @@
         load_devices();
 
         ractive.on("set_val", function(e, value, name, desc){
+            if(ractive.get('selection_value') != -1){
+                ractive.set('refresh_selected', false);
+            }
             ractive.set('selection_value', value);
             ractive.set('selection_name', name);
             ractive.set('selection_desc', desc);

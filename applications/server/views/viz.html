@@ -6,15 +6,16 @@
     <div class="panel-body">
         <div class="col-sm-12">
             <div id="chartdiv" style="width: 100%; height: 400px;" class="hidden"></div>
-            <div id="graph_div" style="width: 100%; height: 400px">
-                {% #if refresh_selected %}
-                {% else %}
+            {% #if refresh_selected %}
+                <div id="graph_div" style="width: 100%; height: 400px"></div>
+            {% else %}
+                <div id="refresh_div" style="width: 100%; height: 400px">
                     <div class="container-text" align="center">
                         <a style="color: #842448;" href="#" on-click="refresh">{{=icon_refresh_big}}</a><br>
                         <h3><a style="color: #842448;" href="#" on-click="refresh">{{=string_refresh}}</a></h3>
                     </div>
-                {% /if %}
-            </div>
+                </div>
+            {% /if %}
         </div>
     </div>
 </div>
