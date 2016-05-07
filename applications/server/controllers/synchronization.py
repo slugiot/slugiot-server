@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import json_plus
-import json
 
 
 @request.restful()
 def receive_logs():
     def GET(*args, **vars):
-        logs = db(db.logs).select(orderby="received_time_stamp DESC",limitby=(0,3))
+        limit = 3
+        if ('limit' in request.vars):
+            limit = int(request.vars.limit)
+        logs = db(db.logs).select(orderby="received_time_stamp DESC",limitby=(0,limit))
         return response.json(logs)
     def POST(*args, **vars):
         # get the log data from the request and validate
@@ -55,7 +57,10 @@ def receive_logs():
 @request.restful()
 def receive_outputs():
     def GET(*args, **vars):
-        logs = db(db.outputs).select(orderby="received_time_stamp DESC", limitby=(0, 3))
+        limit = 3
+        if ('limit' in request.vars):
+            limit = int(request.vars.limit)
+        logs = db(db.outputs).select(orderby="received_time_stamp DESC", limitby=(0, limit))
         return response.json(logs)
 
     def POST(*args, **vars):
