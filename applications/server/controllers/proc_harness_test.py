@@ -27,7 +27,8 @@ def clear_tables():
     db = current.db
     db.procedures.truncate()
     db.procedure_revisions.truncate()
-    logger.info("Tables cleared on server")
+    if db(db.procedures).isempty() and db(db.procedure_revisions).isempty():
+        logger.info("Server Table Cleared")
 
 def create_new_proc_for_synch():
     random.seed(time.time())
