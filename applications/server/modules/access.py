@@ -7,6 +7,10 @@ from perm_comparator import permission_entail
 # a = admin (valid only for one whole device)
 # e = edit settings of procedure
 
+########################################
+##########Manage Permissions############
+########################################
+
 
 def add_permission(device_id, user_email, perm_type='v', procedure_id=None):
     """
@@ -81,7 +85,28 @@ def delete_permission(user_email=None, device_id=None, procedure_id=None):
                (db.user_permission.procedure_id == procedure_id)).delete()
 
 
-def can_view_procedure(user_email, device_id, procedure_id):
+####################################################
+##########Generate device list for User#############
+####################################################
+
+
+def generate_device_list(user_email):
+    """
+    This function generate all related devices for a user
+    @param user_email: user email
+    @return: list of devices
+    """
+    db = current.db
+    p = db((db.user_permission.perm_user_email == user_email))
+    return [record.device_id for record in p]
+
+
+#############################################
+##########Access Control methods#############
+#############################################
+
+
+def can_view_procedure(user_email, device_id, procedure_id=None):
     """
     This function check whether a user can view a procedure
     @param device_id : device id
@@ -94,7 +119,7 @@ def can_view_procedure(user_email, device_id, procedure_id):
                                         procedure_id=procedure_id)
 
 
-def can_edit_procedure(user_email, device_id, procedure_id):
+def can_edit_procedure(user_email, device_id, procedure_id=None):
     """
     This function check whether a user can edit a procedure
     @param device_id : device id
@@ -130,7 +155,7 @@ def can_create_procedure(device_id, user_email):
     return check_generic_permission(user_email=user_email, device_id=device_id, perm_type='a')
 
 
-def can_delete_procedure(device_id, user_email, procedure_id):
+def can_delete_procedure(device_id, user_email, procedure_id=None):
     """
         This function check whether a user can delete a procedure, it need 'a' permission type
         @param device_id : device id
