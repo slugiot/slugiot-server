@@ -8,29 +8,30 @@ def test_fill():
     module = "egg"
     out_var = "x"
     log_level = 1
-    # Let us clear previous data.
-    # db((db.outputs.device_id == device_id) &
-    #    (db.outputs.modulename == module) &
-    #    (db.outputs.name == out_var)).delete()
+    # Clear previous data.
     db(db.outputs).delete()
     db(db.logs).delete()
 
     # fill some data for module_values table
-    # db(db.module_values).delete()
-    # db.module_values.insert(device_id=device_id,
-    #                         modulename="egg",
-    #                         name="egg",
-    #                         output_value="egg"
-    #                         )
-    # db.module_values.insert(device_id=device_id,
-    #                         modulename="leg",
-    #                         name="leg",
-    #                         output_value="leg"
-    #                         )
+    db(db.module_values).delete()
+    db.module_values.insert(device_id=device_id,
+                            procedure_id="egg",
+                            name="egg",
+                            output_value="egg",
+                            value_time_stamp=datetime.datetime.now(),
+                            received_time_stamp=datetime.datetime.now()
+                            )
+    db.module_values.insert(device_id=device_id,
+                            procedure_id="leg",
+                            name="leg",
+                            output_value="leg",
+                            value_time_stamp=datetime.datetime.now(),
+                            received_time_stamp=datetime.datetime.now()
+                            )
 
     # Let us insert some new random data.
     now = datetime.datetime.utcnow()
-    for i in range(3):
+    for i in range(5):
         db.outputs.insert(device_id=device_id,
                           procedure_id=module,
                           name=out_var,
@@ -63,10 +64,7 @@ def get_data():
     device_id, module_name, name, date1, date2
     ]
     """
-    print 1111111111111
     test_fill()
-    print 2222222222222
-
     s = request.vars.start
     e = request.vars.end
 
@@ -98,7 +96,6 @@ def get_data():
     mixed_data = []
 
 
-    print 'begin of output_data reading'
     for row in db((db.outputs.output_time_stamp >= start) & (db.outputs.output_time_stamp <= end)).select(orderby=db.outputs.output_time_stamp):
         type = 'output'
         device_id = row.device_id
@@ -109,7 +106,7 @@ def get_data():
         tag = row.tag
         content = 'name: ' + str(name) + ', value: ' + str(value) + ', tag: ' + str(tag)
         mixed_data.append({'type': type, 'device_id': device_id, 'modulename': modulename, 'time_stamp': time_stamp,'content': content})
-    print 'end of output_data reading'
+
     # add log_data in
     for row in db((db.logs.logged_time_stamp >= start) & (db.logs.logged_time_stamp <= end)).select(orderby=db.logs.logged_time_stamp):
         type = 'log'
@@ -123,8 +120,6 @@ def get_data():
                            'content': content})
 
 
-    print 'end of log_data reading'
-    # sorted(mixed_data, key=mixed_data.time_stamp, reverse=False)
     mixed_data.sort(key=lambda r: r['time_stamp'])
 
     result = {'output_data': output_data, 'log_data': log_data, 'mixed_data': mixed_data}
