@@ -45,8 +45,8 @@ def add_permission(device_id, user_email, perm_type='v', procedure_id=None):
         else:
             # update the selected row if given type entails original type
             if permission_entail(perm_type, p.perm_type):
-                p.update(perm_user_email=user_email, device_id=device_id, procedure_id=procedure_id,
-                         perm_type=perm_type)
+                p.update_record(perm_type=perm_type)
+    db.commit()
     return fail_email
 
 
@@ -83,6 +83,7 @@ def delete_permission(user_email=None, device_id=None, procedure_id=None):
             db((db.user_permission.perm_user_email == user_email) &
                (db.user_permission.device_id == device_id) &
                (db.user_permission.procedure_id == procedure_id)).delete()
+    db.commit()
 
 
 ####################################################
