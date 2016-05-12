@@ -13,49 +13,51 @@ class EditorTest(unittest.TestCase):
         # create instance of Firefox WebDriver
         self.driver = webdriver.Firefox()
 
-
-    def test_temp_save(self):
-        # local reference to the driver object
+    #initial to insert a procedure into the database
+    def test_init(self):
+        print("run test_init")
         driver = self.driver
-        driver.get("http://localhost:8000/editor/test_edit?procedure_id=1&stable=false")
+        driver.get("http://127.0.0.1:8000/editor/run_test")
+        element = driver.find_element_by_tag_name('body')
+        self.assertIn('ok', element.text)
 
-        print "ok"
-        time.sleep(2)
-        # locate the temporary save button
-        element = driver.find_element_by_class_name("btn-primary")
-        element.click()
-        # wait until saved
-        time.sleep(2)
-        self.assertIn("file saved successfully", driver.page_source)
 
-    def test_stable_save_success(self):
+    # test for the save function for unstable procedure
+    def test_save(self):
+        print("run unstable")
+        #get the page with edit button
         driver = self.driver
-        driver.get("http://localhost:8000/editor/test_edit?procedure_id=1&stable=false")
-        time.sleep(2)
-        # locate the stable save button
-        element = driver.find_element_by_class_name("btn-info")
+        driver.get("http://127.0.0.1:8000/editor/unit_test")
+        time.sleep(1)
+        element = driver.find_element_by_id('unstable')
         element.click()
-        # wait until saved
+        time.sleep(1)
+        # find and click the save button
+        element_save_unstable = driver.find_element_by_id('save_unstable')
+        element_save_unstable.click()
         time.sleep(2)
-        self.assertIn("file saved successfully", driver.page_source)
+        element_result = driver.find_element_by_id('save_result')
+        print(element_result.text)
+        self.assertIn('file saved successfully', element_result.text)
 
-    def test_stable_save_fail(self):
+
+    # test for the save function for stable procedure
+    def test_save_next(self):
+        print("run stable")
+        #get the page with edit button
         driver = self.driver
-        driver.get("http://localhost:8000/editor/test_edit?procedure_id=1&stable=false")
-        time.sleep(2)
-
-        # TODO:
-        # locate the editor area
-        # use .send_keys("") method add some code in editor area
-        # add syntax error code intentionally
-
-        # locate the stable save button
-        element = driver.find_element_by_class_name("btn-info")
+        driver.get("http://127.0.0.1:8000/editor/unit_test")
+        time.sleep(1)
+        element = driver.find_element_by_id('stable')
         element.click()
-        # wait until saved
+        time.sleep(1)
+        # find and click the save button
+        element_save_stable = driver.find_element_by_id('save_stable')
+        element_save_stable.click()
         time.sleep(2)
-        self.assertIn("SyntaxError", driver.page_source)
-
+        element_result = driver.find_element_by_id('save_result')
+        print(element_result.text)
+        self.assertIn('file saved successfully', element_result.text)
 
     # get called after every test method
     def tearDown(self):
