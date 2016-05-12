@@ -312,6 +312,7 @@
     </div>
 </div>
 <!-- ------------ END Ractive Body ------------ -->
+
 </script>
 
 
@@ -343,111 +344,127 @@
 
         // ----------- get the parameter in the control panel --------------------------
         var start = "2016-05-03 21:20:20";
-        var end = "2016-05-03 23:20:20";
+        var end = "2016-07-03 23:20:20";
 
+        $.ajax({
+            'url': 'get_data',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {start: start, end: end},
+//            'data':"start=" + start,
+            'success': function (data) {
+                console.log(data);
+                ractive.set({mixed_data: data.mixed_data});
+                ractive.set({output_data: data.output_data});
+                ractive.set({log_data: data.log_data});
 
-        mixed_data = [
-            {
-                'type': 'output',
-                'deivce_id': 'home',
-                'modulename': 'batman',
-                'time_stamp': '2016-04-01',
-                'content': 'name: temperature, value: 22, tag: 1'
-            },
-            {
-                'type': 'log',
-                'deivce_id': 'office',
-                'modulename': 'superman',
-                'time_stamp': '2016-04-02',
-                'content': 'name: normal log, value: Your system went smoothly'
-            },
-            {
-                'type': 'output',
-                'deivce_id': 'office',
-                'modulename': 'batman',
-                'time_stamp': '2016-04-03',
-                'content': 'name: temperature, value: 21, tag: 1'
-            },
-            {
-                'type': 'log',
-                'deivce_id': 'scholl',
-                'modulename': 'superman',
-                'time_stamp': '2016-04-04',
-                'content': 'name: normal log, value: administrator logged in'
             }
-        ];
-        output_data = [
-            {
-                'deivce_id': 'home',
-                'modulename': 'batman',
-                'name': 'temperature',
-                'output_value': 22,
-                'tag': '1',
-                'time_stamp': '2016-04-01'
-            },
-            {
-                'deivce_id': 'office',
-                'modulename': 'batman',
-                'name': 'temperature',
-                'output_value': 26,
-                'tag': '1',
-                'time_stamp': '2016-04-02'
-            },
-            {
-                'deivce_id': 'home',
-                'modulename': 'batman',
-                'name': 'temperature',
-                'output_value': 20,
-                'tag': '1',
-                'time_stamp': '2016-04-03'
-            },
-            {
-                'deivce_id': 'office',
-                'modulename': 'batman',
-                'name': 'temperature',
-                'output_value': 23,
-                'tag': '1',
-                'time_stamp': '2016-04-04'
-            }];
-        log_data = [
-            {
-                'device_id': 'office',
-                'modulename': 'superman',
-                'name': 'normal log',
-                'output_value': 'Your system went smoothly',
-                'time_stamp': '2016-04-01',
-                'log_level': '0'
-            },
-            {
-                'device_id': 'home',
-                'modulename': 'superman',
-                'name': 'normal log',
-                'output_value': 'Your system just got modified',
-                'time_stamp': '2016-04-02',
-                'log_level': '0'
-            },
-            {
-                'device_id': 'office',
-                'modulename': 'superman',
-                'name': 'critical log',
-                'output_value': 'Unauthorized logged in',
-                'time_stamp': '2016-04-03',
-                'log_level': '4'
-            },
-            {
-                'device_id': 'home',
-                'modulename': 'superman',
-                'name': 'normal log',
-                'output_value': 'guest logged in',
-                'time_stamp': '2016-04-04',
-                'log_level': '0'
-            }
-        ];
 
+        });
 
-        ractive.set({mixed_data: mixed_data});
-        ractive.set({output_data: output_data});
-        ractive.set({log_data: log_data});
+//
+//        mixed_data = [
+//            {
+//                'type': 'output',
+//                'deivce_id': 'home',
+//                'modulename': 'batman',
+//                'time_stamp': '2016-04-01',
+//                'content': 'name: temperature, value: 22, tag: 1'
+//            },
+//            {
+//                'type': 'log',
+//                'deivce_id': 'office',
+//                'modulename': 'superman',
+//                'time_stamp': '2016-04-02',
+//                'content': 'name: normal log, value: Your system went smoothly'
+//            },
+//            {
+//                'type': 'output',
+//                'deivce_id': 'office',
+//                'modulename': 'batman',
+//                'time_stamp': '2016-04-03',
+//                'content': 'name: temperature, value: 21, tag: 1'
+//            },
+//            {
+//                'type': 'log',
+//                'deivce_id': 'scholl',
+//                'modulename': 'superman',
+//                'time_stamp': '2016-04-04',
+//                'content': 'name: normal log, value: administrator logged in'
+//            }
+//        ];
+//        output_data = [
+//            {
+//                'deivce_id': 'home',
+//                'modulename': 'batman',
+//                'name': 'temperature',
+//                'output_value': 22,
+//                'tag': '1',
+//                'time_stamp': '2016-04-01'
+//            },
+//            {
+//                'deivce_id': 'office',
+//                'modulename': 'batman',
+//                'name': 'temperature',
+//                'output_value': 26,
+//                'tag': '1',
+//                'time_stamp': '2016-04-02'
+//            },
+//            {
+//                'deivce_id': 'home',
+//                'modulename': 'batman',
+//                'name': 'temperature',
+//                'output_value': 20,
+//                'tag': '1',
+//                'time_stamp': '2016-04-03'
+//            },
+//            {
+//                'deivce_id': 'office',
+//                'modulename': 'batman',
+//                'name': 'temperature',
+//                'output_value': 23,
+//                'tag': '1',
+//                'time_stamp': '2016-04-04'
+//            }];
+//        log_data = [
+//            {
+//                'device_id': 'office',
+//                'modulename': 'superman',
+//                'name': 'normal log',
+//                'output_value': 'Your system went smoothly',
+//                'time_stamp': '2016-04-01',
+//                'log_level': '0'
+//            },
+//            {
+//                'device_id': 'home',
+//                'modulename': 'superman',
+//                'name': 'normal log',
+//                'output_value': 'Your system just got modified',
+//                'time_stamp': '2016-04-02',
+//                'log_level': '0'
+//            },
+//            {
+//                'device_id': 'office',
+//                'modulename': 'superman',
+//                'name': 'critical log',
+//                'output_value': 'Unauthorized logged in',
+//                'time_stamp': '2016-04-03',
+//                'log_level': '4'
+//            },
+//            {
+//                'device_id': 'home',
+//                'modulename': 'superman',
+//                'name': 'normal log',
+//                'output_value': 'guest logged in',
+//                'time_stamp': '2016-04-04',
+//                'log_level': '0'
+//            }
+//        ];
+//
+//
+//        ractive.set({mixed_data: mixed_data});
+//        ractive.set({output_data: output_data});
+//        ractive.set({log_data: log_data});
 
 
 //        $.ajax({
@@ -677,7 +694,6 @@
         });
     });
 </script>
-
 
 
 </div>
