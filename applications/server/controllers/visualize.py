@@ -35,7 +35,7 @@ def test_fill():
         db.outputs.insert(device_id=device_id,
                           procedure_id=module,
                           name=out_var,
-                          output_time_stamp=now - datetime.timedelta(days=i),
+                          output_time_stamp=now - datetime.timedelta(days=i) - datetime.timedelta(hours=i),
                           output_value=random.random() * 20,
                           tag="1")
         db.logs.insert(device_id=device_id,

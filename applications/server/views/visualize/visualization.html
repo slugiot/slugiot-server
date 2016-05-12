@@ -313,6 +313,7 @@
 </div>
 <!-- ------------ END Ractive Body ------------ -->
 
+
 </script>
 
 
@@ -338,8 +339,8 @@
         // ----------- get the parameter in the control panel --------------------------
         var time_span = $('#time_span').val();
         var elems = time_span.trim().split("-");
-        var start = elems[0].slice(6,10)+"-"+elems[0].slice(0,2)+"-"+elems[0].slice(3,5)+" 00:00:00";
-        var end = elems[1].slice(7,12)+"-"+elems[1].slice(1,3)+"-"+elems[1].slice(4,6)+" 23:59:59";
+        var start = elems[0].slice(6, 10) + "-" + elems[0].slice(0, 2) + "-" + elems[0].slice(3, 5) + " 00:00:00";
+        var end = elems[1].slice(7, 12) + "-" + elems[1].slice(1, 3) + "-" + elems[1].slice(4, 6) + " 23:59:59";
 
         $.ajax({
             'url': 'get_data',
