@@ -90,9 +90,9 @@ def get_data():
     end = datetime.datetime(end_year, end_month, end_day, end_hour, end_minute, end_second)
 
     output_data = db((db.outputs.output_time_stamp >= start) &
-                     (db.outputs.output_time_stamp <= end)).select()
+                     (db.outputs.output_time_stamp <= end)).select(orderby=db.outputs.output_time_stamp)
     log_data = db((db.logs.logged_time_stamp >= start) &
-                  (db.logs.logged_time_stamp <= end)).select()
+                  (db.logs.logged_time_stamp <= end)).select(orderby=db.logs.logged_time_stamp)
     mixed_data = []
 
 
