@@ -204,7 +204,7 @@
                                 <tr>
                                     <th scope="row">{% index+1 %}</th>
                                     <td>{% type %}</td>
-                                    <td>{% deivce_id %}</td>
+                                    <td>{% device_id %}</td>
                                     <td>{% modulename %}</td>
                                     <td>{% content %}</td>
                                     <td>{% time_stamp %}</td>
@@ -234,23 +234,23 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Device ID</th>
-                                    <th>Module Name</th>
+                                    <th>Procedure ID</th>
                                     <th>Name</th>
                                     <th>Output Value</th>
                                     <th>Tag</th>
-                                    <th>Time Stamp</th>
+                                    <th>Output Time Stamp</th>
                                 </tr>
                                 </thead>
                                 <tbody id="output_table_body">
                                 {% #output_data:index %}
                                 <tr>
                                     <th scope="row">{% index+1 %}</th>
-                                    <td>{% deivce_id %}</td>
-                                    <td>{% modulename %}</td>
+                                    <td>{% device_id %}</td>
+                                    <td>{% procedure_id %}</td>
                                     <td>{% name %}</td>
                                     <td>{% output_value %}</td>
                                     <td>{% tag %}</td>
-                                    <td>{% time_stamp %}</td>
+                                    <td>{% output_time_stamp %}</td>
 
                                 </tr>
                                 {% /output_data %}
@@ -284,14 +284,14 @@
                                             <a role="button" data-toggle="collapse" data-parent="#accordion"
                                                href="#collapse{% index %}"
                                                aria-expanded="true" aria-controls="collapse{% index %}">
-                                                {% device_id %} : [ {% time_stamp %}] - [ level : {% log_level %} ]
+                                                {% device_id %} : [ {% logged_time_stamp %}] - [ level : {% log_level %} ]
                                             </a>
                                         </h4>
                                     </div>
                                     <div id="collapse{% index %}" class="panel-collapse collapse" role="tabpanel"
                                          aria-labelledby="headingOne">
                                         <div class="panel-body">
-                                            [{% modulename %}] - [{% name %} : {% output_value %} ]
+                                            [{% modulename %}] - [ {% log_message %} ]
                                         </div>
                                     </div>
                                 </div>
@@ -356,9 +356,7 @@
                 ractive.set({mixed_data: data.mixed_data});
                 ractive.set({output_data: data.output_data});
                 ractive.set({log_data: data.log_data});
-
             }
-
         });
     } // -------- END Refresh Button --------
 
