@@ -1,12 +1,6 @@
 {{extend 'layout.html'}}
 
 
-<!-- Angular.js Libraries -->
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
-
 
 <!-- Bootstrap CSS & JS-->
 <!-- Latest compiled and minified CSS -->
@@ -36,160 +30,164 @@
 <!-- dygraph library -->
 <script src="/server/static/js/dygraph-combined-dev.js"></script>
 
+
+<div id="target"></div>
+<script id="template" type="text/ractive">
+<!-- ------------ START Ractive Body ------------ -->
+
 <div class="visualization">
 
     <h1>Data Visualization</h1>
 
-
     <div class="container-fluid">
- <div class="row">
-        <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
 
-        <!-- DATA VISUALIZATION START -->
-        <div class="panel panel-default" name="dataVisualization" style="margin-left: 15px; margin-right: 15px">
-            <div class="panel-heading">
-                <h3 class="panel-title">Data Visualization Panel</h3>
-            </div>
-            <div class="panel-body">
-
-                <div class="row">
-
-
-                    <!-- ------------------------------------ CONTROL PANEL ------------------------------------ -->
-                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                        <table>
-                            <tr>
-                                <td>
-                                    <label>Select:</label> <br>
-                                    <select id="select_device" class="selectpicker" data-live-search="true"
-                                            title="Choose Device...">
-                                        <option>Android</option>
-                                        <option>iPhone</option>
-                                        <option>iPad</option>
-                                        <option>Nest</option>
-
-                                    </select>
-                                    <br>
-                                    <select id="select_data_module" class="selectpicker" data-live-search="true"
-                                            title="Choose Data Module...">
-                                        <option value="temperature">temperature</option>
-                                        <option value="pressure">pressure</option>
-                                    </select>
-
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>
-                                    <label>Compare:</label> <br>
-                                    <select class="selectpicker" data-live-search="true" multiple data-max-options="3">
-                                        <optgroup label="Picnic">
-                                            <option>Mustard</option>
-                                            <option>Ketchup</option>
-                                            <option>Relish</option>
-                                        </optgroup>
-                                        <optgroup label="Camping">
-                                            <option>Tent</option>
-                                            <option>Flashlight</option>
-                                            <option>Toilet Paper</option>
-                                        </optgroup>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label>Time Span:</label>
-                                    <div>
-                                        <input id="time_span" type="text" class="form-control" name="time_span"
-                                               value="04/01/2016 - 04/10/2016"/>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>
-                                    <br><br>
-
-                                    <button id="refreshButton" onclick="refresh();" type="button"
-                                            class="btn btn-info btn-block">Refresh
-                                    </button>
-                                    <!-- Spinner icon -->
-                                    <div id="result-spinner" class="hidden">
-                                        <i class="fa fa-spinner fa-pulse fa-4x"></i>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
+                <!-- ------------ START DATA VISUALIZATION  ------------ -->
+                <div class="panel panel-default" name="dataVisualization" style="margin-left: 15px; margin-right: 15px">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Data Visualization Panel</h3>
                     </div>
-                    <!-- ------------------------------------ DATA VISUALIZATION dyGraph ------------------------------------ -->
+                    <div class="panel-body">
 
-                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                        <div class="row">
 
-    <ul class="nav nav-tabs">
-      <li class="active"><a href="#tab1">Line Chart</a></li>
-      <li><a href="#tab2">Bar Chart</a></li>
-    </ul>
-    <div class="tab-content">
-      <div class="tab-pane active" id="tab1">
-        <div class="dygraph-wrapper">
-          <div class="dygraph-target1" style="width: 600px; height: 300px" ></div>
-        </div>
-      </div>
-      <div class="tab-pane" id="tab2" >
-        <div class="dygraph-wrapper">
-          <div class="dygraph-target2" style="width: 600px; height: 300px" ></div>
-        </div>
-      </div>
-    </div>
+                            <!-- ------------ START CONTROL PANEL ------------ -->
+                            <div class="col-sm-4">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <label>Select:</label> <br>
+                                            <select id="select_device" class="selectpicker" data-live-search="true"
+                                                    title="Choose Device...">
+                                                <option>Android</option>
+                                                <option>iPhone</option>
+                                                <option>iPad</option>
+                                                <option>Nest</option>
 
+                                            </select>
+                                            <br>
+                                            <select id="select_data_module" class="selectpicker" data-live-search="true"
+                                                    title="Choose Data Module...">
+                                                <option value="temperature">temperature</option>
+                                                <option value="pressure">pressure</option>
+                                            </select>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>
+                                            <label>Compare:</label> <br>
+                                            <select class="selectpicker" data-live-search="true" multiple
+                                                    data-max-options="3">
+                                                <optgroup label="Picnic">
+                                                    <option>Mustard</option>
+                                                    <option>Ketchup</option>
+                                                    <option>Relish</option>
+                                                </optgroup>
+                                                <optgroup label="Camping">
+                                                    <option>Tent</option>
+                                                    <option>Flashlight</option>
+                                                    <option>Toilet Paper</option>
+                                                </optgroup>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label>Time Span:</label>
+                                            <div>
+                                                <input id="time_span" type="text" class="form-control" name="time_span"
+                                                       value="04/01/2016 - 04/10/2016"/>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>
+                                            <br><br>
+
+                                            <button id="refreshButton" onclick="refresh();" type="button"
+                                                    class="btn btn-info btn-block">Refresh
+                                            </button>
+                                            <!-- Spinner icon -->
+                                            <div id="result-spinner" class="hidden">
+                                                <i class="fa fa-spinner fa-pulse fa-4x"></i>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <!-- ------------ END CONTROL PANEL ------------ -->
+
+
+                            <!-- ------------ START DATA VISUALIZATION dyGraph ------------ -->
+                            <div class="col-sm-8">
+
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a href="#tab1">Line Chart</a></li>
+                                    <li><a href="#tab2">Bar Chart</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="tab1">
+                                        <div class="dygraph-wrapper">
+                                            <div class="dygraph-target1" style="width: 100%; height: 300px"></div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" id="tab2">
+                                        <div class="dygraph-wrapper">
+                                            <div class="dygraph-target2" style="width: 100%; height: 300px"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- ------------ END DATA VISUALIZATION dyGraph ------------ -->
+
+                        </div>
                     </div>
                 </div>
+                <!-- ------------ END DATA VISUALIZATION  ------------ -->
+
             </div>
         </div>
-          </div>
-        </div>
 
-        <!-- ------------------------------------ DATA DETAIL START ------------------------------------ -->
-
+        <!-- ------------ START DATA DETAIL  ------------ -->
         <div class="panel panel-default" name="dataDetail" ng-controller="dataDetailController">
             <div class="panel-heading">
                 <h3 class="panel-title">Data Detail Panel</h3>
             </div>
             <div class="panel-body">
-                <!-- Tab -->
                 <div>
 
                     <!-- ------- Data Detail  Nav tabs  ------- -->
                     <ul class="nav nav-tabs" role="tablist">
-                        <li role="presentation" class="active"><a href="#Mixed" aria-controls="Mixed" role="tab"
-                                                                  data-toggle="tab">Mixed</a>
+                        <li role="presentation" class="active">
+                            <a href="#Mixed" aria-controls="Mixed" role="tab" data-toggle="tab">Mixed</a>
                         </li>
-                        <li role="presentation"><a href="#Output" aria-controls="Output" role="tab"
-                                                   data-toggle="tab">Output</a>
+                        <li role="presentation">
+                            <a href="#Output" aria-controls="Output" role="tab" data-toggle="tab">Output</a>
                         </li>
-                        <li role="presentation"><a href="#Log" aria-controls="Log" role="tab"
-                                                   data-toggle="tab">Log</a></li>
+                        <li role="presentation">
+                            <a href="#Log" aria-controls="Log" role="tab" data-toggle="tab">Log</a></li>
                     </ul>
 
-                    <!-- ------------------ Tab panes ------------------ -->
                     <div class="tab-content">
                         <!-- ------------------ Mixed Tab ------------------ -->
                         <div role="tabpanel" class="tab-pane active" id="Mixed">
                             <form class="navbar-form navbar-right" role="search">
                                 <div class="input-group">
                                     <input type="text" class="form-control" placeholder="Search for...">
-                          <span class="input-group-btn">
-                            <button class="btn btn-default" type="button">Search</button>
-                          </span>
+                                      <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button">Search</button>
+                                      </span>
                                 </div>
                             </form>
 
 
-                            <div id='ractive_mixed_table_container'></div>
-                            <script id='ractive_mixed_table_template' type='text/ractive'>
-
-                        <table class="table table-hover">
-                            <thead>
+                            <table class="table table-hover">
+                                <thead>
 
                                 <tr>
                                     <th>#</th>
@@ -199,10 +197,9 @@
                                     <th>Content</th>
                                     <th>Timestamp</th>
 
-
                                 </tr>
-                            </thead>
-                            <tbody id="mixed_table_body">
+                                </thead>
+                                <tbody id="mixed_table_body">
                                 {% #mixed_data:index %}
                                 <tr>
                                     <th scope="row">{% index+1 %}</th>
@@ -214,14 +211,10 @@
 
                                 </tr>
                                 {% /mixed_data %}
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
 
 
-
-
-
-                            </script>
                         </div>
 
                         <!-- ------------------ Output Tab ------------------ -->
@@ -234,23 +227,21 @@
                           </span>
                                 </div>
                             </form>
-                            <div id='ractive_output_table_container'></div>
-                            <script id='ractive_output_table_template' type='text/ractive'>
 
-                        <table class="table table-hover">
-                            <thead>
+                            <table class="table table-hover">
+                                <thead>
 
-                            <tr>
-                                <th>#</th>
-                                <th>Device ID</th>
-                                <th>Module Name</th>
-                                <th>Name</th>
-                                <th>Output Value</th>
-                                <th>Tag</th>
-                                <th>Time Stamp</th>
-                            </tr>
-                            </thead>
-                            <tbody id="output_table_body">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Device ID</th>
+                                    <th>Module Name</th>
+                                    <th>Name</th>
+                                    <th>Output Value</th>
+                                    <th>Tag</th>
+                                    <th>Time Stamp</th>
+                                </tr>
+                                </thead>
+                                <tbody id="output_table_body">
                                 {% #output_data:index %}
                                 <tr>
                                     <th scope="row">{% index+1 %}</th>
@@ -264,14 +255,9 @@
                                 </tr>
                                 {% /output_data %}
 
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
 
-
-
-
-
-                            </script>
 
                         </div>
 
@@ -288,39 +274,30 @@
                             </form>
                             <br><br><br>
 
-                            <div id='ractive_log_table_container'></div>
-                            <script id='ractive_log_table_template' type='text/ractive'>
 
-                        <div class="panel-group" id="log_accordion" role="tablist" aria-multiselectable="true">
+                            <div class="panel-group" id="log_accordion" role="tablist" aria-multiselectable="true">
 
-                            {% #log_data:index %}
-                            <div class="panel panel-default">
-                                <div class="panel-heading" role="tab" id="heading{% index %}">
-                                    <h4 class="panel-title">
-                                        <a role="button" data-toggle="collapse" data-parent="#accordion"
-                                           href="#collapse{% index %}"
-                                           aria-expanded="true" aria-controls="collapse{% index %}">
-                                             {% device_id %} : [ {% time_stamp %}] - [ level : {% log_level %} ]
-                                        </a>
-                                    </h4>
-                                </div>
-                                <div id="collapse{% index %}" class="panel-collapse collapse" role="tabpanel"
-                                     aria-labelledby="headingOne">
-                                    <div class="panel-body">
-                                        [{% modulename %}] - [{% name %} : {% output_value %} ]
+                                {% #log_data:index %}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="heading{% index %}">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordion"
+                                               href="#collapse{% index %}"
+                                               aria-expanded="true" aria-controls="collapse{% index %}">
+                                                {% device_id %} : [ {% time_stamp %}] - [ level : {% log_level %} ]
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse{% index %}" class="panel-collapse collapse" role="tabpanel"
+                                         aria-labelledby="headingOne">
+                                        <div class="panel-body">
+                                            [{% modulename %}] - [{% name %} : {% output_value %} ]
+                                        </div>
                                     </div>
                                 </div>
+                                {% /log_data %}
+
                             </div>
-                            {% /log_data %}
-
-
-                        </div>
-
-
-
-
-
-                            </script>
 
 
                         </div>
@@ -331,49 +308,30 @@
             </div>
 
         </div>
-
-
+        <!-- ------------ END DATA DETAIL  ------------ -->
     </div>
-    <!-- DATA TABLE END -->
-
-
 </div>
+<!-- ------------ END Ractive Body ------------ -->
+</script>
 
-
-</div>
 
 <script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
 <script>
 
 
-    var ractive_mixed_table = new Ractive({
-        el: '#ractive_mixed_table_container',
-        template: '#ractive_mixed_table_template',
+    var ractive = new Ractive({
+        el: '#target',
+        template: '#template',
         delimiters: ['{%', '%}'],
         data: {
-            mixed_data: []
-
-        }
-    });
-
-    var ractive_output_table = new Ractive({
-        el: '#ractive_output_table_container',
-        template: '#ractive_output_table_template',
-        delimiters: ['{%', '%}'],
-        data: {
-            output_data: []
-        }
-    });
-
-    var ractive_log_table = new Ractive({
-        el: '#ractive_log_table_container',
-        template: '#ractive_log_table_template',
-        delimiters: ['{%', '%}'],
-        data: {
+            mixed_data: [],
+            output_data: [],
             log_data: []
         }
     });
-    // ------------------------------------  Refresh Button  ------------------------------------
+
+
+    // ------------------------------------ START Refresh Button  ------------------------------------
     function refresh() {
 
         var timeSpan = $('#time_span').val();
@@ -387,22 +345,127 @@
         var start = "2016-05-03 21:20:20";
         var end = "2016-05-03 23:20:20";
 
-        $.ajax({
-            'url': 'get_data',
-            'type': 'post',
-            'dataType': 'json',
-            'data': {start: start, end: end},
-//            'data':"start=" + start,
-            'success': function (data) {
 
-                ractive_mixed_table.set({mixed_data: data.mixed_data});
-                ractive_output_table.set({output_data: data.output_data});
-                ractive_log_table.set({log_data: data.log_data});
-
+        mixed_data = [
+            {
+                'type': 'output',
+                'deivce_id': 'home',
+                'modulename': 'batman',
+                'time_stamp': '2016-04-01',
+                'content': 'name: temperature, value: 22, tag: 1'
+            },
+            {
+                'type': 'log',
+                'deivce_id': 'office',
+                'modulename': 'superman',
+                'time_stamp': '2016-04-02',
+                'content': 'name: normal log, value: Your system went smoothly'
+            },
+            {
+                'type': 'output',
+                'deivce_id': 'office',
+                'modulename': 'batman',
+                'time_stamp': '2016-04-03',
+                'content': 'name: temperature, value: 21, tag: 1'
+            },
+            {
+                'type': 'log',
+                'deivce_id': 'scholl',
+                'modulename': 'superman',
+                'time_stamp': '2016-04-04',
+                'content': 'name: normal log, value: administrator logged in'
             }
+        ];
+        output_data = [
+            {
+                'deivce_id': 'home',
+                'modulename': 'batman',
+                'name': 'temperature',
+                'output_value': 22,
+                'tag': '1',
+                'time_stamp': '2016-04-01'
+            },
+            {
+                'deivce_id': 'office',
+                'modulename': 'batman',
+                'name': 'temperature',
+                'output_value': 26,
+                'tag': '1',
+                'time_stamp': '2016-04-02'
+            },
+            {
+                'deivce_id': 'home',
+                'modulename': 'batman',
+                'name': 'temperature',
+                'output_value': 20,
+                'tag': '1',
+                'time_stamp': '2016-04-03'
+            },
+            {
+                'deivce_id': 'office',
+                'modulename': 'batman',
+                'name': 'temperature',
+                'output_value': 23,
+                'tag': '1',
+                'time_stamp': '2016-04-04'
+            }];
+        log_data = [
+            {
+                'device_id': 'office',
+                'modulename': 'superman',
+                'name': 'normal log',
+                'output_value': 'Your system went smoothly',
+                'time_stamp': '2016-04-01',
+                'log_level': '0'
+            },
+            {
+                'device_id': 'home',
+                'modulename': 'superman',
+                'name': 'normal log',
+                'output_value': 'Your system just got modified',
+                'time_stamp': '2016-04-02',
+                'log_level': '0'
+            },
+            {
+                'device_id': 'office',
+                'modulename': 'superman',
+                'name': 'critical log',
+                'output_value': 'Unauthorized logged in',
+                'time_stamp': '2016-04-03',
+                'log_level': '4'
+            },
+            {
+                'device_id': 'home',
+                'modulename': 'superman',
+                'name': 'normal log',
+                'output_value': 'guest logged in',
+                'time_stamp': '2016-04-04',
+                'log_level': '0'
+            }
+        ];
 
-        });
-    }
+
+        ractive.set({mixed_data: mixed_data});
+        ractive.set({output_data: output_data});
+        ractive.set({log_data: log_data});
+
+
+//        $.ajax({
+//            'url': 'get_data',
+//            'type': 'post',
+//            'dataType': 'json',
+//            'data': {start: start, end: end},
+////            'data':"start=" + start,
+//            'success': function (data) {
+//
+//                ractive_mixed_table.set({mixed_data: data.mixed_data});
+//                ractive_output_table.set({output_data: data.output_data});
+//                ractive_log_table.set({log_data: data.log_data});
+//
+//            }
+//
+//        });
+    } // -------- END Refresh Button --------
 
 
     // ------------------------------------  Tab  ------------------------------------
@@ -433,7 +496,8 @@
             ctx.fillRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
             ctx.strokeRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
         }
-    };
+    }
+    ;
 
     dy_plot = function () {
         var graph_com = document.getElementById("graphdiv");
@@ -442,55 +506,54 @@
 
         // collecting output data
         if (typeof output_data === "undefined") {
-            console.log('output_data not define yet!');
             g = new Dygraph(
-                graph_com,
-                data,
-                {
-                    //rollPeriod: 5,
-                    //showRoller: true,
-                    title: 'Temperature Line Chart',
-                    ylabel: 'Temperature (C)',
-                    legend: 'always',
-                    showRangeSelector: true,
-                    rangeSelectorHeight: 30,
-                    rangeSelectorPlotStrokeColor: 'green',
-                    rangeSelectorPlotFillColor: 'lightgreen'
-                }
+                    graph_com,
+                    data,
+                    {
+                        //rollPeriod: 5,
+                        //showRoller: true,
+                        title: 'Temperature Line Chart',
+                        ylabel: 'Temperature (C)',
+                        legend: 'always',
+                        showRangeSelector: true,
+                        rangeSelectorHeight: 30,
+                        rangeSelectorPlotStrokeColor: 'green',
+                        rangeSelectorPlotFillColor: 'lightgreen'
+                    }
             );
         }
         else if (output_data.length > 0) {
             var data = "Date, Temperature\n";   //[['Date', 'Temperature']];
             var dateRange = [];
             var timeSpan = $('#time_span').val();
-            for (var i = 0; i < output_data.length; i++){
+            for (var i = 0; i < output_data.length; i++) {
                 var output = output_data[i];
                 data = data + output.time_stamp + ',' + output.output_value.toString() + '\n'
-                if ( i == 0 || i == output_data.length-1)
+                if (i == 0 || i == output_data.length - 1)
                     dateRange.push(output.time_stamp);
                 //data.push([output.time_stamp, output.output_value]);
             }
-            if (typeof timeSpan !== "undefined"){
+            if (typeof timeSpan !== "undefined") {
                 var time2 = timeSpan.split("-");
-                dateRange = [ Date.parse(time2[0]), Date.parse(time2[1])];
+                dateRange = [Date.parse(time2[0]), Date.parse(time2[1])];
             }
 
             g2 = new Dygraph(
-                graph_com,
-                data,
-                {
-                    //labels: ['Date', 'Temperature'],
-                    plotter: barChartPlotter,
-                    title: 'Temperature Bar Chart',
-                    ylabel: 'Temperature (C)',
-                    legend: 'always',
-                    dateWindow: dateRange,
-                    showRangeSelector: true,
-                    rangeSelectorHeight: 30,
-                    rangeSelectorPlotStrokeColor: 'green',
-                    rangeSelectorPlotFillColor: 'lightgreen'
-                    //xTicker: Dygraph.dateTicker
-                }
+                    graph_com,
+                    data,
+                    {
+                        //labels: ['Date', 'Temperature'],
+                        plotter: barChartPlotter,
+                        title: 'Temperature Bar Chart',
+                        ylabel: 'Temperature (C)',
+                        legend: 'always',
+                        dateWindow: dateRange,
+                        showRangeSelector: true,
+                        rangeSelectorHeight: 30,
+                        rangeSelectorPlotStrokeColor: 'green',
+                        rangeSelectorPlotFillColor: 'lightgreen'
+                        //xTicker: Dygraph.dateTicker
+                    }
             );
 
         }
@@ -501,156 +564,120 @@
 
 </script>
 
- <!-- ------------------ Dygraph tab ------------------ -->
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="jquery-2.0.3.min.js"></script>
-    <script src="/server/static/js/dygraph-combined-dev.js"></script>
-  <!-- Bootstrap -->
-  <script src="tab.js"></script>
-  <link href="bootstrap.min.css" rel="stylesheet" media="screen">
-  <!-- Dygraphs -->
-  <script src="dygraph-combined.js"></script>
-  <!-- CSS for resizable graph -->
-  <style>
-    .dygraph-wrapper {
-      position: relative;
-      height: 300px;
-      width: 600px;
-    }
-    .dygraph-target1 {
-     position: center;
-      top: 20px;
-      left: 0px;
-      bottom: 50px;
-      right: 20px;
-
-    }
-    .dygraph-target2 {
-      position: center;
-      top: 20px;
-      left: 0px;
-      bottom: 50px;
-      right: 20px;
-
-  </style>
-</head>
+<!-- ------------------ Dygraph tab ------------------ -->
 
 
 <script>
     // list of dygraph object
     var graphs = [];
-    $(document).ready(function() {
-      $(".nav-tabs a").click(function(event) {
-        event.preventDefault();
-        $(this).tab('show');
-        var target_id = $(this).attr("href");
-        // clear the default style properties.
-        $(target_id).find(".dygraph-target").removeAttr("style");
-        graphs[target_id].resize();
-      });
-      $(".dygraph-target1").each(function() {
-
-        g = new Dygraph($(this)[0],  "{{=URL('static', 'temper.csv')}}",
-        {
-            rollPeriod: 5,
-            showRoller: true,
-            title : 'Temperature Line Chart',
-            ylabel: 'Temperature (C)',
-            legend: 'always',
-            showRangeSelector: true,
-            rangeSelectorHeight: 30,
-            rangeSelectorPlotStrokeColor: 'green',
-            rangeSelectorPlotFillColor: 'lightgreen'
+    $(document).ready(function () {
+        $(".nav-tabs a").click(function (event) {
+            event.preventDefault();
+            $(this).tab('show');
+            var target_id = $(this).attr("href");
+            // clear the default style properties.
+            $(target_id).find(".dygraph-target").removeAttr("style");
+            graphs[target_id].resize();
         });
-        // append the dygraph object to the list
-        graphs["#" + $(this).parents(".tab-pane").attr("id")] = g;
-      });
+        $(".dygraph-target1").each(function () {
 
-       $(".dygraph-target2").each(function() {
+            g = new Dygraph($(this)[0], "{{=URL('static', 'temper.csv')}}",
+                    {
+                        rollPeriod: 5,
+                        showRoller: true,
+                        title: 'Temperature Line Chart',
+                        ylabel: 'Temperature (C)',
+                        legend: 'always',
+                        showRangeSelector: true,
+                        rangeSelectorHeight: 30,
+                        rangeSelectorPlotStrokeColor: 'green',
+                        rangeSelectorPlotFillColor: 'lightgreen'
+                    });
+            // append the dygraph object to the list
+            graphs["#" + $(this).parents(".tab-pane").attr("id")] = g;
+        });
 
-        // bar chart
-    // Darken a color
-      function darkenColor(colorStr) {
-        // Defined in dygraph-utils.js
-        var color = Dygraph.toRGB_(colorStr);
-        color.r = Math.floor((255 + color.r) / 2);
-        color.g = Math.floor((255 + color.g) / 2);
-        color.b = Math.floor((255 + color.b) / 2);
-        return 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
-      }
+        $(".dygraph-target2").each(function () {
 
-    function multiColumnBarPlotter(e) {
-      // We need to handle all the series simultaneously.
-      if (e.seriesIndex !== 0) return;
+            // bar chart
+            // Darken a color
+            function darkenColor(colorStr) {
+                // Defined in dygraph-utils.js
+                var color = Dygraph.toRGB_(colorStr);
+                color.r = Math.floor((255 + color.r) / 2);
+                color.g = Math.floor((255 + color.g) / 2);
+                color.b = Math.floor((255 + color.b) / 2);
+                return 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
+            }
 
-      var g = e.dygraph;
-      var ctx = e.drawingContext;
-      var sets = e.allSeriesPoints;
-      var y_bottom = e.dygraph.toDomYCoord(0);
+            function multiColumnBarPlotter(e) {
+                // We need to handle all the series simultaneously.
+                if (e.seriesIndex !== 0) return;
 
-      // Find the minimum separation between x-values.
-      // This determines the bar width.
-      var min_sep = Infinity;
-      for (var j = 0; j < sets.length; j++) {
-        var points = sets[j];
-        for (var i = 1; i < points.length; i++) {
-          var sep = points[i].canvasx - points[i - 1].canvasx;
-          if (sep < min_sep) min_sep = sep;
-        }
-      }
-      var bar_width = Math.floor(2.0 / 3 * min_sep);
+                var g = e.dygraph;
+                var ctx = e.drawingContext;
+                var sets = e.allSeriesPoints;
+                var y_bottom = e.dygraph.toDomYCoord(0);
 
-      var fillColors = [];
-      var strokeColors = g.getColors();
-      for (var i = 0; i < strokeColors.length; i++) {
-        fillColors.push(darkenColor(strokeColors[i]));
-      }
+                // Find the minimum separation between x-values.
+                // This determines the bar width.
+                var min_sep = Infinity;
+                for (var j = 0; j < sets.length; j++) {
+                    var points = sets[j];
+                    for (var i = 1; i < points.length; i++) {
+                        var sep = points[i].canvasx - points[i - 1].canvasx;
+                        if (sep < min_sep) min_sep = sep;
+                    }
+                }
+                var bar_width = Math.floor(2.0 / 3 * min_sep);
 
-      for (var j = 0; j < sets.length; j++) {
-        ctx.fillStyle = fillColors[j];
-        ctx.strokeStyle = strokeColors[j];
-        for (var i = 0; i < sets[j].length; i++) {
-          var p = sets[j][i];
-          var center_x = p.canvasx;
-          var x_left = center_x - (bar_width / 2) * (1 - j/(sets.length-1));
+                var fillColors = [];
+                var strokeColors = g.getColors();
+                for (var i = 0; i < strokeColors.length; i++) {
+                    fillColors.push(darkenColor(strokeColors[i]));
+                }
 
-          ctx.fillRect(x_left, p.canvasy,
-              bar_width/sets.length, y_bottom - p.canvasy);
+                for (var j = 0; j < sets.length; j++) {
+                    ctx.fillStyle = fillColors[j];
+                    ctx.strokeStyle = strokeColors[j];
+                    for (var i = 0; i < sets[j].length; i++) {
+                        var p = sets[j][i];
+                        var center_x = p.canvasx;
+                        var x_left = center_x - (bar_width / 2) * (1 - j / (sets.length - 1));
 
-          ctx.strokeRect(x_left, p.canvasy,
-              bar_width/sets.length, y_bottom - p.canvasy);
-        }
-      }
-    }
+                        ctx.fillRect(x_left, p.canvasy,
+                                bar_width / sets.length, y_bottom - p.canvasy);
 
-    g1 = new Dygraph(
-            $(this)[0],
-             "{{=URL('static', 'temper.csv')}}",
-            {
-              title : 'Temperature Bar Chart',
-              ylabel: 'Temperature (C)',
-              rangeSelectorPlotStrokeColor: 'green',
-              rangeSelectorPlotFillColor: 'lightgreen',
-              includeZero: true,
-              showRoller: true,
-              legend: 'always',
-              showRangeSelector: true,
-            rangeSelectorHeight: 30,
-            rangeSelectorPlotStrokeColor: 'green',
-            rangeSelectorPlotFillColor: 'lightgreen',
-              plotter: multiColumnBarPlotter
+                        ctx.strokeRect(x_left, p.canvasy,
+                                bar_width / sets.length, y_bottom - p.canvasy);
+                    }
+                }
+            }
 
-            });
-        // append the dygraph object to the list
-        graphs["#" + $(this).parents(".tab-pane").attr("id")] = g1;
-      });
+            g1 = new Dygraph(
+                    $(this)[0],
+                    "{{=URL('static', 'temper.csv')}}",
+                    {
+                        title: 'Temperature Bar Chart',
+                        ylabel: 'Temperature (C)',
+                        rangeSelectorPlotStrokeColor: 'green',
+                        rangeSelectorPlotFillColor: 'lightgreen',
+                        includeZero: true,
+                        showRoller: true,
+                        legend: 'always',
+                        showRangeSelector: true,
+                        rangeSelectorHeight: 30,
+                        rangeSelectorPlotStrokeColor: 'green',
+                        rangeSelectorPlotFillColor: 'lightgreen',
+                        plotter: multiColumnBarPlotter
+
+                    });
+            // append the dygraph object to the list
+            graphs["#" + $(this).parents(".tab-pane").attr("id")] = g1;
+        });
     });
-  </script>
+</script>
 
 
-
-<script src="{{=URL('static', 'js/visualize_output.js')}}"></script>
 
 </div>
