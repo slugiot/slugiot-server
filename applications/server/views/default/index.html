@@ -3,7 +3,7 @@
 <div id="target"></div>
 <script id="template" type="text/ractive">
     <div class="navmenu navmenu-default navmenu-fixed-left navmenu-inverse offcanvas">
-        <a class="navmenu-brand" href="#">{{=response.title}}</a>
+        <a class="navmenu-brand" href="{{=URL('default', 'index')}}">{{=response.title}}</a>
         <ul class="nav navmenu-nav">
             {{if len(device_list) == 0:}}
                 <li class="active"><a href="{{=URL('device', 'add')}}">Add device</a></li>

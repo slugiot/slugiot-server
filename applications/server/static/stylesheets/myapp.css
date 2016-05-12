@@ -85,39 +85,40 @@
 /* line 2, ../sass/_main.scss */
 .img-circle {
   border-radius: 50%;
+  margin-top: 10px;
 }
 
-/* line 6, ../sass/_main.scss */
+/* line 7, ../sass/_main.scss */
 img.resize {
   width: 40px;
   /* you can use % */
   height: auto;
 }
 
-/* line 11, ../sass/_main.scss */
+/* line 12, ../sass/_main.scss */
 html, body, #wrapper {
   width: 100%;
   height: 100%;
 }
 
-/* line 16, ../sass/_main.scss */
+/* line 17, ../sass/_main.scss */
 #web2py-logo {
   font-size: 150%;
 }
 
-/* line 20, ../sass/_main.scss */
+/* line 21, ../sass/_main.scss */
 .border-c {
   background-color: #fff;
   padding: 2px;
 }
 
-/* line 25, ../sass/_main.scss */
+/* line 26, ../sass/_main.scss */
 .gravimg {
   line-height: 40px;
   vertical-align: middle;
 }
 
-/* line 31, ../sass/_main.scss */
+/* line 32, ../sass/_main.scss */
 .navbar {
   /* fallback for old browsers */
   background: #C04848;
@@ -128,7 +129,7 @@ html, body, #wrapper {
 }
 
 /* https://css-tricks.com/quick-css-trick-how-to-center-an-object-exactly-in-the-center/ */
-/* line 41, ../sass/_main.scss */
+/* line 42, ../sass/_main.scss */
 .centered {
   position: fixed;
   top: 45%;
@@ -136,23 +137,23 @@ html, body, #wrapper {
   transform: translate(-50%, -50%);
 }
 
-/* line 49, ../sass/_main.scss */
+/* line 50, ../sass/_main.scss */
 body {
   background-color: #fff;
 }
 
-/* line 53, ../sass/_main.scss */
+/* line 54, ../sass/_main.scss */
 .footer {
   background: #222222;
 }
 
-/* line 55, ../sass/_main.scss */
+/* line 56, ../sass/_main.scss */
 .panel-footer.panel-custom {
   background: #222222;
   color: #222222;
 }
 
-/* line 60, ../sass/_main.scss */
+/* line 61, ../sass/_main.scss */
 .container-text {
   position: absolute;
   top: 50%;
