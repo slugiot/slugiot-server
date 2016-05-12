@@ -13,10 +13,13 @@ class EditorTest(unittest.TestCase):
         # create instance of Firefox WebDriver
         self.driver = webdriver.Firefox()
 
+
     def test_temp_save(self):
         # local reference to the driver object
         driver = self.driver
         driver.get("http://localhost:8000/editor/test_edit?procedure_id=1&stable=false")
+
+        print "ok"
         time.sleep(2)
         # locate the temporary save button
         element = driver.find_element_by_class_name("btn-primary")
