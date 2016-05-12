@@ -1,184 +1,157 @@
-<!-- Sample "dashboard" for SlugIOT
-    TODO: Replace all harcoded examples with things from the database
-    TODO: Actually make ractive work -->
-
-{{left_sidebar_enabled=False,right_sidebar_enabled=False,('message' in globals())}}
 {{extend 'layout.html'}}
 
-<!-- Ractive requires a "target" div, so everything from the template script is translated to the target -->
 <div id="target"></div>
-
-<!-- List of all devices sorted by Raspberry Pi -->
 <script id="template" type="text/ractive">
-    {{block left_sidebar}}
-      <div class="panel panel-info">
-          <div class="panel-heading"><h3 class="panel-title"><a class="btn-block" href="#">
-              <i class="fa fa-home fa-fw fa-3x" aria-hidden="true"></i><font size="4">Family Home</font></a></h3>
-          </div>
-          <ul class="list-group">
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-sun-o fa-fw" aria-hidden="true"></i>Nest Thermostat</a>
-            </li>
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-television fa-fw" aria-hidden="true"></i>Samsung Smart TV</a>
-            </li>
-            <li class="list-group-item" on-click='car_click'>
-                <a href="#"><i class="fa fa-car fa-fw" aria-hidden="true"></i>Tesla Model S</a>
-            </li>
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-tint fa-fw" aria-hidden="true"></i>Sprinkler System</a>
-            </li>
+    {% #unless loading %}
+    <div class="col-sm-3 col-md-2 col-lg-2 fill sidebar" style="margin-top: -20">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="{{=URL('default', 'add')}}">{{=(icon_add + string_add_short)}} <span class="sr-only">(current)</span></a></li>
+            {% #each device_dict:device_id %}
+                <li><a href="#" on-click="set_val:{% device_id %}, {% name %}, {% description %}">{% name %}</a></li>
+            {% /each %}
+            <div class="spacer"></div>
           </ul>
-        </div>
-
-        <div class="panel panel-info">
-          <div class="panel-heading"><h3 class="panel-title"><a class="btn-block" href="{{=URL('admin','default','index')}}">
-              <i class="fa fa-plane fa-fw fa-3x" aria-hidden="true"></i><font size="4">Vacation Villa</font></a></h3>
-          </div>
-          <ul class="list-group">
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-video-camera fa-fw" aria-hidden="true"></i>Security Camera</a>
-            </li>
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-fax fa-fw" aria-hidden="true"></i>Fax Machine</a>
-            </li>
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-lightbulb-o fa-fw" aria-hidden="true"></i>Phillps Hue</a>
-            </li>
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-gamepad fa-fw" aria-hidden="true"></i>Xbox One</a>
-            </li>
-          </ul>
-        </div>
-    {{end}}
-
-    <!-- This where the charts and logs from the data viz team would go -->
-    <div id="middle_bar" align="center">
-        <h1 align="center">{% name %}</h1>
-        <div id="curve_chart" style="width: 900px; height: 500px"></div>
     </div>
+    {% /unless %}
 
-    <!-- Things here would be generated from the database -->
-    {{block right_sidebar}}
-        <div id="device_info" align="center">
-        <h1>Status</h1>
-        <!-- This would link to something produced by the script editor team -->
-        <button type="button" class="btn btn-primary" onclick="editClick()">
-            <i class="fa fa-pencil-square-o fa-fw" aria-hidden="true"></i><font size="1">Edit Script</font>
-        </button><br><br>
-        <ul class="list-group">
-            <li class="list-group-item"><span class="badge"><i class="fa fa-check" aria-hidden="true"></i></span>Status: OK</li>
-            <li class="list-group-item">Last synced: December 31, 1969</li>
-            <li class="list-group-item">Next sync in: <span id="time"></span></li>
-        </ul>
+    <div class="main">
+        <div id="middle_bar" class="col-sm-5 col-md-7 col-lg-7" align="center">
+            <div class="centered" align="center">
+                {% #if loading %}
+                    <h1>{{=icon_loading}}</h1>
+                {% else %}
+                    {{if len(device_list) == 0:}}
+                        <a href="{{=URL('default', 'add')}}">{{=icon_sad_big}}</a><br>
+                        <h3><a href="{{=URL('default', 'add')}}">{{=string_no_device}}</a></h3>
+                    {{else:}}
+                        {% #if selection_value == -1 %}
+                           {{=icon_rocket_big}}
+                           <h3>{{=string_get_started}}</h3>
+                        {% else %}
+                           {{=icon_graph_big}}
+                           <h3>{% selection_name %} {{=string_no_data}}</h3>
+                        {% /if %}
+                    {{pass}}
+                {% /if %}
+            </div>
         </div>
-    {{end}}
+
+        {% #unless loading %}
+            <div id="device_info" class="col-sm-4 col-md-3 col-lg-3" align="center">
+                <h2>{% selection_name %} Configuration</h2><br/>
+                {% #if selection_value == -1 %}
+                    <button type="button" class="btn btn-primary disabled">{{=string_manage}}</button>
+                    <button type="button" class="btn btn-warning disabled">{{=string_edit}}</button>
+                    <button type="button" class="btn btn-danger disabled"
+                        on-click="delete:{% selection_value %}">{{=string_delete}}</button><br><br>
+                {% else %}
+                    <a href="{{=URL('default', 'manage')}}?device={% selection_value %}" class="btn btn-primary">{{=string_manage}}</a>
+                    <a href="{{=URL('default', 'edit_device')}}?device={% selection_value %}" class="btn btn-warning">{{=string_edit}}</a>
+                    <button type="button" class="btn btn-danger"
+                        on-click="delete:{% selection_value %}">{{=string_delete}}</button><br><br>
+                {% /if %}
+                <ul class="list-group">
+                    {% #if selection_value == -1 %}
+                        <li class="list-group-item clearfix">
+                            <span class="pull-left">{{=string_no_status}}</span>
+                            <span class="pull-right">
+                                <span class="label label-pill label-warning">{{=icon_warning}}</span>
+                            </span>
+                        </li>
+                        <li class="list-group-item clearfix">
+                            <span class="pull-left">
+                                {{=string_device_id + string_undefined}}
+                            </span>
+                        </li>
+                    {% else %}
+                        <li class="list-group-item clearfix">
+                            <span class="pull-left">Status: OK</span>
+                            <span class="pull-right">
+                                <span class="label label-pill label-success">{{=icon_check}}</span>
+                            </span>
+                        </li>
+                        <li class="list-group-item clearfix">
+                            <span class="pull-left">
+                                {{=string_device_id}}{% selection_value %}
+                            </span>
+                        </li>
+                        <li class="list-group-item clearfix">
+                            <span class="pull-left">
+                                {{=string_desc}}{% selection_desc %}
+                            </span>
+                        </li>
+                    {% /if %}
+                </ul>
+            </div>
+        {% /unless %}
+    </div>
 </script>
+
 <script>
-    // =============== Ractive ===================================
+$(function() {
+    // Ractive object
     var ractive = new Ractive({
-      // The `el` option can be a node, an ID, or a CSS selector.
-      el: '#target',
-
-      // We could pass in a string, but for the sake of convenience
-      // we're passing the ID of the <script> tag above.
-      template: '#template',
-
-      delimiters: ['{%', '%}'],
-      tripleDelimiters: ['{%%', '%%}'],
-
-      // Here, we're passing in some initial data
-      data: { name: 'Nest Thermostat' } // this would be changed, obviously
-    });
-
-    ractive.on({
-        'car_click': function(){
-            ractive.set('name', "Tesla Model S"); // again, would be changed, expanded
+        el: '#target',
+        template: '#template',
+        delimiters: ['{%', '%}'],
+        tripleDelimiters: ['{%%', '%%}'],
+        data: {
+            device_dict: {},
+            delete_devices: [],
+            loading: true,
+            sign_uuid: "{{=sign_uuid}}",
+            selection_value: -1,
+            selection_name: "",
+            selection_desc: ""
         }
     });
 
-    // ============== Graphs =====================================
-    // Would be replace by whatever the data viz teams comes up with
-
-    // Load the Visualization API and the corechart package.
-      google.charts.load('current', {'packages':['corechart']});
-
-      // Set a callback to run when the Google Visualization API is loaded.
-      google.charts.setOnLoadCallback(drawChart);
-
-      // Callback that creates and populates a data table,
-      // instantiates the pie chart, passes in the data and
-      // draws it.
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Day', 'This week', 'Last week'],
-          ['Saturday',  62,      25],
-          ['Sunday',    73,      28],
-          ['Yesterday', 41,      70],
-          ['Today',     64,      34]
-        ]);
-
-        var options = {
-          curveType: 'function',
-          legend: { position: 'bottom' }
-        };
-
-        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
-
-        chart.draw(data, options);
-      }
-
-    // =============== Sync Timer ===================
-    // Countdown timer until next sync
-    function startTimer(duration, display) {
-        var timer = duration, minutes, seconds;
-        setInterval(function () {
-            minutes = parseInt(timer / 60, 10);
-            seconds = parseInt(timer % 60, 10);
-
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
-
-            display.textContent = minutes + ":" + seconds;
-
-            if (--timer < 0) {
-                timer = duration;
-                notifyMe();
-            }
-        }, 1000);
+    // Refreshes device list every time function is called
+    function load_devices(){
+        $.ajax("{{=URL('default', 'load_devices', user_signature=True, args=sign_uuid)}}",
+                {
+                    method: 'POST',
+                    success: function (data) {
+                        ractive.set('device_dict', data['device_dict']);
+                        ractive.set('loading', false);
+                    }
+                }
+        );
     }
 
-    window.onload = function () {
-        var fiveMinutes = 60 * 1,
-            display = document.querySelector('#time');
-        startTimer(fiveMinutes, display);
-    };
+    // Call load_devices() initially when the page first loads
+    load_devices();
 
-    // =========== Misc ====================
-    // Edit Script alert box
-    function editClick() {
-        alert("Work in progress, not added yet");
-    }
-
-    // Chrome notifications...neat little thing was messing around with
-    // request permission on page load
-    document.addEventListener('DOMContentLoaded', function () {
-      if (Notification.permission !== "granted")
-        Notification.requestPermission();
+    ractive.on("set_val", function(e, value, name, desc){
+        ractive.set('selection_value', value);
+        ractive.set('selection_name', name);
+        ractive.set('selection_desc', desc)
     });
 
-    function notifyMe() {
-      if (!Notification) return;
-      if (Notification.permission !== "granted") Notification.requestPermission();
-      else {
-        var notification = new Notification('Device synced', {
-          icon: '',
-          body: "One of your devices has synced",
-        });
+    // Delete logic
+    ractive.on("delete", function(e, device_id){
+        if(device_id == -1){
+            alert("You are trying to delete with no selection.");
+            return;
+        }
+        var delete_devices = ractive.get('delete_devices');
+        if(delete_devices.indexOf(device_id) == -1) delete_devices.push(device_id);
+        else delete_devices.pop(device_id);
+        ractive.set('delete_list', delete_devices);
+        $.ajax("{{=URL('default', 'delete_devices', user_signature=True)}}",
+                {
+                    data: { delete_devices: delete_devices },
+                    method: 'POST',
+                    success: function() {},
+                    error: function() {}
+                }
+        );
+        ractive.set('delete_list', []);
+        reloadPage();
+    });
 
-        notification.onclick = function () {
-          window.open("http://127.0.0.1:8800/#");
-        };
-      }
+    function reloadPage() {
+        location.reload();
     }
+});
 </script>
