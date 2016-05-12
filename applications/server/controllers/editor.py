@@ -4,7 +4,7 @@
 
 import proc_harness_module
 from datetime import datetime
-
+# @auth.requires_signature()
 def edit_procedure():
     """
     This function received ajax request to generated the HTML content for editor
@@ -42,7 +42,7 @@ def edit_procedure():
 
     return response.json(file_details)
 
-
+# @auth.requires_signature()
 def save_procedure():
     """
     This function received ajax request to save procedure to the procedure TABLE
