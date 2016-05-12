@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json_plus
+import slugiot_synchronization
 
 """
  This method is to recieve log data.  It accepts two HTTP methods:
@@ -20,27 +21,12 @@ def receive_logs():
         logs = db(db.logs).select(orderby="received_time_stamp DESC",limitby=(0,limit))
         return response.json(logs)
     def POST(*args, **vars):
-        # get the log data from the request and validate
         request_body = request.body.read()
-        log_data = __get_validated_data(request_body, "logs")
-
-        # get information from document
-        device_id = log_data.get('device_id')
-        logs = log_data.get('logs')
-
-        for log in logs:
-            if (not isinstance(log, dict)):
-                raise HTTP(400, "all log entries must be of type 'dict'")
-            log["device_id"] = device_id
-            if (log.get('id')):
-                del log['id']
-
         try:
-            db.logs.bulk_insert(logs)
+            saved_data = slugiot_synchronization.receive_append_data(request_body, 'logs')
+            return response.json({"success":True,"table":"logs","insert_count":len(saved_data)})
         except Exception as e:
             raise HTTP(400, "there was an error saving log data: " + e.message)
-
-        return response.json({"saved_logs":logs})
 
     return locals()
 
@@ -71,27 +57,12 @@ def receive_outputs():
         return response.json(logs)
 
     def POST(*args, **vars):
-        # get the log data from the request and validate
         request_body = request.body.read()
-        output_data = __get_validated_data(request_body, 'outputs')
-
-        # get information from document
-        device_id = output_data.get('device_id')
-        output = output_data.get('outputs')
-
-        for out in output:
-            if (not isinstance(out, dict)):
-                raise HTTP(400, "all output entries must be of type 'dict'")
-            out["device_id"] = device_id
-            if (out.get('id')):
-                del out['id']
-
         try:
-            db.outputs.bulk_insert(output)
+            saved_data = slugiot_synchronization.receive_append_data(request_body, 'outputs')
+            return response.json({"success":True,"table":"outputs","insert_count":len(saved_data)})
         except Exception as e:
             raise HTTP(400, "there was an error saving log data: " + e.message)
-
-        return response.json({"saved_logs": output})
 
     return locals()
 
