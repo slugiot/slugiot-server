@@ -10,6 +10,7 @@ from gluon import utils as gluon_utils
 import time
 import access
 import proc_harness_module
+import uuid
 
 
 class DeviceIDVerification:
@@ -29,7 +30,8 @@ class DeviceIDVerification:
 def index():
     """
     Description: Controller for the home page.
-    Returns: a redirect to the splash page if not logged in or a list of the devices + UUID to index.html if you are.
+    Returns (if not logged in): a redirect to the splash page.
+    Returns (if logged in): A list of all the devices that are associated with your email (and a UUID for signatures)
     """
     if auth.user_id is None:
         redirect(URL('default', 'login.html'))
@@ -45,7 +47,7 @@ def login():
     Description: Controller for the login/splash page.
     Returns: Nothing of substance
     """
-    return dict(message=T('Welcome to SlugIOT!'))
+    return dict()
 
 
 @auth.requires_login()
@@ -54,12 +56,14 @@ def add():
     Description: Controller for the add page, which lets you add a device into the DB
     Returns: A form that lets you add things into db.devices (use by including {{=form}} in add.html)
     """
-    db.device.device_id.writable = False
+    var = uuid.uuid4()
     form = SQLFORM(db.device)
+    form.vars.device_id = var
+    db.device.device_id.writable = False
     form.custom.widget.name['requires'] = IS_NOT_EMPTY()
     if form.process().accepted:
-        session.flash = "Device added!"
-        redirect(URL('default', 'index'))
+        session.flash = T(form.vars.name + ' added!')
+        redirect(URL('default', 'manage', vars=dict(device=var)))
     return dict(form=form)
 
 
@@ -134,6 +138,9 @@ def manage():
     :return: procedure_list, uuid, and vars for URL
     """
     val = request.vars['device']
+    if val is None:
+        session.flash = T('Device not found.')
+        redirect(URL('default', 'index'))
     sign_uuid = gluon_utils.web2py_uuid()
     procedure_list = db(db.procedures.device_id == val).select()
     return dict(procedures_list=procedure_list, sign_uuid=sign_uuid, val=val)

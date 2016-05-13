@@ -25,8 +25,7 @@ response.google_analytics_id = None
 # We don't the user to see things like "add new device" if they're not logged in
 if auth.user_id is not None:
     response.menu = [
-        (T('Devices'), False, URL('default', 'add'), []),
-        (T('Procedures'), False, URL('default', 'manage'), []),
+        (T('Add Device'), False, URL('default', 'add'), []),
         (T('Help'), False, URL('default', 'help'), [])
     ]
 else:

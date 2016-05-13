@@ -27,13 +27,15 @@
             }}
         </div>
     </div>
+        {{if 'profile' in request.args(0):}}
         <br>
         <div class="settings-box" align="center">
-            <h3>Settings</h3><br>
+            <h3>Experimental Settings</h3><br>
             <div class="checkbox">
               <label><input type="checkbox" data-toggle="toggle">&nbsp;Enable QR codes</label>
             </div>
         </div>
+        {{pass}}
 </div>
 
 

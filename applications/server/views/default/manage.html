@@ -5,7 +5,7 @@
     {% #unless loading %}
     <div class="col-sm-3 col-md-2 col-lg-2 fill sidebar" style="margin-top: -20">
           <ul class="nav nav-sidebar">
-            <li class="active"><a href="{{=URL('default', 'add_new_procedure', vars=dict(device=val))}}">{{=(icon_add + string_add_short)}} <span class="sr-only">(current)</span></a></li>
+            <li class="active"><a href="{{=URL('default', 'add_new_procedure', vars=dict(device=val))}}" id="add_proc">{{=(icon_add + string_add_short)}} <span class="sr-only">(current)</span></a></li>
             {% #each procedure_dict:device_id %}
                 <li><a href="#" on-click="set_val:{% device_id %}, {% id %}">{% name %}</a></li>
             {% /each %}
@@ -28,7 +28,7 @@
                                {{=icon_left_big}}
                                <h3>{{=string_get_started_script}}</h3>
                             {% else %}
-                               <a href="{{=URL('default', 'edit_procedure')}}?procedure_id={% selection_id %}&stable=false">{{=icon_edit_big}}</a><br>
+                               <a href="{{=URL('default', 'edit_procedure')}}?procedure_id={% selection_id %}&stable=false">{{=icon_edit_big}} id="add_idek"</a><br>
                                <h3><a href="{{=URL('default', 'edit_procedure')}}?procedure_id={% selection_id %}&stable=false">{{=string_start_edit}}</a></h3>
                             {% /if %}
                         </div>

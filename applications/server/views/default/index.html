@@ -21,9 +21,9 @@
                     <h1>{{=icon_loading}}</h1>
                 {% else %}
                     {{if len(device_list) == 0:}}
-                        <div align="center">
-                            <a style="color: #842448;" href="{{=URL('default', 'add')}}">{{=icon_sad_big}}</a><br>
-                            <h3><a style="color: #842448;" href="{{=URL('default', 'add')}}">{{=string_no_device}}</a></h3>
+                        <div align="center" style="color: #842448;">
+                            <a href="{{=URL('default', 'add')}}">{{=icon_sad_big}}</a><br>
+                            <h3><a href="{{=URL('default', 'add')}}">{{=string_no_device}}</a></h3>
                         </div>
                     {{else:}}
                         {% #if selection_value == -1 %}
@@ -43,37 +43,17 @@
         <!-- Let's hide this section as well until we have a device list populated -->
         {% #unless loading %}
             <div id="device_info" class="col-sm-4 col-md-3 col-lg-3" align="center">
-                <h2>{% selection_name %} Configuration</h2><br/>
-                <!-- Show buttons as disabled if there is no device selected -->
-                {% #if selection_value == -1 %}
-                    <button type="button" class="btn btn-primary disabled">{{=string_manage}}</button>
-                    <button type="button" class="btn btn-warning disabled">{{=string_edit}}</button>
-                    <button type="button" class="btn btn-danger disabled"
-                        on-click="delete:{% selection_value %}">{{=string_delete}}</button><br><br>
-                <!-- Enable the buttons once we have a selected device ID -->
-                {% else %}
-                    <a href="{{=URL('default', 'manage')}}?device={% selection_value %}" class="btn btn-primary">{{=string_manage}}</a>
+                {% #unless selection_value == -1 %}
+                    <h2>{% selection_name %} Configuration</h2><br/>
+                    <a href="{{=URL('default', 'manage')}}?device={% selection_value %}" id="btn-procedure" class="btn btn-primary">{{=string_manage}}</a>
                     <a href="{{=URL('default', 'edit_device')}}?device={% selection_value %}" class="btn btn-warning">{{=string_edit}}</a>
-                    <button type="button" class="btn btn-danger"
+                    <button type="button" id="btn-delete" class="btn btn-danger"
                         on-click="delete:{% selection_value %}">{{=string_delete}}</button><br><br>
-                {% /if %}
+                {% /unless %}
                 <!-- Status panel for the device, listing name, status, ID , and description -->
                 <ul class="list-group">
-                    <!-- Tell the user we don't know anything if there is no selection ID -->
-                    {% #if selection_value == -1 %}
-                        <li class="list-group-item clearfix">
-                            <span class="pull-left">{{=string_no_status}}</span>
-                            <span class="pull-right">
-                                <span class="label label-pill label-warning">{{=icon_warning}}</span>
-                            </span>
-                        </li>
-                        <li class="list-group-item clearfix">
-                            <span class="pull-left">
-                                {{=string_device_id + string_undefined}}
-                            </span>
-                        </li>
-                    <!-- Display device info if we DO know the device ID -->
-                    {% else %}
+                    {% #unless selection_value == -1 %}
+                        <!-- Display device info if we DO know the device ID -->
                         <li class="list-group-item clearfix">
                             <span class="pull-left">Status: OK</span>
                             <span class="pull-right">
@@ -90,7 +70,7 @@
                                 {{=string_desc}}{% selection_desc %}
                             </span>
                         </li>
-                    {% /if %}
+                    {% /unless %}
                 </ul>
             </div>
         {% /unless %}
