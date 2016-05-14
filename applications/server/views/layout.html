@@ -113,18 +113,20 @@
           </div>
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
-            <ul class="nav navbar-nav navbar-right">
+            <ul class="nav navbar-nav navbar-right white-col">
                 {{='auth' in globals() and auth.navbar('Welcome',mode='dropdown') or ''}}
             </ul>
             {{if response.menu:}}
                 <!-- Add the user's gravatar image next to the dropdown if they're logged in -->
                 {{if auth.is_logged_in():}}
                     <ul class="nav navbar-nav navbar-right">
-                        <img class="img-circle profile-image resize border-c" src='{{=Gravatar(auth.user.email).thumb}}'>
+                        <a href="{{=URL('default', 'user', args='profile')}}">
+                            <img class="img-circle profile-image resize border-c" src='{{=Gravatar(auth.user.email).thumb}}'>
+                        </a>
                     </ul>
                 {{pass}}
                 <!-- Actual dropdown itself -->
-                {{=MENU(response.menu, _class='nav navbar-nav',li_class='dropdown',ul_class='dropdown-menu')}}
+                {{=MENU(response.menu, _class='nav navbar-nav white-col',li_class='dropdown',ul_class='dropdown-menu')}}
             {{pass}}
         </div>
       </div>
@@ -149,7 +151,7 @@
         <div class="copyright pull-left">{{=T('Copyright')}} &#169; {{=request.now.year}}</div>
           <div id="poweredBy" class="pull-right">
             {{=T('Made in')}}
-            <a style="color: #C04875;" href="http://www.ucsc.edu/">UCSC</a>
+            <a style="color: #FFFFFF;" href="http://www.ucsc.edu/">UCSC</a>
           </div>
       </div>
     </footer>
