@@ -98,7 +98,7 @@ def get_validated_data(request_body, data_key):
         raise Exception("data needs to have list of data entries as '" + data_key + "'")
     if (not "device_id" in data and not isinstance(data.get('device_id'), str)):
         raise Exception("data needs to have string device id as 'device_id'")
-    validate_device_id(data.get['device_id'])
+    validate_device_id(data['device_id'])
 
     return data
 
