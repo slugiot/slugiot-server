@@ -99,7 +99,7 @@ class ProcHarnessTest:
 
         self.test_device_id = "test"
         auth = Auth(globals(), self.db)
-        self.test_user_email = auth.user.email
+        self.test_user_email = "test@test.com" #auth.user.email
         access.add_permission(self.test_device_id, self.test_user_email, perm_type="a")
 
         self.proc_table = self.db.procedures
@@ -126,7 +126,7 @@ class ProcHarnessTest:
         for row in self.db(self.revisions_table).select():
             logger.debug(str(row))
 
-        name2 = "second_test_name"
+        name2 = "illegal test name"
         proc_id2 = phm.create_procedure(name2, self.test_device_id)
         test_data3 = "db = 2\nprint db"
 

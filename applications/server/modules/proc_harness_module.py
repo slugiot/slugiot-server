@@ -4,6 +4,7 @@ from gluon import current
 from gluon.tools import Auth
 import access
 import logging
+import re
 
 test_device_id = "test"
 logger = logging.getLogger("web2py.app.server")
@@ -28,6 +29,12 @@ def _check_name_and_perms_(user_email, device_id, procedure_name):
                (proc_table.name == procedure_name))
     if not query.isempty():
         logger.info("Device " + str(device_id) + " already contains a procedure of name " + str(procedure_name))
+        return False
+
+    # name should not break file system
+    result = re.search("[^a-zA-Z0-9._-]", str(procedure_name))
+    if result:
+        logger.info("Procedure name \"" + str(procedure_name) + "\" is not allowed. Use only numbers, letters, _, -, and .")
         return False
 
     return True
