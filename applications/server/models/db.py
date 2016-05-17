@@ -20,7 +20,7 @@ myconf = AppConfig(reload=True)
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    db = DAL(myconf.get('db.uri'), 
+    db = DAL(myconf.get('db.uri'),
              pool_size = myconf.get('db.pool_size'),
              migrate_enabled = myconf.get('db.migrate'),
              check_reserved = ['all'])
@@ -69,6 +69,8 @@ except ImportError:
 
 # host names must be a list of allowed host names (glob syntax allowed)
 auth = Auth(db, host_names=myconf.get('host.names'))
+current.auth = auth
+
 service = Service()
 plugins = PluginManager()
 
