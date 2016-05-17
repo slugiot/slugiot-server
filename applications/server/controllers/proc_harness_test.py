@@ -39,8 +39,8 @@ def create_new_proc_for_synch():
     name = "new_procedure" + str(random.randint(0,10000))
 
     db = current.db
-    auth = Auth(globals(), db)
-    test_user_email = "test@test.com" #auth.user.email
+    auth = current.auth
+    test_user_email = auth.user.email
     logger.info("test_user_email" + str(test_user_email))
 
     access.add_permission(test_device_id, test_user_email, perm_type="a")

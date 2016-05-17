@@ -68,10 +68,10 @@ def create_procedure(procedure_name, device_id):
     :rtype: long
     """
     db = current.db
-    auth = Auth(globals(), db)
+    auth = current.auth
     proc_table = db.procedures
 
-    user_email = "test@test.com" #auth.user.email
+    user_email = auth.user.email
 
     if not _check_name_and_perms_(user_email, device_id, procedure_name):
         return None
