@@ -19,36 +19,6 @@ def permission_value(x):
         return 0
 
 
-def permission_max(x, y):
-    """
-    This function returns maximum permission level of x and y.
-    @param x : x permission
-    @param y : y permission
-    @returns : max permission.
-    """
-    num_x = permission_value(x)
-    num_y = permission_value(y)
-    if num_x > num_y:
-        return x
-    else:
-        return y
-
-
-def permission_min(x, y):
-    """
-    This function returns minimum permission level of x and y.
-    @param x : x permission
-    @param y : y permission
-    @returns : max permission.
-    """
-    num_x = permission_value(x)
-    num_y = permission_value(y)
-    if num_x < num_y:
-        return x
-    else:
-        return y
-
-
 def permission_entail(x, y):
     """
     This function returns if x permission entails y permission
