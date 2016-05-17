@@ -1,7 +1,6 @@
 import datetime
 
 from gluon import current
-from gluon.tools import Auth
 import access
 import logging
 import re
@@ -9,8 +8,6 @@ import re
 test_device_id = "test"
 logger = logging.getLogger("web2py.app.server")
 logger.setLevel(logging.INFO)
-
-auth = Auth(globals(), current.db)
 
 ####### Helper Functions ##########
 
