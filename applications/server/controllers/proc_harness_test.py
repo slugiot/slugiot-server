@@ -24,6 +24,8 @@ def index():
     return "Ran Unit Tests for Procedure Harness"
 
 def clear_tables():
+    if not request.env.HTTP_HOST.startswith('localhost'):
+        raise(HTTP(403))
     db = current.db
     db.procedures.truncate()
     db.procedure_revisions.truncate()
@@ -31,6 +33,8 @@ def clear_tables():
         logger.info("Server Table Cleared")
 
 def create_new_proc_for_synch():
+    if not request.env.HTTP_HOST.startswith('localhost'):
+        raise(HTTP(403))
     random.seed(time.time())
     name = "new_procedure" + str(random.randint(0,10000))
 
@@ -50,6 +54,8 @@ def create_new_proc_for_synch():
 
 
 def update_proc_for_synch():
+    if not request.env.HTTP_HOST.startswith('localhost'):
+        raise(HTTP(403))
     db = current.db
     proc_table = db.procedures
 
@@ -63,6 +69,8 @@ def update_proc_for_synch():
 
 
 def update_proc_not_for_synch():
+    if not request.env.HTTP_HOST.startswith('localhost'):
+        raise(HTTP(403))
     db = current.db
     proc_table = db.procedures
 
