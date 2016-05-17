@@ -2,8 +2,56 @@ import datetime
 
 from gluon import current
 from gluon.tools import Auth
+import access
+import logging
+import re
 
-#auth = Auth(globals(), current.db)
+test_device_id = "test"
+logger = logging.getLogger("web2py.app.server")
+logger.setLevel(logging.INFO)
+
+auth = Auth(globals(), current.db)
+
+####### Helper Functions ##########
+
+def _check_name_and_perms_(user_email, device_id, procedure_name):
+    db = current.db
+    proc_table = db.procedures
+
+    # check that user has permissions to add a procedure to the device
+    if not access.can_create_procedure(device_id, user_email):
+        logger.info("User " + str(user_email) +
+                    " does not have permission to create a procedure on device: " + str(device_id))
+        return False
+
+    # device should not have two procedures of the same name
+    query = db((proc_table.device_id == device_id) &
+               (proc_table.name == procedure_name))
+    if not query.isempty():
+        logger.info("Device " + str(device_id) + " already contains a procedure of name " + str(procedure_name))
+        return False
+
+    # name should not break file system
+    result = re.search("[^a-zA-Z0-9._-]", str(procedure_name))
+    if result:
+        logger.info("Procedure name \"" + str(procedure_name) + "\" is not allowed. Use only numbers, letters, _, -, and .")
+        return False
+
+    return True
+
+def _get_most_recent_date_(procedure_id, is_stable):
+    db = current.db
+    revisions_table = db.procedure_revisions
+
+    # Get the most recent date, either stable or absolute
+    max = revisions_table.last_update.max()
+    if is_stable:
+        date = db((revisions_table.procedure_id == procedure_id) &
+                  (revisions_table.is_stable == is_stable)).select(max).first()[max]
+    else:
+        date = db(revisions_table.procedure_id == procedure_id).select(max).first()[max]
+
+    return date
 
 ####### API FOR EDITOR TEAM ##########
 
@@ -23,14 +71,41 @@ def create_procedure(procedure_name, device_id):
     auth = Auth(globals(), db)
     proc_table = db.procedures
 
-    user_email = auth.user.email
+    user_email = "test@test.com" #auth.user.email
 
-    if not access.can_create_procedure(device_id, user_email):
+    if not _check_name_and_perms_(user_email, device_id, procedure_name):
         return None
 
     pid = proc_table.insert(device_id = device_id, name = procedure_name)
     access.add_permission(device_id = device_id, user_email = user_email, procedure_id = pid)
+
     return pid
+
+#@auth.requires_login()
+def change_procedure_name(procedure_id, new_procedure_name):
+    """
+    This function should be called when a procedure name change is desired
+
+    :param procedure_id: Procedure ID for which code should be fetched
+    :type procedure_id: long
+    :param procedure_name: New name for the procedure
+    :type procedure_name: str
+    :return:
+    :rtype:
+    """
+
+    db = current.db
+    auth = Auth(globals(), db)
+    proc_table = db.procedures
+
+    user_email = "test@test.com" #auth.user.email
+    device_id = db(proc_table.id == procedure_id).select().first().device_id
+
+    if not _check_name_and_perms_(user_email, device_id, new_procedure_name):
+        return
+
+    record = db(proc_table.id == procedure_id).select().first()
+    record.update_record(name = new_procedure_name)
 
 #@auth.requires_login()
 def get_procedures_for_edit(device_id):
@@ -46,7 +121,7 @@ def get_procedures_for_edit(device_id):
     auth = Auth(globals(), db)
     proc_table = db.procedures
 
-    user_email = auth.user.email
+    user_email = "test@test.com" #auth.user.email
 
     # Get all relevant records for user_email
     records = db(proc_table.device_id == device_id).select()
@@ -75,7 +150,7 @@ def get_procedures_for_view(device_id):
     proc_table = db.procedures
 
     # Get all relevant records for user_email
-    user_email = auth.user.email
+    user_email = "test@test.com" #auth.user.email
 
     records = db(proc_table.device_id == device_id).select()
 
@@ -87,22 +162,6 @@ def get_procedures_for_view(device_id):
             procedure_ids.append(row.id)
 
     return procedure_ids
-
-
-def __get_most_recent_date__(procedure_id, is_stable):
-    db = current.db
-    revisions_table = db.procedure_revisions
-
-    # Get the most recent date, either stable or absolute
-    max = revisions_table.last_update.max()
-    if is_stable:
-        date = db((revisions_table.procedure_id == procedure_id) &
-                  (revisions_table.is_stable == is_stable)).select(max).first()[max]
-    else:
-        date = db(revisions_table.procedure_id == procedure_id).select(max).first()[max]
-
-    return date
-
 
 #@auth.requires_login()
 def get_procedure_data(procedure_id, is_stable):
@@ -121,7 +180,7 @@ def get_procedure_data(procedure_id, is_stable):
     db = current.db
     revisions_table = db.procedure_revisions
 
-    date = __get_most_recent_date__(procedure_id, is_stable)
+    date = _get_most_recent_date_(procedure_id, is_stable)
 
     # Return the data corresponding the procedure ID and determined date
     return db((revisions_table.procedure_id == procedure_id) & (revisions_table.last_update == date)).select(revisions_table.procedure_data).first().procedure_data
@@ -145,7 +204,6 @@ def get_procedure_name(procedure_id):
 
     # Return the data corresponding the procedure ID and determined date
     return db(proc_table.id == procedure_id).select(proc_table.name).first().name
-
 
 #@auth.requires_login()
 def save(procedure_id, procedure_data, is_stable):
