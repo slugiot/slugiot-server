@@ -1,19 +1,185 @@
 {{extend 'layout.html'}}
-<script src="/server/static/js/dygraph-combined-dev.js"></script>
+
+
+<head>
+    <!-- Dygraphs -->
+    <script src="/server/static/js/dygraph-combined-dev.js"></script>
+</head>
+
+
 <h1>Visualization Test</h1>
-<center>
-    <div id="graphdiv" style="width: 600px; height: 400px"></div>
-</center>
-<script type="text/javascript">
-    g = new Dygraph(
-        document.getElementById("graphdiv"),
-        "{{=URL('static', 'temper.csv')}}",
-        {
-            rollPeriod: 5,
-            showRoller: true,
-            showRangeSelector: true
+<div class="panel-group">
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h2 class="panel-title">Visualization Panel</h2>
+        </div>
+        <div class="panel-body">
+            <div class="container">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#tab1">Line Chart</a></li>
+                    <li><a href="#tab2">Bar Chart</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tab1">
+                        <div class="dygraph-wrapper">
+                            <div class="dygraph-target1" style="width: 100%; height: 300px"></div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tab2">
+                        <div class="dygraph-wrapper">
+                            <div class="dygraph-target2" style="width: 100%; height: 300px"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="result-spinner">
+                <i class="fa fa-spinner fa-pulse fa-5x"></i>
+                <p style="font-size:36px;">{{=T("Now Loading")}}</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h2 class="panel-title">Log Report Panel</h2>
+        </div>
+        <div class="panel-body">
+            <div class="container">
+                <center>
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#log1">Log</a></li>
+                        <li><a data-toggle="tab" href="#log2"> Output</a></li>
+                        <li><a data-toggle="tab" href="#log3"> Mixed</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="log1" class="tab-pane fade in active">
+                            {{=grid}}
+                        </div>
+                        <div id="log2" class="tab-pane fade">
+                            {{=grid}}
+                        </div>
+                        <div id="log3" class="tab-pane fade">
+                            {{=grid}}
+                        </div>
+                    </div>
+                </center>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+// list of dygraph object
+var graphs = [];
+$(document).ready(function() {
+    $("#result-spinner").delay(2000).hide();
+
+    $(".nav-tabs a").click(function(event) {
+        event.preventDefault();
+        $(this).tab('show');
+        var target_id = $(this).attr("href");
+        // clear the default style properties.
+        $(target_id).find(".dygraph-target").removeAttr("style");
+        graphs[target_id].resize();
+    });
+
+    $(".dygraph-target1").each(function() {
+        g = new Dygraph(
+            $(this)[0],
+            "{{=URL('static', 'temper.csv')}}",
+            {
+                rollPeriod: 5,
+                showRoller: true,
+                title : 'Temperature Line Chart',
+                ylabel: 'Temperature (C)',
+                legend: 'always',
+                showRangeSelector: true,
+                rangeSelectorHeight: 30,
+                rangeSelectorPlotStrokeColor: 'green',
+                rangeSelectorPlotFillColor: 'lightgreen'
+            }
+        );
+        // append the dygraph object to the list
+        graphs["#" + $(this).parents(".tab-pane").attr("id")] = g;
+    });
+
+    $(".dygraph-target2").each(function() {
+        g1 = new Dygraph(
+            $(this)[0],
+            "{{=URL('static', 'temper.csv')}}",
+            {
+                title : 'Temperature Bar Chart',
+                ylabel: 'Temperature (C)',
+                includeZero: true,
+                showRoller: true,
+                legend: 'always',
+                showRangeSelector: true,
+                rangeSelectorHeight: 30,
+                rangeSelectorPlotStrokeColor: 'green',
+                rangeSelectorPlotFillColor: 'lightgreen',
+                plotter: multiColumnBarPlotter
+            }
+        );
+        // append the dygraph object to the list
+        graphs["#" + $(this).parents(".tab-pane").attr("id")] = g1;
+      });
+});
+
+// bar chart
+// Darken a color
+function darkenColor(colorStr) {
+    // Defined in dygraph-utils.js
+    var color = Dygraph.toRGB_(colorStr);
+    color.r = Math.floor((255 + color.r) / 2);
+    color.g = Math.floor((255 + color.g) / 2);
+    color.b = Math.floor((255 + color.b) / 2);
+    return 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
+}
+
+function multiColumnBarPlotter(e) {
+    // We need to handle all the series simultaneously.
+    if (e.seriesIndex !== 0) return;
+
+    var g = e.dygraph;
+    var ctx = e.drawingContext;
+    var sets = e.allSeriesPoints;
+    var y_bottom = e.dygraph.toDomYCoord(0);
+
+    // Find the minimum separation between x-values.
+    // This determines the bar width.
+    var min_sep = Infinity;
+    for (var j = 0; j < sets.length; j++) {
+        var points = sets[j];
+        for (var i = 1; i < points.length; i++) {
+          var sep = points[i].canvasx - points[i - 1].canvasx;
+          if (sep < min_sep) min_sep = sep;
         }
-    );
+    }
+    var bar_width = Math.floor(2.0 / 3 * min_sep);
+
+    var fillColors = [];
+    var strokeColors = g.getColors();
+    for (var i = 0; i < strokeColors.length; i++) {
+        fillColors.push(darkenColor(strokeColors[i]));
+    }
+
+    for (var j = 0; j < sets.length; j++) {
+        ctx.fillStyle = fillColors[j];
+        ctx.strokeStyle = strokeColors[j];
+        for (var i = 0; i < sets[j].length; i++) {
+            var p = sets[j][i];
+            var center_x = p.canvasx;
+            var x_left = center_x - (bar_width / 2) * (1 - j/(sets.length-1));
+
+            ctx.fillRect(x_left, p.canvasy,
+                bar_width/sets.length, y_bottom - p.canvasy);
+
+            ctx.strokeRect(x_left, p.canvasy,
+                bar_width/sets.length, y_bottom - p.canvasy);
+        }
+    }
+}
 </script>
-<h1>log report</h1>
-{{=grid}}
