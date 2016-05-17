@@ -44,8 +44,8 @@
     </div>
     <br>
     <!-- the save button example integrated to UI team web page-->
-    <button type="button" class="btn btn-primary" onclick="save_procedure('{{=URL('save_procedure')}}',{{=procedure_id}}, false)">save temporary</button>
-    <button type="button" class="btn btn-info" onclick="save_procedure('{{=URL('save_procedure')}}',{{=procedure_id}}, true)">save stable</button>
+    <button id = "save_unstable" type="button" class="btn btn-primary" onclick="save_procedure('{{=URL('editor','save_procedure',user_signature=True)}}',{{=procedure_id}}, false)">save temporary</button>
+    <button id = "save_stable" type="button" class="btn btn-info" onclick="save_procedure('{{=URL('editor','save_procedure',user_signature=True)}}',{{=procedure_id}}, true)">save stable</button>
 
     <!-- the text area to show the saving state for editor-->
     <div style="margin: 15px 0px 0px 0px;">
@@ -57,7 +57,7 @@
 <script>
 
 $(document).ready(function() {
-    load_procedure('{{=URL('edit_procedure')}}',{{=procedure_id}}, {{=stable}});
+    load_procedure('{{=URL('editor','edit_procedure',user_signature=True)}}',{{=procedure_id}}, {{=stable}});
 });
 
 </script>

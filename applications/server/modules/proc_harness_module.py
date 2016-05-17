@@ -94,10 +94,10 @@ def change_procedure_name(procedure_id, new_procedure_name):
     """
 
     db = current.db
-    auth = Auth(globals(), db)
+    auth = current.auth
     proc_table = db.procedures
 
-    user_email = "test@test.com" #auth.user.email
+    user_email = auth.user.email
     device_id = db(proc_table.id == procedure_id).select().first().device_id
 
     if not _check_name_and_perms_(user_email, device_id, new_procedure_name):
@@ -117,10 +117,10 @@ def get_procedures_for_edit(device_id):
     :rtype:
     """
     db = current.db
-    auth = Auth(globals(), db)
+    auth = current.auth
     proc_table = db.procedures
 
-    user_email = "test@test.com" #auth.user.email
+    user_email = auth.user.email
 
     # Get all relevant records for user_email
     records = db(proc_table.device_id == device_id).select()
@@ -145,11 +145,11 @@ def get_procedures_for_view(device_id):
     """
 
     db = current.db
-    auth = Auth(globals(), db)
+    auth = current.auth
     proc_table = db.procedures
 
     # Get all relevant records for user_email
-    user_email = "test@test.com" #auth.user.email
+    user_email = auth.user.email
 
     records = db(proc_table.device_id == device_id).select()
 
