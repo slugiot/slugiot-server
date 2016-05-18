@@ -24,7 +24,7 @@ def index():
     return "Ran Unit Tests for Procedure Harness"
 
 def clear_tables():
-    if not request.env.HTTP_HOST.startswith('localhost'):
+    if request.env.HTTP_HOST.find('localhost') == -1 and request.env.HTTP_HOST.find('127.0.0.1') == -1:
         raise(HTTP(403))
     db = current.db
     db.procedures.truncate()
@@ -33,7 +33,7 @@ def clear_tables():
         logger.info("Server Table Cleared")
 
 def create_new_proc_for_synch():
-    if not request.env.HTTP_HOST.startswith('localhost'):
+    if request.env.HTTP_HOST.find('localhost') == -1 and request.env.HTTP_HOST.find('127.0.0.1') == -1:
         raise(HTTP(403))
     random.seed(time.time())
     name = "new_procedure" + str(random.randint(0,10000))
@@ -54,7 +54,7 @@ def create_new_proc_for_synch():
 
 
 def update_proc_for_synch():
-    if not request.env.HTTP_HOST.startswith('localhost'):
+    if request.env.HTTP_HOST.find('localhost') == -1 and request.env.HTTP_HOST.find('127.0.0.1') == -1:
         raise(HTTP(403))
     db = current.db
     proc_table = db.procedures
@@ -69,7 +69,7 @@ def update_proc_for_synch():
 
 
 def update_proc_not_for_synch():
-    if not request.env.HTTP_HOST.startswith('localhost'):
+    if request.env.HTTP_HOST.find('localhost') == -1 and request.env.HTTP_HOST.find('127.0.0.1') == -1:
         raise(HTTP(403))
     db = current.db
     proc_table = db.procedures

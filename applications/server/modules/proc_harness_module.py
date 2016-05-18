@@ -8,6 +8,8 @@ import re
 logger = logging.getLogger("web2py.app.server")
 logger.setLevel(logging.INFO)
 
+auth = current.auth
+
 ####### Helper Functions ##########
 
 def _check_name_and_perms_(user_email, device_id, procedure_name):
