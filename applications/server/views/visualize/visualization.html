@@ -124,25 +124,19 @@
 
                             <!-- ------------ START DATA VISUALIZATION dyGraph ------------ -->
                             <div class="col-sm-8">
-                                <div id="dygraph_target1" style="width: 100%; height: 400px"></div>
-<!--
                                 <ul class="nav nav-tabs">
-                                    <li class="active"><a href="#tab1">Line Chart</a></li>
-                                    <li><a href="#tab2">Bar Chart</a></li>
+                                    <li class="active" onclick="line_plot()" title={{=T("Line")}}>
+                                        <a data-toggle="tab">
+                                            <i class="fa fa-line-chart fa-2x" aria-hidden="true"></i>
+                                        </a>
+                                    </li>
+                                    <li onclick="bar_plot()" title={{=T("Bar")}}>
+                                        <a data-toggle="tab">
+                                            <i class="fa fa-bar-chart fa-2x" aria-hidden="true"></i>
+                                        </a>
+                                    </li>
                                 </ul>
-                                <div class="tab-content">
-                                    <div class="tab-pane active" id="tab1">
-                                        <div class="dygraph-wrapper">
-                                            <div id="dygraph_target1" style="width: 100%; height: 300px"></div>
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane" id="tab2">
-                                        <div class="dygraph-wrapper">
-                                            <div class="dygraph-target2" style="width: 100%; height: 300px"></div>
-                                        </div>
-                                    </div>
-                                </div>
--->
+                                <div id="dygraph_target1" style="width: 100%; height: 400px"></div>
                             </div>
                             <!-- ------------ END DATA VISUALIZATION dyGraph ------------ -->
 
