@@ -4,7 +4,7 @@
 
 import proc_harness_module
 from datetime import datetime
-
+# @auth.requires_signature()
 def edit_procedure():
     """
     This function received ajax request to generated the HTML content for editor
@@ -42,7 +42,7 @@ def edit_procedure():
 
     return response.json(file_details)
 
-
+# @auth.requires_signature()
 def save_procedure():
     """
     This function received ajax request to save procedure to the procedure TABLE
@@ -213,3 +213,11 @@ def run_test():
     logger.info(data2)
     return "ok"
 
+def unit_test():
+    """
+    generate the page for selenium unit test
+    :return:
+    """
+    # get the procedure_id list for device 1
+    id_list = proc_harness_module.get_procedures_for_edit("1")
+    return dict(id_list=id_list)
