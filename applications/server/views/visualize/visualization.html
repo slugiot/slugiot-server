@@ -251,7 +251,7 @@
                                     <td>{% name %}</td>
                                     <td>{% output_value %}</td>
                                     <td>{% tag %}</td>
-                                    <td>{% output_time_stamp %}</td>
+                                    <td>{% time_stamp %}</td>
 
                                 </tr>
                                 {% /output_data %}
@@ -285,14 +285,14 @@
                                             <a role="button" data-toggle="collapse" data-parent="#accordion"
                                                href="#collapse{% index %}"
                                                aria-expanded="true" aria-controls="collapse{% index %}">
-                                                {% device_id %} : [ {% logged_time_stamp %}] - [ level : {% log_level %} ]
+                                                {% device_id %} : [ {% time_stamp %}] - [ level : {% log_level %} ]
                                             </a>
                                         </h4>
                                     </div>
                                     <div id="collapse{% index %}" class="panel-collapse collapse" role="tabpanel"
                                          aria-labelledby="headingOne">
                                         <div class="panel-body">
-                                            [{% modulename %}] - [ {% log_message %} ]
+                                            [{% procedure_id %}] - [ {% log_message %} ]
                                         </div>
                                     </div>
                                 </div>
@@ -320,6 +320,8 @@
 
 
 <script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
+<script src="{{=URL('static','js/visualize_output.js')}}"></script>
+<!--
 <script>
 
     var ractive = new Ractive({
@@ -460,3 +462,4 @@
 
     dy_plot();
 </script>
+-->

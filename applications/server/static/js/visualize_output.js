@@ -111,17 +111,17 @@
             for (var i = 0; i < output_data.length; i++) {
                 var output = output_data[i];
                 if (i == 0 || i == output_data.length - 1)
-                    dateRange.push(Date.parse(output.output_time_stamp));
+                    dateRange.push(Date.parse(output.time_stamp));
                 // use dict to storage
                 if (output.procedure_id == check_module[0]){
-                    data_dict[output.output_time_stamp] = [output.output_value, null];
+                    data_dict[output.time_stamp] = [output.output_value, null];
                 }
                 else{
-                    if (output.output_time_stamp in data_dict){
-                        data_dict[output.output_time_stamp][1] = output.output_value;
+                    if (output.time_stamp in data_dict){
+                        data_dict[output.time_stamp][1] = output.output_value;
                     }
                     else{
-                        data_dict[output.output_time_stamp] = [null, output.output_value]
+                        data_dict[output.time_stamp] = [null, output.output_value]
                     }
                 }
             }
