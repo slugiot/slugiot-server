@@ -92,12 +92,17 @@
     }}
   </head>
   <body>
+  <style type="text/css">
+html, body {
+    overflow-y: auto;
+}
+</style>
   <!--[if lt IE 8]><p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p><![endif]-->
     <div class="w2p_flash alert alert-dismissable">{{=response.flash or ''}}</div>
     <!-- Navbar =======================================
     http://web2py.com/books/default/chapter/29/05/the-views#Customizing-the-default-layout -->
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-        <div class="container-fluid">
+        <div class="container-fluid" style="overflow-y: auto">
             <div class="navbar-header">
                 <!-- Don't show hamburger menu if user isn't even logged in. What are we, barbarians? -->
                 {{if auth.is_logged_in() is True:}}
@@ -145,17 +150,7 @@
        </div>
     </div>
 
-    {{block footer}} <!-- this is default footer -->
-    <footer class="footer" style="background: #222222;">
-      <div class="container-fluid">
-        <div class="copyright pull-left">{{=T('Copyright')}} &#169; {{=request.now.year}}</div>
-          <div id="poweredBy" class="pull-right">
-            {{=T('Made in')}}
-            <a style="color: #FFFFFF;" href="http://www.ucsc.edu/">UCSC</a>
-          </div>
-      </div>
-    </footer>
-    {{end}}
+
     <!-- The javascript =============================== -->
     <script src="{{=URL('static','js/bootstrap.min.js')}}"></script>
     <script src="{{=URL('static','js/web2py-bootstrap3.js')}}"></script>
@@ -212,4 +207,19 @@
     </script>
     {{pass}}
   </body>
+    <!-- this is default footer -->
+    {{block footer}} <!-- this is default footer -->
+    <footer class="footer">
+      <div class="container-fluid">
+        <div class="copyright pull-left">{{=T('Copyright')}} &#169; {{=request.now.year}}</div>
+          <div id="poweredBy" class="pull-right">
+            {{=T('Powered by')}}
+            <a href="http://www.web2py.com/">web2py</a>
+          </div>
+      </div>
+    </footer>
+    {{end}}
+
 </html>
+
+

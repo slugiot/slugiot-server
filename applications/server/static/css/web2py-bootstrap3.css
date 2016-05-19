@@ -109,7 +109,8 @@ select.autocomplete {
 }
 body {
     padding-top: 60px;
-    margin-bottom: 60px;
+    padding-bottom: 100px;
+
 }
 header {
     -webkit-box-shadow: 0 0 8px 2px #000;
