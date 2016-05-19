@@ -350,6 +350,10 @@
             'dataType': 'json',
             'data': {start: start, end: end},
             'success': function (data) {
+
+                console.log(data);
+
+
                 ractive.set({mixed_data: data.mixed_data});
                 ractive.set({output_data: data.output_data});
                 ractive.set({log_data: data.log_data});
@@ -365,9 +369,9 @@
 
     // ------------------------------------  Tab  ------------------------------------
     $('#myTabs a').click(function (e) {
-        e.preventDefault()
-        $(this).tab('show')
-    })
+        e.preventDefault();
+        $(this).tab('show');
+    });
     // ------------  Date Picker  ------------
     $(function () {
         $('#time_span').daterangepicker();
@@ -392,7 +396,7 @@
             ctx.strokeRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
         }
     }
-    ;
+
 
     dy_plot = function () {
         var graph_com = document.getElementById("dygraph_target1");
@@ -403,7 +407,6 @@
         if (typeof output_data === "undefined") {
             g = new Dygraph(
                     graph_com,
-                    data,
                     {
                         //rollPeriod: 5,
                         //showRoller: true,
@@ -423,9 +426,9 @@
             var timeSpan = $('#time_span').val();
             for (var i = 0; i < output_data.length; i++) {
                 var output = output_data[i];
-                data = data + output.output_time_stamp + ',' + output.output_value.toString() + '\n'
+                data = data + output.time_stamp + ',' + output.output_value.toString() + '\n';
                 if (i == 0 || i == output_data.length - 1)
-                    dateRange.push(Date.parse(output.output_time_stamp));
+                    dateRange.push(Date.parse(output.time_stamp));
                 //data.push([output.time_stamp, output.output_value]);
             }
             /*if (typeof timeSpan !== "undefined") {
