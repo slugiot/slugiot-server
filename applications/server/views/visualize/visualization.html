@@ -142,7 +142,7 @@
                                         </div>
                                     </div>
                                 </div>
--->>
+-->
                             </div>
                             <!-- ------------ END DATA VISUALIZATION dyGraph ------------ -->
 
@@ -315,34 +315,98 @@
 <!-- ------------ END Ractive Body ------------ -->
 
 
+
 </script>
 
 
 <script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
-<script src="{{=URL('static','js/visualize_output.js')}}"></script>
-
-
-<!-- ------------------ Dygraph tab ------------------ -->
-
-
 <script>
-    // list of dygraph object
-/*    var graphs = [];
-    $(document).ready(function () {
-        $(".nav-tabs a").click(function (event) {
-            event.preventDefault();
-            $(this).tab('show');
-            var target_id = $(this).attr("href");
-            // clear the default style properties.
-            $(target_id).find(".dygraph-target").removeAttr("style");
-            graphs[target_id].resize();
-        });
-        $(".dygraph-target1").each(function () {
 
-            g = new Dygraph($(this)[0], "{{=URL('static', 'temper.csv')}}",
+    var ractive = new Ractive({
+        el: '#target',
+        template: '#template',
+        delimiters: ['{%', '%}'],
+        data: {
+            mixed_data: [],
+            output_data: [],
+            log_data: []
+        }
+    });
+
+
+    // ------------------------------------ START Refresh Button  ------------------------------------
+    function refresh() {
+
+
+        // ----------- get the parameter in the control panel --------------------------
+        var time_span = $('#time_span').val();
+        var elems = time_span.trim().split("-");
+        var start = elems[0].slice(6, 10) + "-" + elems[0].slice(0, 2) + "-" + elems[0].slice(3, 5) + " 00:00:00";
+        var end = elems[1].slice(7, 12) + "-" + elems[1].slice(1, 3) + "-" + elems[1].slice(4, 6) + " 23:59:59";
+
+        $.ajax({
+            'url': 'get_data',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {start: start, end: end},
+            'success': function (data) {
+                ractive.set({mixed_data: data.mixed_data});
+                ractive.set({output_data: data.output_data});
+                ractive.set({log_data: data.log_data});
+                //  ---------- showing test output dygraph ----------
+                dy_plot();
+            }
+        });
+
+        //  ---------- showing test output dygraph ----------
+        dy_plot();
+    } // -------- END Refresh Button --------
+
+
+    // ------------------------------------  Tab  ------------------------------------
+    $('#myTabs a').click(function (e) {
+        e.preventDefault()
+        $(this).tab('show')
+    })
+    // ------------  Date Picker  ------------
+    $(function () {
+        $('#time_span').daterangepicker();
+    });
+
+    // ------------  Dygraph testing  ------------
+    function barChartPlotter(e) {
+        var ctx = e.drawingContext;
+        var points = e.points;
+        var y_bottom = e.dygraph.toDomYCoord(0);  // see <a href="http://dygraphs.com/jsdoc/symbols/Dygraph.html#toDomYCoord">jsdoc</a>
+
+        // This should really be based on the minimum gap
+        var bar_width = 2 / 3 * (points[1].canvasx - points[0].canvasx);
+        ctx.fillStyle = e.color;  // a lighter shade might be more aesthetically pleasing
+
+        // Do the actual plotting.
+        for (var i = 0; i < points.length; i++) {
+            var p = points[i];
+            var center_x = p.canvasx;  // center of the bar
+
+            ctx.fillRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
+            ctx.strokeRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
+        }
+    }
+    ;
+
+    dy_plot = function () {
+        var graph_com = document.getElementById("dygraph_target1");
+        var output_data = ractive.get('output_data'); //"{{=URL('static', 'temper.csv')}}";
+
+
+        // collecting output data
+        if (typeof output_data === "undefined") {
+            g = new Dygraph(
+                    graph_com,
+                    data,
                     {
-                        rollPeriod: 5,
-                        showRoller: true,
+                        //rollPeriod: 5,
+                        //showRoller: true,
                         title: 'Temperature Line Chart',
                         ylabel: 'Temperature (C)',
                         legend: 'always',
@@ -350,91 +414,46 @@
                         rangeSelectorHeight: 30,
                         rangeSelectorPlotStrokeColor: 'green',
                         rangeSelectorPlotFillColor: 'lightgreen'
-                    });
-            // append the dygraph object to the list
-            graphs["#" + $(this).parents(".tab-pane").attr("id")] = g;
-        });
-
-        $(".dygraph-target2").each(function () {
-
-            // bar chart
-            // Darken a color
-            function darkenColor(colorStr) {
-                // Defined in dygraph-utils.js
-                var color = Dygraph.toRGB_(colorStr);
-                color.r = Math.floor((255 + color.r) / 2);
-                color.g = Math.floor((255 + color.g) / 2);
-                color.b = Math.floor((255 + color.b) / 2);
-                return 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
-            }
-
-            function multiColumnBarPlotter(e) {
-                // We need to handle all the series simultaneously.
-                if (e.seriesIndex !== 0) return;
-
-                var g = e.dygraph;
-                var ctx = e.drawingContext;
-                var sets = e.allSeriesPoints;
-                var y_bottom = e.dygraph.toDomYCoord(0);
-
-                // Find the minimum separation between x-values.
-                // This determines the bar width.
-                var min_sep = Infinity;
-                for (var j = 0; j < sets.length; j++) {
-                    var points = sets[j];
-                    for (var i = 1; i < points.length; i++) {
-                        var sep = points[i].canvasx - points[i - 1].canvasx;
-                        if (sep < min_sep) min_sep = sep;
                     }
-                }
-                var bar_width = Math.floor(2.0 / 3 * min_sep);
-
-                var fillColors = [];
-                var strokeColors = g.getColors();
-                for (var i = 0; i < strokeColors.length; i++) {
-                    fillColors.push(darkenColor(strokeColors[i]));
-                }
-
-                for (var j = 0; j < sets.length; j++) {
-                    ctx.fillStyle = fillColors[j];
-                    ctx.strokeStyle = strokeColors[j];
-                    for (var i = 0; i < sets[j].length; i++) {
-                        var p = sets[j][i];
-                        var center_x = p.canvasx;
-                        var x_left = center_x - (bar_width / 2) * (1 - j / (sets.length - 1));
-
-                        ctx.fillRect(x_left, p.canvasy,
-                                bar_width / sets.length, y_bottom - p.canvasy);
-
-                        ctx.strokeRect(x_left, p.canvasy,
-                                bar_width / sets.length, y_bottom - p.canvasy);
-                    }
-                }
+            );
+        }
+        else if (output_data.length > 0) {
+            var data = "Date, Temperature\n";   //[['Date', 'Temperature']];
+            var dateRange = [];
+            var timeSpan = $('#time_span').val();
+            for (var i = 0; i < output_data.length; i++) {
+                var output = output_data[i];
+                data = data + output.output_time_stamp + ',' + output.output_value.toString() + '\n'
+                if (i == 0 || i == output_data.length - 1)
+                    dateRange.push(Date.parse(output.output_time_stamp));
+                //data.push([output.time_stamp, output.output_value]);
             }
+            /*if (typeof timeSpan !== "undefined") {
+                var time2 = timeSpan.split("-");
+                dateRange = [Date.parse(time2[0]), Date.parse(time2[1])];
+            }*/
 
-            g1 = new Dygraph(
-                    $(this)[0],
-                    "{{=URL('static', 'temper.csv')}}",
+            g2 = new Dygraph(
+                    graph_com,
+                    data,
                     {
-                        title: 'Temperature Bar Chart',
+                        //labels: ['Date', 'Temperature'],
+                        //plotter: barChartPlotter,
+                        title: 'Temperature Line Chart',
                         ylabel: 'Temperature (C)',
-                        rangeSelectorPlotStrokeColor: 'green',
-                        rangeSelectorPlotFillColor: 'lightgreen',
-                        includeZero: true,
-                        showRoller: true,
                         legend: 'always',
+                        dateWindow: dateRange,
                         showRangeSelector: true,
                         rangeSelectorHeight: 30,
                         rangeSelectorPlotStrokeColor: 'green',
-                        rangeSelectorPlotFillColor: 'lightgreen',
-                        plotter: multiColumnBarPlotter
+                        rangeSelectorPlotFillColor: 'lightgreen'
+                        //xTicker: Dygraph.dateTicker
+                    }
+            );
 
-                    });
-            // append the dygraph object to the list
-            graphs["#" + $(this).parents(".tab-pane").attr("id")] = g1;
-        });
-    });*/
+        }
+
+    };
+
+    dy_plot();
 </script>
-
-
-</div>
