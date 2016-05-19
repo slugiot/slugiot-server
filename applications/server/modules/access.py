@@ -19,13 +19,21 @@ def add_permission(device_id, user_email, perm_type='v', procedure_id=None):
     @param user_email : user email
     @param procedure_id : procedure id if None add generic permission
     @param perm_type : permission type to share
-    @returns : if fail return this user's email else return None
+    @returns : error message if pass return None
     """
     # Check input type value is valid or not
     if perm_type not in ['v', 'e', 'a']:
         raise Exception("Invalid permission type input")
-
     db = current.db
+    # Check whether there is generic admin permission for this device
+    # if yes we can't share an generic admin permission to other people
+    if perm_type is 'a' and procedure_id == None:
+        p = db((db.user_permission.perm_user_email == user_email) &
+               (db.user_permission.device_id == device_id) &
+               (db.user_permission.procedure_id == procedure_id)).select().first()
+        if p.perm_type == 'a': return 'Sharing generic admin permission is prohibited'
+
+
     permission = db.user_permission
     fail_email = None
     # Does the email exist in registered user table?
@@ -47,7 +55,9 @@ def add_permission(device_id, user_email, perm_type='v', procedure_id=None):
             if permission_entail(perm_type, p.perm_type):
                 p.update_record(perm_type=perm_type)
     db.commit()
-    return fail_email
+    error_message = None
+    if fail_email is not None: error_message = 'User ['+user_email,'] does not exist'
+    return error_message
 
 
 def delete_permission(user_email=None, device_id=None, procedure_id=None):
