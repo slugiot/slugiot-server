@@ -2,10 +2,11 @@ import datetime
 import random
 
 
-def test_fill():
+def test_fill(days):
     """Fills some data for visualization."""
-    device_id = "chicken"
-    module = "egg"
+
+    device_id = session.device_id   # "chicken"
+    module = session.module         # "egg"
     out_var = "x"
     log_level = 1
     # Clear previous data.
@@ -31,18 +32,19 @@ def test_fill():
 
     # Let us insert some new random data.
     now = datetime.datetime.utcnow()
-    for i in range(5):
-        db.outputs.insert(device_id=device_id,
-                          procedure_id=module,
-                          name=out_var,
-                          time_stamp=now - datetime.timedelta(days=i) - datetime.timedelta(hours=i),
-                          output_value=random.random() * 20,
-                          tag="1")
-        db.logs.insert(device_id=device_id,
-                       procedure_id=module,
-                       time_stamp=now - datetime.timedelta(days=i),
-                       log_level=log_level,
-                       log_message='This is message' + str(i) + '.')
+    for i in range(days):
+        for j in range(len(module)):
+            db.outputs.insert(device_id=device_id,
+                              procedure_id=module[j],
+                              name=out_var,
+                              time_stamp=now - datetime.timedelta(days=i) - datetime.timedelta(hours=i),
+                              output_value=random.random() * 20,
+                              tag="1")
+            db.logs.insert(device_id=device_id,
+                           procedure_id=module[j],
+                           time_stamp=now - datetime.timedelta(days=i),
+                           log_level=random.randint(0,4),
+                           log_message='This is message' + str(i) + '.')
 
 
 # @auth.requires_signature()
@@ -64,7 +66,6 @@ def get_data():
     device_id, module_name, name, date1, date2
     ]
     """
-    test_fill()
     s = request.vars.start
     e = request.vars.end
 
@@ -88,6 +89,10 @@ def get_data():
     # transform the start date and end date into datetime format
     start = datetime.datetime(start_year, start_month, start_day, start_hour, start_minute, start_second)
     end = datetime.datetime(end_year, end_month, end_day, end_hour, end_minute, end_second)
+
+    # generate random data depend on how many day picked
+    num_days = end - start
+    test_fill(num_days.days)
 
     output_data = db((db.outputs.time_stamp >= start) &
                      (db.outputs.time_stamp <= end)).select(orderby=db.outputs.time_stamp)
@@ -132,4 +137,8 @@ def get_data():
 
 
 def visualization():
-    return dict()
+    # storage device_id, and module in session for testing (fake)
+    # later need to read them from UI backend
+    session.device_id = "chicken"
+    session.module = ["egg", "eggnog"]
+    return dict(session=session)
