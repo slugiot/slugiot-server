@@ -31,6 +31,18 @@
 <!-- dygraph library -->
 <script src="/server/static/js/dygraph-combined-dev.js"></script>
 
+
+<!-- table of all the chosen devices -->
+<table id="DeviceTable">
+    <tr>
+        <td>Device ID</td>
+        <td>Procedure ID</td>
+        <td>name</td>
+    </tr>
+</table>
+<!-- end of table -->
+
+
 <div id="target"></div>
 
 
@@ -188,7 +200,7 @@
                                     <th>#</th>
                                     <th>Type</th>
                                     <th>Device ID</th>
-                                    <th>Module Name</th>
+                                    <th>Procedure ID</th>
                                     <th>Content</th>
                                     <th>Timestamp</th>
 
@@ -317,6 +329,8 @@
 
 
 
+
+
 </script>
 
 
@@ -333,39 +347,6 @@
             log_data: []
         }
     });
-
-
-    //-------------------start of typeahead module ------------------------------
-    $(function () {
-        var availableTags = [
-            "ActionScript",
-            "AppleScript",
-            "Asp",
-            "BASIC",
-            "C",
-            "C++",
-            "Clojure",
-            "COBOL",
-            "ColdFusion",
-            "Erlang",
-            "Fortran",
-            "Groovy",
-            "Haskell",
-            "Java",
-            "JavaScript",
-            "Lisp",
-            "Perl",
-            "PHP",
-            "Python",
-            "Ruby",
-            "Scala",
-            "Scheme"
-        ];
-        $("#tags").autocomplete({
-            source: availableTags
-        });
-    });
-    //-------------------start of typeahead module ------------------------------
 
 
     function choose_device_id() {
@@ -405,6 +386,17 @@
     // ------------------------------------ START Refresh Button  ------------------------------------
     function refresh() {
 
+
+        // ----------------- add the device info to DeviceTable  ------------------------
+        // generate new row data
+        var device_id = $('#select_device_id option:selected').text();
+        var procedure_id = $('#select_procedure_id option:selected').text();
+        var name = $('#select_name option:selected').text();
+        var row = '<tr><td>' + device_id + '</td><td>' + procedure_id + '</td><td>' + name + '</td></tr>';
+        $("#DeviceTable").append(row);
+        console.log(row);
+
+        // ----------------- end of adding the device info to DeviceTable  ------------------------
 
         // ----------- get the parameter in the control panel --------------------------
         var time_span = $('#time_span').val();

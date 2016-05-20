@@ -7,7 +7,7 @@ def test_fill():
     device_id = "device1"
     module = "egg"
     procedure_id = 12580
-    name = "cpp"
+    name = "cpp03"
     out_var = "x"
     log_level = 1
     # Clear previous data.
@@ -169,7 +169,8 @@ def get_data():
                      (db.outputs.device_id == device_id) &
                      (db.outputs.procedure_id == procedure_id) &
                      (db.outputs.name == name)).select(orderby=db.outputs.time_stamp)
-    print 111111
+    print "output_data is :"
+    print output_data
 
     log_data = db((db.logs.time_stamp >= start) &
                   (db.logs.time_stamp <= end) &
