@@ -1,7 +1,6 @@
 {{extend 'layout.html'}}
 
 
-
 <!-- Bootstrap CSS & JS-->
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
@@ -12,6 +11,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
         integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
         crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"
+        integrity="sha256-DI6NdAhhFRnO2k51mumYeDShet3I8AKCQf/tf7ARNhI=" crossorigin="anonymous"></script>
 
 
 <!-- Bootstrap select -->
@@ -30,14 +31,30 @@
 <!-- dygraph library -->
 <script src="/server/static/js/dygraph-combined-dev.js"></script>
 
+<div class="ui-widget">
+    <label for="tags">Tags: </label>
+    <input id="tags">
+</div>
 
 <div id="target"></div>
+
+
+<!--start of typeadhead search module-->
+
+
+<!--end of  typeadhead search module-->
+
+
 <script id="template" type="text/ractive">
 <!-- ------------ START Ractive Body ------------ -->
 
 <div class="visualization">
 
     <h1>Data Visualization</h1>
+
+    <!-- start of typeahead search -->
+
+    <!-- end of typeahead search -->
 
     <div class="container-fluid">
         <div class="row">
@@ -58,16 +75,17 @@
                                     <tr>
                                         <td>
                                             <label>Select:</label> <br>
-                                            <select id="select_device" class="selectpicker" data-live-search="true"
-                                                    title="Choose Device...">
+                                            <select id="select_procedure_id" class="selectpicker" data-live-search="true"
+                                                    title="Choose Device..." onchange="choose_procedure_id();">
                                                 <option>Android</option>
                                                 <option>iPhone</option>
                                                 <option>iPad</option>
                                                 <option>Nest</option>
 
+
                                             </select>
                                             <br>
-                                            <select id="select_data_module" class="selectpicker" data-live-search="true"
+                                            <select id="select_name" class="selectpicker" data-live-search="true"
                                                     title="Choose Data Module...">
                                                 <option value="temperature">temperature</option>
                                                 <option value="pressure">pressure</option>
@@ -218,6 +236,7 @@
 
                         </div>
 
+
                         <!-- ------------------ Output Tab ------------------ -->
                         <div role="tabpanel" class="tab-pane" id="Output">
                             <form class="navbar-form navbar-right" role="search">
@@ -316,6 +335,11 @@
 
 
 
+
+
+
+
+
 </script>
 
 
@@ -332,6 +356,67 @@
             log_data: []
         }
     });
+
+
+    //-------------------start of typeahead module ------------------------------
+    $(function () {
+        var availableTags = [
+            "ActionScript",
+            "AppleScript",
+            "Asp",
+            "BASIC",
+            "C",
+            "C++",
+            "Clojure",
+            "COBOL",
+            "ColdFusion",
+            "Erlang",
+            "Fortran",
+            "Groovy",
+            "Haskell",
+            "Java",
+            "JavaScript",
+            "Lisp",
+            "Perl",
+            "PHP",
+            "Python",
+            "Ruby",
+            "Scala",
+            "Scheme"
+        ];
+        $("#tags").autocomplete({
+            source: availableTags
+        });
+    });
+    //-------------------start of typeahead module ------------------------------
+
+
+    function choose_procedure_id() {
+//        alert($('#select_procedure_id option:selected').text());
+        $("#select_name").empty();
+        $('.selectpicker').selectpicker('refresh');
+
+
+        // add value to select_name
+        // sending a ajax request
+        $.ajax({
+            'url': 'get_name',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {},
+            'success': function (data) {
+                console.log(data);
+//                alert(data);
+                var name = data.name;
+                for (var val in name) {
+                    console.log(name[val].name);
+                    $("#select_name").append('<option>' + name[val].name + '</option>');
+                }
+                $('.selectpicker').selectpicker('refresh');
+            }
+        });
+
+    }
 
 
     // ------------------------------------ START Refresh Button  ------------------------------------
@@ -432,9 +517,9 @@
                 //data.push([output.time_stamp, output.output_value]);
             }
             /*if (typeof timeSpan !== "undefined") {
-                var time2 = timeSpan.split("-");
-                dateRange = [Date.parse(time2[0]), Date.parse(time2[1])];
-            }*/
+             var time2 = timeSpan.split("-");
+             dateRange = [Date.parse(time2[0]), Date.parse(time2[1])];
+             }*/
 
             g2 = new Dygraph(
                     graph_com,

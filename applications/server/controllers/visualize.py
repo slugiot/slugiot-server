@@ -53,7 +53,15 @@ def get_modulename():
         modulename.append(row.procedure_id)
     print modulename
     print "end of get_modulename"
-    result = {'module_name':modulename}
+    result = {'module_name': modulename}
+    return response.json(result)
+
+
+def get_name():
+    name = []
+    name.append({'name': 'liujun'})
+    name.append({'name': 'yuchangyou'})
+    result = {'name': name}
     return response.json(result)
 
 
@@ -97,7 +105,8 @@ def get_data():
 
     # print "111111111111111111111111"
 
-    for row in db((db.outputs.time_stamp >= start) & (db.outputs.time_stamp <= end)).select(orderby=db.outputs.time_stamp):
+    for row in db((db.outputs.time_stamp >= start) & (db.outputs.time_stamp <= end)).select(
+            orderby=db.outputs.time_stamp):
         type = 'output'
         device_id = row.device_id
         modulename = row.procedure_id
@@ -106,8 +115,8 @@ def get_data():
         value = row.output_value
         tag = row.tag
         content = 'name: ' + str(name) + ', value: ' + str(value) + ', tag: ' + str(tag)
-        mixed_data.append({'type': type, 'device_id': device_id, 'modulename': modulename, 'time_stamp': time_stamp,'content': content})
-
+        mixed_data.append({'type': type, 'device_id': device_id, 'modulename': modulename, 'time_stamp': time_stamp,
+                           'content': content})
 
     # print "111111111111111111111111"
     # add log_data in
@@ -121,7 +130,6 @@ def get_data():
         content = 'name: ' + str(log_level) + ', value: ' + str(log_message)
         mixed_data.append({'type': type, 'device_id': device_id, 'modulename': modulename, 'time_stamp': time_stamp,
                            'content': content})
-
 
     # print "111111111111111111111111"
     mixed_data.sort(key=lambda r: r['time_stamp'])
