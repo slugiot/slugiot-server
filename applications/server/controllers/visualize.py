@@ -4,17 +4,9 @@ import random
 
 def test_fill():
     """Fills some data for visualization."""
-
-
-
-
-    device_id = session.device_id   # "chicken"
-    module = session.module         # "egg"
     device_id = "device1"
-    module = "egg"
     procedure_id = 12580
     name = "cpp03"
-    out_var = "x"
     log_level = 1
     # Clear previous data.
     db(db.outputs).delete()
@@ -40,7 +32,6 @@ def test_fill():
 
     # Let us insert some new random data.
     now = datetime.datetime.utcnow()
-# <<<<<<< HEAD
     for i in range(5):
         db.outputs.insert(device_id=device_id,
                           procedure_id=procedure_id,
@@ -53,21 +44,6 @@ def test_fill():
                        time_stamp=now - datetime.timedelta(days=i),
                        log_level=log_level,
                        log_message='This is message' + str(i) + '.')
-# =======
-#     for i in range(days):
-#         for j in range(len(module)):
-#             db.outputs.insert(device_id=device_id,
-#                               procedure_id=module[j],
-#                               name=out_var,
-#                               time_stamp=now - datetime.timedelta(days=i) - datetime.timedelta(hours=i),
-#                               output_value=random.random() * 20,
-#                               tag="1")
-#             db.logs.insert(device_id=device_id,
-#                            procedure_id=module[j],
-#                            time_stamp=now - datetime.timedelta(days=i),
-#                            log_level=random.randint(0,4),
-#                            log_message='This is message' + str(i) + '.')
-# >>>>>>> refs/remotes/origin/visual_team
 
 
 def fill_device():
@@ -84,33 +60,33 @@ def fill_device():
     db(db.device).delete()
     print 1111111
     db.device.insert(device_id='device1',
-                      user_email='admin@google.com',
-                      name='admin',
-                      )
+                     user_email='admin@google.com',
+                     name='admin',
+                     )
     db.device.insert(device_id='device2',
-                      user_email='admin@google.com',
-                      name='admin',
-                      )
+                     user_email='admin@google.com',
+                     name='admin',
+                     )
     db(db.procedures).delete()
     print 1111111
     db.procedures.insert(device_id='device1',
-                   name='app01'
-                   )
+                         name='app01'
+                         )
     db.procedures.insert(device_id='device1',
-                   name='bpp02'
-                   )
+                         name='bpp02'
+                         )
     db.procedures.insert(device_id='device1',
-                   name='cpp03'
-                   )
+                         name='cpp03'
+                         )
     db.procedures.insert(device_id='device2',
-                   name='app01'
-                   )
+                         name='app01'
+                         )
     db.procedures.insert(device_id='device2',
-                   name='bpp02'
-                   )
+                         name='bpp02'
+                         )
     db.procedures.insert(device_id='device2',
-                   name='cpp03'
-                   )
+                         name='cpp03'
+                         )
     print 1111111
 
 
@@ -160,7 +136,6 @@ def get_data():
     procedure_id = request.vars.procedure_id
     name = request.vars.name
 
-
     print s
 
     # start = datetime.strptime("2016-05-03 21:20:20", "%Y-%m-%d %H:%M:%S")
@@ -183,15 +158,15 @@ def get_data():
     start = datetime.datetime(start_year, start_month, start_day, start_hour, start_minute, start_second)
     end = datetime.datetime(end_year, end_month, end_day, end_hour, end_minute, end_second)
 
-# <<<<<<< HEAD
-#
-#     print 111111
-# =======
-#     # generate random data depend on how many day picked
-#     num_days = end - start
-#     test_fill(num_days.days)
-#
-# >>>>>>> refs/remotes/origin/visual_team
+    # <<<<<<< HEAD
+    #
+    #     print 111111
+    # =======
+    #     # generate random data depend on how many day picked
+    #     num_days = end - start
+    #     test_fill(num_days.days)
+    #
+    # >>>>>>> refs/remotes/origin/visual_team
     test_fill()
     output_data = db((db.outputs.time_stamp >= start) &
                      (db.outputs.time_stamp <= end) &
@@ -206,7 +181,6 @@ def get_data():
                   (db.logs.device_id == device_id) &
                   (db.logs.procedure_id == procedure_id)).select(orderby=db.logs.time_stamp)
     mixed_data = []
-
 
     print 111111
     # print "111111111111111111111111"
