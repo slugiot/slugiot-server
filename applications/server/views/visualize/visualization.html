@@ -75,20 +75,18 @@
                                     <tr>
                                         <td>
                                             <label>Select:</label> <br>
-                                            <select id="select_procedure_id" class="selectpicker" data-live-search="true"
-                                                    title="Choose Device..." onchange="choose_procedure_id();">
-                                                <option>Android</option>
-                                                <option>iPhone</option>
-                                                <option>iPad</option>
-                                                <option>Nest</option>
-
-
+                                            <select id="select_device_id" class="selectpicker" data-live-search="true"
+                                                    title="Device ID" onchange="choose_device_id();">
+                                                <option>device1</option>
+                                                <option>device2</option>
+                                            </select>
+                                            <br>
+                                             <select id="select_procedure_id" class="selectpicker" data-live-search="true"
+                                                    title="Procedure_id">
                                             </select>
                                             <br>
                                             <select id="select_name" class="selectpicker" data-live-search="true"
-                                                    title="Choose Data Module...">
-                                                <option value="temperature">temperature</option>
-                                                <option value="pressure">pressure</option>
+                                                    title="Name">
                                             </select>
 
                                         </td>
@@ -340,6 +338,7 @@
 
 
 
+
 </script>
 
 
@@ -391,19 +390,20 @@
     //-------------------start of typeahead module ------------------------------
 
 
-    function choose_procedure_id() {
+    function choose_device_id() {
 //        alert($('#select_procedure_id option:selected').text());
         $("#select_name").empty();
         $('.selectpicker').selectpicker('refresh');
 
-
+        var device_id = $('#select_device_id option:selected').text();
+//        alert(device_id);
         // add value to select_name
         // sending a ajax request
         $.ajax({
             'url': 'get_name',
             'type': 'post',
             'dataType': 'json',
-            'data': {},
+            'data': {device_id: device_id},
             'success': function (data) {
                 console.log(data);
 //                alert(data);

@@ -21,6 +21,7 @@ def test_fill():
                             time_stamp=datetime.datetime.now(),
                             received_time_stamp=datetime.datetime.now()
                             )
+
     db.module_values.insert(device_id=device_id,
                             procedure_id="leg",
                             name="leg",
@@ -45,6 +46,40 @@ def test_fill():
                        log_message='This is message' + str(i) + '.')
 
 
+def fill_device():
+    db(db.device).delete()
+    print 1111111
+    db.device.insert(device_id='device1',
+                      user_email='admin@google.com',
+                      name='admin',
+                      )
+    db.device.insert(device_id='device2',
+                      user_email='admin@google.com',
+                      name='admin',
+                      )
+    db(db.procedures).delete()
+    print 1111111
+    db.procedures.insert(device_id='device1',
+                   name='app01'
+                   )
+    db.procedures.insert(device_id='device1',
+                   name='app02'
+                   )
+    db.procedures.insert(device_id='device1',
+                   name='app03'
+                   )
+    db.procedures.insert(device_id='device2',
+                   name='app01'
+                   )
+    db.procedures.insert(device_id='device2',
+                   name='app02'
+                   )
+    db.procedures.insert(device_id='device2',
+                   name='app03'
+                   )
+    print 1111111
+
+
 # @auth.requires_signature()
 def get_modulename():
     device_id = request.vars.device_id
@@ -58,9 +93,18 @@ def get_modulename():
 
 
 def get_name():
+    fill_device()
+
+    device_id = request.vars.device_id
+    print device_id
+
+    print 1111111111
+
     name = []
-    name.append({'name': 'liujun'})
-    name.append({'name': 'yuchangyou'})
+
+    for row in db(db.procedures.device_id == device_id).select():
+        name.append({'name': row.name})
+
     result = {'name': name}
     return response.json(result)
 
