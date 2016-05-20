@@ -4,8 +4,10 @@ import random
 
 def test_fill():
     """Fills some data for visualization."""
-    device_id = "chicken"
+    device_id = "device1"
     module = "egg"
+    procedure_id = 12580
+    name = "cpp"
     out_var = "x"
     log_level = 1
     # Clear previous data.
@@ -15,16 +17,16 @@ def test_fill():
     # fill some data for module_values table
     db(db.module_values).delete()
     db.module_values.insert(device_id=device_id,
-                            procedure_id="egg",
-                            name="egg",
+                            procedure_id=procedure_id,
+                            name=name,
                             module_value="egg",
                             time_stamp=datetime.datetime.now(),
                             received_time_stamp=datetime.datetime.now()
                             )
 
     db.module_values.insert(device_id=device_id,
-                            procedure_id="leg",
-                            name="leg",
+                            procedure_id=procedure_id,
+                            name=name,
                             module_value="leg",
                             time_stamp=datetime.datetime.now(),
                             received_time_stamp=datetime.datetime.now()
@@ -34,19 +36,29 @@ def test_fill():
     now = datetime.datetime.utcnow()
     for i in range(5):
         db.outputs.insert(device_id=device_id,
-                          procedure_id=module,
-                          name=out_var,
+                          procedure_id=procedure_id,
+                          name=name,
                           time_stamp=now - datetime.timedelta(days=i) - datetime.timedelta(hours=i),
                           output_value=random.random() * 20,
                           tag="1")
         db.logs.insert(device_id=device_id,
-                       procedure_id=module,
+                       procedure_id=procedure_id,
                        time_stamp=now - datetime.timedelta(days=i),
                        log_level=log_level,
                        log_message='This is message' + str(i) + '.')
 
 
 def fill_device():
+    db(db.procedure_revisions).delete()
+    print 2222222
+    db.procedure_revisions.insert(procedure_id=10086,
+                                  procedure_data="text information",
+                                  is_stable=True,
+                                  )
+    db.procedure_revisions.insert(procedure_id=12580,
+                                  procedure_data="text information",
+                                  is_stable=True,
+                                  )
     db(db.device).delete()
     print 1111111
     db.device.insert(device_id='device1',
@@ -63,19 +75,19 @@ def fill_device():
                    name='app01'
                    )
     db.procedures.insert(device_id='device1',
-                   name='app02'
+                   name='bpp02'
                    )
     db.procedures.insert(device_id='device1',
-                   name='app03'
+                   name='cpp03'
                    )
     db.procedures.insert(device_id='device2',
                    name='app01'
                    )
     db.procedures.insert(device_id='device2',
-                   name='app02'
+                   name='bpp02'
                    )
     db.procedures.insert(device_id='device2',
-                   name='app03'
+                   name='cpp03'
                    )
     print 1111111
 
@@ -92,7 +104,7 @@ def get_modulename():
     return response.json(result)
 
 
-def get_name():
+def get_parameter():
     fill_device()
 
     device_id = request.vars.device_id
@@ -101,11 +113,15 @@ def get_name():
     print 1111111111
 
     name = []
+    procedure_id = []
 
     for row in db(db.procedures.device_id == device_id).select():
         name.append({'name': row.name})
 
-    result = {'name': name}
+    for row in db(db.procedure_revisions).select():
+        procedure_id.append({'procedure_id': row.procedure_id})
+
+    result = {'name': name, 'procedure_id': procedure_id}
     return response.json(result)
 
 
@@ -119,8 +135,13 @@ def get_data():
     test_fill()
     s = request.vars.start
     e = request.vars.end
+    device_id = request.vars.device_id
+    procedure_id = request.vars.procedure_id
+    name = request.vars.name
+
 
     print s
+
     # start = datetime.strptime("2016-05-03 21:20:20", "%Y-%m-%d %H:%M:%S")
     # parse the start date and end date
     start_year = int(s[0:4])
@@ -141,16 +162,32 @@ def get_data():
     start = datetime.datetime(start_year, start_month, start_day, start_hour, start_minute, start_second)
     end = datetime.datetime(end_year, end_month, end_day, end_hour, end_minute, end_second)
 
+
+    print 111111
     output_data = db((db.outputs.time_stamp >= start) &
-                     (db.outputs.time_stamp <= end)).select(orderby=db.outputs.time_stamp)
+                     (db.outputs.time_stamp <= end) &
+                     (db.outputs.device_id == device_id) &
+                     (db.outputs.procedure_id == procedure_id) &
+                     (db.outputs.name == name)).select(orderby=db.outputs.time_stamp)
+    print 111111
+
     log_data = db((db.logs.time_stamp >= start) &
-                  (db.logs.time_stamp <= end)).select(orderby=db.logs.time_stamp)
+                  (db.logs.time_stamp <= end) &
+                  (db.logs.device_id == device_id) &
+                  (db.logs.procedure_id == procedure_id)).select(orderby=db.logs.time_stamp)
     mixed_data = []
 
+
+    print 111111
     # print "111111111111111111111111"
 
-    for row in db((db.outputs.time_stamp >= start) & (db.outputs.time_stamp <= end)).select(
-            orderby=db.outputs.time_stamp):
+    # for row in db((db.outputs.time_stamp >= start) & (db.outputs.time_stamp <= end)).select(
+    #         orderby=db.outputs.time_stamp):
+    for row in db((db.outputs.time_stamp >= start) &
+                          (db.outputs.time_stamp <= end) &
+                          (db.outputs.device_id == device_id) &
+                          (db.outputs.procedure_id == procedure_id) &
+                          (db.outputs.name == name)).select(orderby=db.outputs.time_stamp):
         type = 'output'
         device_id = row.device_id
         modulename = row.procedure_id
@@ -161,10 +198,15 @@ def get_data():
         content = 'name: ' + str(name) + ', value: ' + str(value) + ', tag: ' + str(tag)
         mixed_data.append({'type': type, 'device_id': device_id, 'modulename': modulename, 'time_stamp': time_stamp,
                            'content': content})
+    print 222222222
 
     # print "111111111111111111111111"
     # add log_data in
-    for row in db((db.logs.time_stamp >= start) & (db.logs.time_stamp <= end)).select(orderby=db.logs.time_stamp):
+    # for row in db((db.logs.time_stamp >= start) & (db.logs.time_stamp <= end)).select(orderby=db.logs.time_stamp):
+    for row in db((db.logs.time_stamp >= start) &
+                          (db.logs.time_stamp <= end) &
+                          (db.logs.device_id == device_id) &
+                          (db.logs.procedure_id == procedure_id)).select(orderby=db.logs.time_stamp):
         type = 'log'
         device_id = row.device_id
         modulename = row.procedure_id
@@ -175,6 +217,7 @@ def get_data():
         mixed_data.append({'type': type, 'device_id': device_id, 'modulename': modulename, 'time_stamp': time_stamp,
                            'content': content})
 
+    print 222222222
     # print "111111111111111111111111"
     mixed_data.sort(key=lambda r: r['time_stamp'])
 
