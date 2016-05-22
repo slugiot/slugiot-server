@@ -15,6 +15,11 @@
         integrity="sha256-DI6NdAhhFRnO2k51mumYeDShet3I8AKCQf/tf7ARNhI=" crossorigin="anonymous"></script>
 
 
+<!--<link rel="stylesheet" type="text/css"-->
+<!--href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">-->
+<link rel="stylesheet" type="text/css"
+      href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+
 <!-- Bootstrap select -->
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
@@ -33,13 +38,41 @@
 
 
 <!-- table of all the chosen devices -->
-<table id="DeviceTable">
-    <tr>
-        <td>Device ID</td>
-        <td>Procedure ID</td>
-        <td>name</td>
-    </tr>
-</table>
+<!--<table id="DeviceTable">-->
+<!--<tr>-->
+<!--<td>Device ID</td>-->
+<!--<td>Procedure ID</td>-->
+<!--<td>name</td>-->
+<!--</tr>-->
+<!--</table>-->
+
+<!-- table of all the chosen devices -->
+<!-- Device_ID Procedure_ID Name Delete -->
+<!--<table class="table table-striped table-bordered"-->
+<!--id="device_table">-->
+<!--<thead>-->
+<!--<tr>-->
+<!--<th>Device ID</th>-->
+<!--<th>Procedure ID</th>-->
+<!--<th>Name</th>-->
+<!--<th>Delete</th>-->
+<!--</tr>-->
+<!--</thead>-->
+<!--<tbody id="device_data_table">-->
+<!--<tr>-->
+<!--<td>device1</td>-->
+<!--<td>procedure1</td>-->
+<!--<td>name1</td>-->
+<!--<td>-->
+<!--<button title="" type="button"-->
+<!--class="btn btn-danger remove show_tip"-->
+<!--data-original-title="Remove from list">-->
+<!--<i class="fa fa-trash-o"></i>-->
+<!--</button>-->
+<!--</td>-->
+<!--</tr>-->
+<!--</tbody>-->
+<!--</table>-->
 <!-- end of table -->
 
 
@@ -75,9 +108,8 @@
                     <div class="panel-body">
 
                         <div class="row">
-
-                            <!-- ------------ START CONTROL PANEL ------------ -->
-                            <div class="col-sm-4">
+                        <!-- ------------ START CONTROL PANEL ------------ -->
+                            <div class="col-sm-3">
                                 <table>
                                     <tr>
                                         <td>
@@ -109,13 +141,25 @@
                                             </div>
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td>
+                                            <br><br>
 
+                                            <button id="addButton" onclick="addDevice();" type="button"
+                                                    class="btn btn-info btn-block">ADD
+                                            </button>
+                                            <!-- Spinner icon -->
+                                            <div id="result-spinner" class="hidden">
+                                                <i class="fa fa-spinner fa-pulse fa-4x"></i>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td>
                                             <br><br>
 
                                             <button id="refreshButton" onclick="refresh();" type="button"
-                                                    class="btn btn-info btn-block">Refresh
+                                                    class="btn btn-info btn-block">REFRESH
                                             </button>
                                             <!-- Spinner icon -->
                                             <div id="result-spinner" class="hidden">
@@ -128,8 +172,44 @@
                             <!-- ------------ END CONTROL PANEL ------------ -->
 
 
+
+                            <div class="col-sm-3">
+                                <!-- Device_ID Procedure_ID Name Delete -->
+                                <table class="table table-striped table-bordered"
+                                       id="device_table">
+                                    <thead>
+                                    <tr>
+                                        <th>Device</th>
+                                        <th>Procedure</th>
+                                        <th>Name</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="device_data_table">
+                                    <!--<tr onclick="clickTr(this);">-->
+                                        <!--<td>device1</td>-->
+                                        <!--<td>procedure1</td>-->
+                                        <!--<td>name1</td>-->
+                                        <!--<td>-->
+                                            <!--<button title="" type="button"-->
+                                                    <!--class="btn btn-danger remove show_tip"-->
+                                                    <!--data-original-title="Remove from list">-->
+                                                <!--<i class="fa fa-trash-o"></i>-->
+                                            <!--</button>-->
+                                        <!--</td>-->
+                                    <!--</tr>-->
+                                    </tbody>
+                                </table>
+                                <!-- end of table -->
+                            </div>
+
+
+
+
+
+
                             <!-- ------------ START DATA VISUALIZATION dyGraph ------------ -->
-                            <div class="col-sm-8">
+                            <div class="col-sm-6">
                                 <ul class="nav nav-tabs">
                                     <li class="active" onclick="line_plot()" title={{=T("Line")}}>
                                         <a data-toggle="tab">
@@ -325,6 +405,10 @@
 
 
 
+
+
+
+
 </script>
 
 
@@ -332,6 +416,29 @@
 <script src="{{=URL('static','js/visualize_output.js')}}"></script>
 
 <script>
+
+    function clickTr(obj) {
+        var c = $(obj).find("td").eq(0).text();
+        alert(c);
+    }
+
+    $(window).load(function () {
+        $(function () {
+            $("table#device_table").on("click", ".remove", function () {
+                $(this).closest('tr').remove();
+            });
+        });
+        $(function () {
+            $(".show_tip").tooltip({
+                container: 'body'
+            });
+        });
+        $(document).click(function () {
+            $('.tooltip').remove();
+            $('[title]').tooltip();
+        });
+    });
+
 
     var ractive = new Ractive({
         el: '#target',
@@ -377,20 +484,74 @@
         });
 
     }
+    // -----------------------------  Add Device_id-Procedure_id-name pair into the devices management table  ------------------------------------------
+
+    function addDevice() {
+        // ----------------- add the device info to DeviceTable  ------------------------
+        // generate new row data
+        var device_id = $('#select_device_id option:selected').text();
+        var procedure_id = $('#select_procedure_id option:selected').text();
+        var name = $('#select_name option:selected').text();
+        var btn = "<button title='' type='button' class='btn btn-danger remove show_tip' data-original-title='Remove from list'><i class='fa fa-trash-o'></i></button>";
+        var row = '<tr onclick="showRow(this)"><td>' + device_id + '</td><td>' + procedure_id + '</td><td>' + name + '</td><td>' + btn + '</td></tr>';
+        $("#device_data_table").append(row);
+        console.log(row);
+//             var btn =       "<button title='' type='button' class='btn btn-danger remove show_tip' data-original-title='Remove from list'><i class='fa fa-trash-o'></i></button>"
+
+
+    }
+
+
+    // ------------------------------------  End of adding info into the devices management table  ------------------------------------------------------
+
+
+    function showRow(obj) {
+
+
+
+
+        // ----------------- end of adding the device info to DeviceTable  ------------------------
+
+        // ----------- get the parameter in the control panel --------------------------
+        var time_span = $('#time_span').val();
+        var elems = time_span.trim().split("-");
+        var start = elems[0].slice(6, 10) + "-" + elems[0].slice(0, 2) + "-" + elems[0].slice(3, 5) + " 00:00:00";
+        var end = elems[1].slice(7, 12) + "-" + elems[1].slice(1, 3) + "-" + elems[1].slice(4, 6) + " 23:59:59";
+
+        var device_id = $(obj).find('td').eq(0).text();
+        var procedure_id = $(obj).find('td').eq(1).text();
+        var name = $(obj).find('td').eq(2).text();
+
+        $.ajax({
+            'url': 'get_data',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {start: start, end: end, device_id: device_id, procedure_id: procedure_id, name: name},
+            'success': function (data) {
+
+                //console.log(data);
+
+
+                ractive.set({mixed_data: data.mixed_data});
+                ractive.set({output_data: data.output_data});
+                ractive.set({log_data: data.log_data});
+                console.log(data);
+
+                //  ---------- showing test output dygraph ----------
+                dy_plot();
+            }
+        });
+
+        //  ---------- showing test output dygraph ----------
+        dy_plot();
+    } // -------- END Refresh Button --------
 
 
     // ------------------------------------ START Refresh Button  ------------------------------------
     function refresh() {
 
 
-        // ----------------- add the device info to DeviceTable  ------------------------
-        // generate new row data
-        var device_id = $('#select_device_id option:selected').text();
-        var procedure_id = $('#select_procedure_id option:selected').text();
-        var name = $('#select_name option:selected').text();
-        var row = '<tr><td>' + device_id + '</td><td>' + procedure_id + '</td><td>' + name + '</td></tr>';
-        $("#DeviceTable").append(row);
-        console.log(row);
+
 
         // ----------------- end of adding the device info to DeviceTable  ------------------------
 

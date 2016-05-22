@@ -233,7 +233,7 @@
         g2.updateOptions({plotter: DygraphCanvasRenderer._linePlotter, title: 'Temperature Line Chart'});
     };
     function bar_plot(){
-        g2.updateOptions({plotter: multiColumnBarPlotter, title: 'Temperature Bar Chart'});
+        g2.updateOptions({plotter: barChartPlotter, title: 'Temperature Bar Chart'});
     };
 
     dy_plot();
