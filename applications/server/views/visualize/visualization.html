@@ -121,7 +121,7 @@
                                             </select>
                                             <br>
                                              <select id="select_procedure_id" class="selectpicker" data-live-search="true"
-                                                    title="Procedure_id">
+                                                    title="Procedure ID">
                                             </select>
                                             <br>
                                             <select id="select_name" class="selectpicker" data-live-search="true"
@@ -409,6 +409,7 @@
 
 
 
+
 </script>
 
 
@@ -455,6 +456,7 @@
     function choose_device_id() {
 //        alert($('#select_procedure_id option:selected').text());
         $("#select_name").empty();
+        $("#select_procedure_id").empty();
         $('.selectpicker').selectpicker('refresh');
 
         var device_id = $('#select_device_id option:selected').text();
@@ -492,12 +494,34 @@
         var device_id = $('#select_device_id option:selected').text();
         var procedure_id = $('#select_procedure_id option:selected').text();
         var name = $('#select_name option:selected').text();
+
+
+        console.log(device_id + " " + procedure_id + " " + name);
+
+        if (device_id == "Device ID" || procedure_id == "Procedure ID" || name == "Name") {
+            return;
+        } else {
+            var isDuplicated = false;
+            $("tbody#device_data_table tr").each(function () {
+                var prev_device_id = $(this).find("td").eq(0).text();
+                var prev_procedure_id = $(this).find("td").eq(1).text();
+                var prev_name = $(this).find("td").eq(2).text();
+
+                if (device_id == prev_device_id && procedure_id == prev_procedure_id && name == prev_name) {
+                    isDuplicated = true;
+                }
+            });
+            if (isDuplicated) {
+                return;
+            }
+        }
+
+
         var btn = "<button title='' type='button' class='btn btn-danger remove show_tip' data-original-title='Remove from list'><i class='fa fa-trash-o'></i></button>";
         var row = '<tr onclick="showRow(this)"><td>' + device_id + '</td><td>' + procedure_id + '</td><td>' + name + '</td><td>' + btn + '</td></tr>';
         $("#device_data_table").append(row);
         console.log(row);
 //             var btn =       "<button title='' type='button' class='btn btn-danger remove show_tip' data-original-title='Remove from list'><i class='fa fa-trash-o'></i></button>"
-
 
     }
 
