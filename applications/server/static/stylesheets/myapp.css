@@ -113,20 +113,25 @@ body {
   padding: 5%;
 }
 
-/* line 33, ../sass/_main.scss */
+/* line 31, ../sass/_main.scss */
+.footer {
+  bottom: 0 !important;
+}
+
+/* line 37, ../sass/_main.scss */
 .loader {
   position: relative;
   margin: 0 auto;
   width: 100px;
 }
-/* line 37, ../sass/_main.scss */
+/* line 41, ../sass/_main.scss */
 .loader:before {
   content: '';
   display: block;
   padding-top: 100%;
 }
 
-/* line 44, ../sass/_main.scss */
+/* line 48, ../sass/_main.scss */
 .circular {
   animation: rotate 2s linear infinite;
   height: 100%;
@@ -140,7 +145,7 @@ body {
   margin: auto;
 }
 
-/* line 55, ../sass/_main.scss */
+/* line 59, ../sass/_main.scss */
 .path {
   stroke-dasharray: 1,200;
   stroke-dashoffset: 0;
