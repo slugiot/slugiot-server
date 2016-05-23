@@ -360,6 +360,25 @@
                             <div class="panel-group" id="log_accordion" role="tablist" aria-multiselectable="true">
 
                                 {% #log_data:index %}
+                                {% #if log_level==0 %}
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading" role="tab" id="heading{% index %}">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordion"
+                                               href="#collapse{% index %}"
+                                               aria-expanded="true" aria-controls="collapse{% index %}">
+                                                {% device_id %} : [ {% time_stamp %}] - [ level : {% log_level %} ]
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse{% index %}" class="panel-collapse collapse" role="tabpanel"
+                                         aria-labelledby="headingOne">
+                                        <div class="panel-body">
+                                            [{% procedure_id %}] - [ {% log_message %} ]
+                                        </div>
+                                    </div>
+                                </div>
+                                {% else %}
                                 <div class="panel panel-default">
                                     <div class="panel-heading" role="tab" id="heading{% index %}">
                                         <h4 class="panel-title">
@@ -377,6 +396,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                {% /if %}
                                 {% /log_data %}
 
                             </div>

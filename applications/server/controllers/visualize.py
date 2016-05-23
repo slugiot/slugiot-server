@@ -42,7 +42,7 @@ def test_fill():
         db.logs.insert(device_id=device_id,
                        procedure_id=procedure_id,
                        time_stamp=now - datetime.timedelta(days=i),
-                       log_level=log_level,
+                       log_level=random.randint(0,4),
                        log_message='This is message' + str(i) + '.')
 
 
