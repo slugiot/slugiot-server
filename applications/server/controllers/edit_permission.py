@@ -15,17 +15,19 @@ def edit_view():
     user_emails = [u.perm_user_email for u in filter(lambda x: x.perm_type=='v', user_list)]
     # Let's get a nice form for editing this.
     form = SQLFORM.factory(
-        Field('users', 'list:string', default=user_emails)
+        Field('users', 'list:string', requires=IS_LIST_OF(IS_EMAIL(error_message='must be email!')), default=user_emails)
     )
     if form.process().accepted:
         new_users = set(form.vars.users) if type(form.vars.users) == type([]) else set([form.vars.users])
         old_users = set(user_emails)
         # Delete old permissions of users who can no longer access.
         for u in old_users - new_users:
-            access.delete_permission(device_id=device_id,user_email=u,procedure_id=procedure_id)
+            if u != '':
+                access.delete_permission(device_id=device_id,user_email=u,procedure_id=procedure_id)
         # Add permissions of users who can newly access.
         for u in new_users - old_users:
-            access.add_permission(device_id,u,'v',procedure_id=procedure_id)
+            if u != '':
+                access.add_permission(device_id,u,'v',procedure_id=procedure_id)
         redirect(URL('edit_permission', 'edit_view', vars={'device_id' : device_id, 'procedure_id': procedure_id}))
     return dict(form=form)
 
@@ -43,17 +45,19 @@ def edit_edit():
     user_emails = [u.perm_user_email for u in filter(lambda x: x.perm_type=='e', user_list)]
     # Let's get a nice form for editing this.
     form = SQLFORM.factory(
-        Field('users', 'list:string', default=user_emails)
+        Field('users', 'list:string', requires=IS_LIST_OF(IS_EMAIL(error_message='must be email!')), default=user_emails)
     )
     if form.process().accepted:
         new_users = set(form.vars.users) if type(form.vars.users) == type([]) else set([form.vars.users])
         old_users = set(user_emails)
         # Delete old permissions of users who can no longer access.
         for u in old_users - new_users:
-            access.delete_permission(device_id=device_id,user_email=u,procedure_id=procedure_id)
+            if u != '':
+                access.delete_permission(device_id=device_id,user_email=u,procedure_id=procedure_id)
         # Add permissions of users who can newly access.
         for u in new_users - old_users:
-            access.add_permission(device_id,u,'e',procedure_id=procedure_id)
+            if u != '':
+                access.add_permission(device_id,u,'e',procedure_id=procedure_id)
         redirect(URL('edit_permission', 'edit_edit', vars={'device_id' : device_id, 'procedure_id': procedure_id}))
     return dict(form=form)
 
@@ -72,16 +76,18 @@ def edit_admin():
     user_emails = [u.perm_user_email for u in filter(lambda x: x.perm_type=='a', user_list)]
     # Let's get a nice form for editing this.
     form = SQLFORM.factory(
-        Field('users', 'list:string', default=user_emails)
+        Field('users', 'list:string', requires=IS_LIST_OF(IS_EMAIL(error_message='must be email!')), default=user_emails)
     )
     if form.process().accepted:
         new_users = set(form.vars.users) if type(form.vars.users) == type([]) else set([form.vars.users])
         old_users = set(user_emails)
         # Delete old permissions of users who can no longer access.
         for u in old_users - new_users:
-            access.delete_permission(device_id=device_id,user_email=u,procedure_id=procedure_id)
+            if u != '':
+                access.delete_permission(device_id=device_id,user_email=u,procedure_id=procedure_id)
         # Add permissions of users who can newly access.
         for u in new_users - old_users:
-            access.add_permission(device_id,u,'a',procedure_id=procedure_id)
+            if u != '':
+                access.add_permission(device_id,u,'a',procedure_id=procedure_id)
         redirect(URL('edit_permission', 'edit_admin', vars={'device_id' : device_id, 'procedure_id': procedure_id}))
     return dict(form=form)
