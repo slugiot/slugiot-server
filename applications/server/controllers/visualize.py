@@ -7,7 +7,6 @@ def test_fill():
     device_id = "device1"
     procedure_id = 12580
     name = "cpp03"
-    log_level = 1
     # Clear previous data.
     db(db.outputs).delete()
     db(db.logs).delete()
@@ -42,13 +41,12 @@ def test_fill():
         db.logs.insert(device_id=device_id,
                        procedure_id=procedure_id,
                        time_stamp=now - datetime.timedelta(days=i),
-                       log_level=random.randint(0,4),
+                       log_level=random.randint(0, 4),
                        log_message='This is message' + str(i) + '.')
 
 
 def fill_device():
     db(db.procedure_revisions).delete()
-    print 2222222
     db.procedure_revisions.insert(procedure_id=10086,
                                   procedure_data="text information",
                                   is_stable=True,
@@ -58,7 +56,6 @@ def fill_device():
                                   is_stable=True,
                                   )
     db(db.device).delete()
-    print 1111111
     db.device.insert(device_id='device1',
                      user_email='admin@google.com',
                      name='admin',
@@ -68,7 +65,6 @@ def fill_device():
                      name='admin',
                      )
     db(db.procedures).delete()
-    print 1111111
     db.procedures.insert(device_id='device1',
                          name='app01'
                          )
@@ -87,7 +83,6 @@ def fill_device():
     db.procedures.insert(device_id='device2',
                          name='cpp03'
                          )
-    print 1111111
 
 
 # @auth.requires_signature()
@@ -107,8 +102,6 @@ def get_parameter():
 
     device_id = request.vars.device_id
     print device_id
-
-    print 1111111111
 
     name = []
     procedure_id = []
@@ -130,15 +123,17 @@ def get_data():
     device_id, module_name, name, date1, date2
     ]
     """
+    # date1
     s = request.vars.start
+    # date2
     e = request.vars.end
+    # device_id
     device_id = request.vars.device_id
+    # module_name or procedure_id
     procedure_id = request.vars.procedure_id
+    # name
     name = request.vars.name
 
-    print s
-
-    # start = datetime.strptime("2016-05-03 21:20:20", "%Y-%m-%d %H:%M:%S")
     # parse the start date and end date
     start_year = int(s[0:4])
     start_month = int(s[5:7])
@@ -158,35 +153,21 @@ def get_data():
     start = datetime.datetime(start_year, start_month, start_day, start_hour, start_minute, start_second)
     end = datetime.datetime(end_year, end_month, end_day, end_hour, end_minute, end_second)
 
-    # <<<<<<< HEAD
-    #
-    #     print 111111
-    # =======
-    #     # generate random data depend on how many day picked
-    #     num_days = end - start
-    #     test_fill(num_days.days)
-    #
-    # >>>>>>> refs/remotes/origin/visual_team
     test_fill()
+    # get output_data and sort by time_stamp
     output_data = db((db.outputs.time_stamp >= start) &
                      (db.outputs.time_stamp <= end) &
                      (db.outputs.device_id == device_id) &
                      (db.outputs.procedure_id == procedure_id) &
                      (db.outputs.name == name)).select(orderby=db.outputs.time_stamp)
-    print "output_data is :"
-    print output_data
-
+    # get log_data and sort by time_stamp
     log_data = db((db.logs.time_stamp >= start) &
                   (db.logs.time_stamp <= end) &
                   (db.logs.device_id == device_id) &
                   (db.logs.procedure_id == procedure_id)).select(orderby=db.logs.time_stamp)
+    # generate mixed_data from output_data and log_data and sort by time_stamp
     mixed_data = []
-
-    print 111111
-    # print "111111111111111111111111"
-
-    # for row in db((db.outputs.time_stamp >= start) & (db.outputs.time_stamp <= end)).select(
-    #         orderby=db.outputs.time_stamp):
+    # transform output_data into mixed_data
     for row in db((db.outputs.time_stamp >= start) &
                           (db.outputs.time_stamp <= end) &
                           (db.outputs.device_id == device_id) &
@@ -202,11 +183,8 @@ def get_data():
         content = 'name: ' + str(name) + ', value: ' + str(value) + ', tag: ' + str(tag)
         mixed_data.append({'type': type, 'device_id': device_id, 'modulename': modulename, 'time_stamp': time_stamp,
                            'content': content})
-    print 222222222
 
-    # print "111111111111111111111111"
-    # add log_data in
-    # for row in db((db.logs.time_stamp >= start) & (db.logs.time_stamp <= end)).select(orderby=db.logs.time_stamp):
+    # transform log_data into mixed_data
     for row in db((db.logs.time_stamp >= start) &
                           (db.logs.time_stamp <= end) &
                           (db.logs.device_id == device_id) &
@@ -220,13 +198,11 @@ def get_data():
         content = 'name: ' + str(log_level) + ', value: ' + str(log_message)
         mixed_data.append({'type': type, 'device_id': device_id, 'modulename': modulename, 'time_stamp': time_stamp,
                            'content': content})
-
-    print 222222222
-    # print "111111111111111111111111"
+    # sort the mixed_data by time_stamp
     mixed_data.sort(key=lambda r: r['time_stamp'])
-
+    # build the return data in dict format
     result = {'output_data': output_data, 'log_data': log_data, 'mixed_data': mixed_data}
-
+    # dump into json format
     return response.json(result)
 
 
