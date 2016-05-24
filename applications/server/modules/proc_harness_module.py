@@ -52,7 +52,6 @@ def _get_most_recent_date_(procedure_id, is_stable):
 
 ####### API FOR EDITOR TEAM ##########
 
-@auth.requires_login()
 def create_procedure(procedure_name, device_id):
     """
     This function should be called when a new procedure is created in the editor.
