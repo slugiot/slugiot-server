@@ -50,7 +50,7 @@ def receive_keyvalue_data(json_data, table_name, key_column, value_column):
             del datum['id']
 
     for datum in keyvalue_data:
-        # get data and build record
+        # get data and build record;
         key = datum[key_column]
         value = datum[value_column]
         procedure_id = None
@@ -102,8 +102,10 @@ def get_validated_data(request_body, data_key):
 
     return data
 
-def validate_device_id(device_id):
+def validate_device_id(device_id,data_key):
     # TODO if the device ID isn't in our list of device IDs: raise Exception("invalid device id")
-    # len( current.db(current.db.table_where_device_ids_live == device_id).select() ) > 0
+    if (len(current.db(data_key == device_id).select()) > 0):
+        return
     # otherwise, just:
-    return
+    else:
+        raise Exception("invalid device id")
