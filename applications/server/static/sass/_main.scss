@@ -41,6 +41,11 @@ height:100%;
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     background: linear-gradient(to left, $clrPink, $clrPurple);
  }
+.footer{
+  bottom: 0 !important;
+}
+
+// end demo-specific
 
 /* https://css-tricks.com/quick-css-trick-how-to-center-an-object-exactly-in-the-center/ */
 .centered {

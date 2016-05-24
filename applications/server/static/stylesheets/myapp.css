@@ -133,8 +133,13 @@ html, body, #wrapper {
   background: linear-gradient(to left, #c04848, #480048);
 }
 
+/* line 44, ../sass/_main.scss */
+.footer {
+  bottom: 0 !important;
+}
+
 /* https://css-tricks.com/quick-css-trick-how-to-center-an-object-exactly-in-the-center/ */
-/* line 46, ../sass/_main.scss */
+/* line 51, ../sass/_main.scss */
 .centered {
   position: fixed;
   top: 45%;
@@ -142,23 +147,23 @@ html, body, #wrapper {
   transform: translate(-50%, -50%);
 }
 
-/* line 54, ../sass/_main.scss */
+/* line 59, ../sass/_main.scss */
 body {
   background-color: #fff;
 }
 
-/* line 58, ../sass/_main.scss */
+/* line 63, ../sass/_main.scss */
 .footer {
   background: #222222;
 }
 
-/* line 60, ../sass/_main.scss */
+/* line 65, ../sass/_main.scss */
 .panel-footer.panel-custom {
   background: #222222;
   color: #222222;
 }
 
-/* line 65, ../sass/_main.scss */
+/* line 70, ../sass/_main.scss */
 .container-text {
   position: absolute;
   top: 50%;

@@ -7,6 +7,10 @@ from perm_comparator import permission_entail
 # a = admin (valid only for one whole device)
 # e = edit settings of procedure
 
+########################################
+##########Manage Permissions############
+########################################
+
 
 def add_permission(device_id, user_email, perm_type='v', procedure_id=None):
     """
@@ -41,8 +45,8 @@ def add_permission(device_id, user_email, perm_type='v', procedure_id=None):
         else:
             # update the selected row if given type entails original type
             if permission_entail(perm_type, p.perm_type):
-                p.update(perm_user_email=user_email, device_id=device_id, procedure_id=procedure_id,
-                         perm_type=perm_type)
+                p.update_record(perm_type=perm_type)
+    db.commit()
     return fail_email
 
 
@@ -79,9 +83,31 @@ def delete_permission(user_email=None, device_id=None, procedure_id=None):
             db((db.user_permission.perm_user_email == user_email) &
                (db.user_permission.device_id == device_id) &
                (db.user_permission.procedure_id == procedure_id)).delete()
+    db.commit()
 
 
-def can_view_procedure(user_email, device_id, procedure_id):
+####################################################
+##########Generate device list for User#############
+####################################################
+
+
+def generate_device_list(user_email):
+    """
+    This function generate all related devices for a user
+    @param user_email: user email
+    @return: list of devices
+    """
+    db = current.db
+    p = db((db.user_permission.perm_user_email == user_email))
+    return [record.device_id for record in p]
+
+
+#############################################
+##########Access Control methods#############
+#############################################
+
+
+def can_view_procedure(user_email, device_id, procedure_id=None):
     """
     This function check whether a user can view a procedure
     @param device_id : device id
@@ -94,7 +120,7 @@ def can_view_procedure(user_email, device_id, procedure_id):
                                         procedure_id=procedure_id)
 
 
-def can_edit_procedure(user_email, device_id, procedure_id):
+def can_edit_procedure(user_email, device_id, procedure_id=None):
     """
     This function check whether a user can edit a procedure
     @param device_id : device id
@@ -130,7 +156,7 @@ def can_create_procedure(device_id, user_email):
     return check_generic_permission(user_email=user_email, device_id=device_id, perm_type='a')
 
 
-def can_delete_procedure(device_id, user_email, procedure_id):
+def can_delete_procedure(device_id, user_email, procedure_id=None):
     """
         This function check whether a user can delete a procedure, it need 'a' permission type
         @param device_id : device id
