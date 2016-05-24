@@ -52,11 +52,22 @@ def add():
     Description: Controller for the add page, which lets you add a device into the DB
     Returns: A form that lets you add things into db.devices (use by including {{=form}} in add.html)
     """
-    db.device.device_id.writable = True
+    db.device.device_id.writable = False
+    db.device.device_id.readable = False # We don't want to display it here.
+    db.device.user_email.readable = False # We know who we are.
     form = SQLFORM(db.device)
     if form.process().accepted:
         session.flash = "Device added!"
-        redirect(URL('default', 'index'))
+        redirect(URL('default', 'new_device', args=[form.vars.id], user_signature=True))
+    return dict(form=form)
+
+
+@auth.requires_login()
+@auth.requires_signature()
+def new_device():
+    device = db.device[request.args(0)]
+    db.device.user_email.readable = False
+    form = SQLFORM(db.device, record=device, readonly=True)
     return dict(form=form)
 
 
