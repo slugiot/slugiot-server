@@ -1,7 +1,6 @@
 {{extend 'layout.html'}}
 
 
-
 <!-- Bootstrap CSS & JS-->
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
@@ -12,7 +11,14 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
         integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
         crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"
+        integrity="sha256-DI6NdAhhFRnO2k51mumYeDShet3I8AKCQf/tf7ARNhI=" crossorigin="anonymous"></script>
 
+
+<!--<link rel="stylesheet" type="text/css"-->
+<!--href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">-->
+<link rel="stylesheet" type="text/css"
+      href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
 
 <!-- Bootstrap select -->
 <link rel="stylesheet"
@@ -31,13 +37,64 @@
 <script src="/server/static/js/dygraph-combined-dev.js"></script>
 
 
+<!-- table of all the chosen devices -->
+<!--<table id="DeviceTable">-->
+<!--<tr>-->
+<!--<td>Device ID</td>-->
+<!--<td>Procedure ID</td>-->
+<!--<td>name</td>-->
+<!--</tr>-->
+<!--</table>-->
+
+<!-- table of all the chosen devices -->
+<!-- Device_ID Procedure_ID Name Delete -->
+<!--<table class="table table-striped table-bordered"-->
+<!--id="device_table">-->
+<!--<thead>-->
+<!--<tr>-->
+<!--<th>Device ID</th>-->
+<!--<th>Procedure ID</th>-->
+<!--<th>Name</th>-->
+<!--<th>Delete</th>-->
+<!--</tr>-->
+<!--</thead>-->
+<!--<tbody id="device_data_table">-->
+<!--<tr>-->
+<!--<td>device1</td>-->
+<!--<td>procedure1</td>-->
+<!--<td>name1</td>-->
+<!--<td>-->
+<!--<button title="" type="button"-->
+<!--class="btn btn-danger remove show_tip"-->
+<!--data-original-title="Remove from list">-->
+<!--<i class="fa fa-trash-o"></i>-->
+<!--</button>-->
+<!--</td>-->
+<!--</tr>-->
+<!--</tbody>-->
+<!--</table>-->
+<!-- end of table -->
+
+
 <div id="target"></div>
+
+
+<!--start of typeadhead search module-->
+
+
+<!--end of  typeadhead search module-->
+
+
 <script id="template" type="text/ractive">
 <!-- ------------ START Ractive Body ------------ -->
 
 <div class="visualization">
 
     <h1>Data Visualization</h1>
+
+    <!-- start of typeahead search -->
+
+    <!-- end of typeahead search -->
 
     <div class="container-fluid">
         <div class="row">
@@ -51,65 +108,58 @@
                     <div class="panel-body">
 
                         <div class="row">
-
-                            <!-- ------------ START CONTROL PANEL ------------ -->
-                            <div class="col-sm-4">
+                        <!-- ------------ START CONTROL PANEL ------------ -->
+                            <div class="col-sm-3">
                                 <table>
                                     <tr>
                                         <td>
                                             <label>Select:</label> <br>
-                                            <select id="select_device" class="selectpicker" data-live-search="true"
-                                                    title="Choose Device...">
-                                                <option>Android</option>
-                                                <option>iPhone</option>
-                                                <option>iPad</option>
-                                                <option>Nest</option>
-
+                                            <select id="select_device_id" class="selectpicker" data-live-search="true"
+                                                    title="Device ID" onchange="choose_device_id();">
+                                                <option>device1</option>
+                                                <option>device2</option>
                                             </select>
                                             <br>
-                                            <select id="select_data_module" class="selectpicker" data-live-search="true"
-                                                    title="Choose Data Module...">
-                                                <option value="temperature">temperature</option>
-                                                <option value="pressure">pressure</option>
+                                             <select id="select_procedure_id" class="selectpicker" data-live-search="true"
+                                                    title="Procedure ID">
+                                            </select>
+                                            <br>
+                                            <select id="select_name" class="selectpicker" data-live-search="true"
+                                                    title="Name">
                                             </select>
 
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td>
-                                            <label>Compare:</label> <br>
-                                            <select class="selectpicker" data-live-search="true" multiple
-                                                    data-max-options="3">
-                                                <optgroup label="Picnic">
-                                                    <option>Mustard</option>
-                                                    <option>Ketchup</option>
-                                                    <option>Relish</option>
-                                                </optgroup>
-                                                <optgroup label="Camping">
-                                                    <option>Tent</option>
-                                                    <option>Flashlight</option>
-                                                    <option>Toilet Paper</option>
-                                                </optgroup>
-                                            </select>
-                                        </td>
-                                    </tr>
+
                                     <tr>
                                         <td>
                                             <label>Time Span:</label>
                                             <div>
                                                 <input id="time_span" type="text" class="form-control" name="time_span"
-                                                       value="04/01/2016 - 04/10/2016"/>
+                                                       value="05/11/2016 - 05/31/2016"/>
                                             </div>
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td>
+                                            <br><br>
 
+                                            <button id="addButton" onclick="addDevice();" type="button"
+                                                    class="btn btn-info btn-block">ADD
+                                            </button>
+                                            <!-- Spinner icon -->
+                                            <div id="result-spinner" class="hidden">
+                                                <i class="fa fa-spinner fa-pulse fa-4x"></i>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td>
                                             <br><br>
 
                                             <button id="refreshButton" onclick="refresh();" type="button"
-                                                    class="btn btn-info btn-block">Refresh
+                                                    class="btn btn-info btn-block">REFRESH
                                             </button>
                                             <!-- Spinner icon -->
                                             <div id="result-spinner" class="hidden">
@@ -122,27 +172,57 @@
                             <!-- ------------ END CONTROL PANEL ------------ -->
 
 
+
+                            <div class="col-sm-3">
+                                <!-- Device_ID Procedure_ID Name Delete -->
+                                <table class="table table-striped table-bordered"
+                                       id="device_table">
+                                    <thead>
+                                    <tr>
+                                        <th>Device</th>
+                                        <th>Procedure</th>
+                                        <th>Name</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="device_data_table">
+                                    <!--<tr onclick="clickTr(this);">-->
+                                        <!--<td>device1</td>-->
+                                        <!--<td>procedure1</td>-->
+                                        <!--<td>name1</td>-->
+                                        <!--<td>-->
+                                            <!--<button title="" type="button"-->
+                                                    <!--class="btn btn-danger remove show_tip"-->
+                                                    <!--data-original-title="Remove from list">-->
+                                                <!--<i class="fa fa-trash-o"></i>-->
+                                            <!--</button>-->
+                                        <!--</td>-->
+                                    <!--</tr>-->
+                                    </tbody>
+                                </table>
+                                <!-- end of table -->
+                            </div>
+
+
+
+
+
+
                             <!-- ------------ START DATA VISUALIZATION dyGraph ------------ -->
-                            <div class="col-sm-8">
-                                <div id="dygraph_target1" style="width: 100%; height: 400px"></div>
-<!--
+                            <div class="col-sm-6">
                                 <ul class="nav nav-tabs">
-                                    <li class="active"><a href="#tab1">Line Chart</a></li>
-                                    <li><a href="#tab2">Bar Chart</a></li>
+                                    <li class="active" onclick="line_plot()" title={{=T("Line")}}>
+                                        <a data-toggle="tab">
+                                            <i class="fa fa-line-chart fa-2x" aria-hidden="true"></i>
+                                        </a>
+                                    </li>
+                                    <li onclick="bar_plot()" title={{=T("Bar")}}>
+                                        <a data-toggle="tab">
+                                            <i class="fa fa-bar-chart fa-2x" aria-hidden="true"></i>
+                                        </a>
+                                    </li>
                                 </ul>
-                                <div class="tab-content">
-                                    <div class="tab-pane active" id="tab1">
-                                        <div class="dygraph-wrapper">
-                                            <div id="dygraph_target1" style="width: 100%; height: 300px"></div>
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane" id="tab2">
-                                        <div class="dygraph-wrapper">
-                                            <div class="dygraph-target2" style="width: 100%; height: 300px"></div>
-                                        </div>
-                                    </div>
-                                </div>
--->>
+                                <div id="dygraph_target1" style="width: 100%; height: 400px"></div>
                             </div>
                             <!-- ------------ END DATA VISUALIZATION dyGraph ------------ -->
 
@@ -194,7 +274,7 @@
                                     <th>#</th>
                                     <th>Type</th>
                                     <th>Device ID</th>
-                                    <th>Module Name</th>
+                                    <th>Procedure ID</th>
                                     <th>Content</th>
                                     <th>Timestamp</th>
 
@@ -217,6 +297,7 @@
 
 
                         </div>
+
 
                         <!-- ------------------ Output Tab ------------------ -->
                         <div role="tabpanel" class="tab-pane" id="Output">
@@ -251,7 +332,7 @@
                                     <td>{% name %}</td>
                                     <td>{% output_value %}</td>
                                     <td>{% tag %}</td>
-                                    <td>{% output_time_stamp %}</td>
+                                    <td>{% time_stamp %}</td>
 
                                 </tr>
                                 {% /output_data %}
@@ -285,14 +366,14 @@
                                             <a role="button" data-toggle="collapse" data-parent="#accordion"
                                                href="#collapse{% index %}"
                                                aria-expanded="true" aria-controls="collapse{% index %}">
-                                                {% device_id %} : [ {% logged_time_stamp %}] - [ level : {% log_level %} ]
+                                                {% device_id %} : [ {% time_stamp %}] - [ level : {% log_level %} ]
                                             </a>
                                         </h4>
                                     </div>
                                     <div id="collapse{% index %}" class="panel-collapse collapse" role="tabpanel"
                                          aria-labelledby="headingOne">
                                         <div class="panel-body">
-                                            [{% modulename %}] - [ {% log_message %} ]
+                                            [{% procedure_id %}] - [ {% log_message %} ]
                                         </div>
                                     </div>
                                 </div>
@@ -315,34 +396,265 @@
 <!-- ------------ END Ractive Body ------------ -->
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
 
 
 <script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
 <script src="{{=URL('static','js/visualize_output.js')}}"></script>
 
-
-<!-- ------------------ Dygraph tab ------------------ -->
-
-
 <script>
-    // list of dygraph object
-/*    var graphs = [];
-    $(document).ready(function () {
-        $(".nav-tabs a").click(function (event) {
-            event.preventDefault();
-            $(this).tab('show');
-            var target_id = $(this).attr("href");
-            // clear the default style properties.
-            $(target_id).find(".dygraph-target").removeAttr("style");
-            graphs[target_id].resize();
-        });
-        $(".dygraph-target1").each(function () {
 
-            g = new Dygraph($(this)[0], "{{=URL('static', 'temper.csv')}}",
+    function clickTr(obj) {
+        var c = $(obj).find("td").eq(0).text();
+        alert(c);
+    }
+
+    $(window).load(function () {
+        $(function () {
+            $("table#device_table").on("click", ".remove", function () {
+                $(this).closest('tr').remove();
+            });
+        });
+        $(function () {
+            $(".show_tip").tooltip({
+                container: 'body'
+            });
+        });
+        $(document).click(function () {
+            $('.tooltip').remove();
+            $('[title]').tooltip();
+        });
+    });
+
+
+    var ractive = new Ractive({
+        el: '#target',
+        template: '#template',
+        delimiters: ['{%', '%}'],
+        data: {
+            mixed_data: [],
+            output_data: [],
+            log_data: []
+        }
+    });
+
+
+    function choose_device_id() {
+//        alert($('#select_procedure_id option:selected').text());
+        $("#select_name").empty();
+        $("#select_procedure_id").empty();
+        $('.selectpicker').selectpicker('refresh');
+
+        var device_id = $('#select_device_id option:selected').text();
+//        alert(device_id);
+        // add value to select_name
+        // sending a ajax request
+        $.ajax({
+            'url': 'get_parameter',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {device_id: device_id},
+            'success': function (data) {
+                console.log(data);
+//                alert(data);
+                var name = data.name;
+                var procedure_id = data.procedure_id;
+                for (var val in name) {
+                    console.log(name[val].name);
+                    $("#select_name").append('<option>' + name[val].name + '</option>');
+                }
+                for (var val in procedure_id) {
+                    console.log(procedure_id[val].procedure_id);
+                    $("#select_procedure_id").append('<option>' + procedure_id[val].procedure_id + '</option>');
+                }
+                $('.selectpicker').selectpicker('refresh');
+            }
+        });
+
+    }
+    // -----------------------------  Add Device_id-Procedure_id-name pair into the devices management table  ------------------------------------------
+
+    function addDevice() {
+        // ----------------- add the device info to DeviceTable  ------------------------
+        // generate new row data
+        var device_id = $('#select_device_id option:selected').text();
+        var procedure_id = $('#select_procedure_id option:selected').text();
+        var name = $('#select_name option:selected').text();
+
+
+        console.log(device_id + " " + procedure_id + " " + name);
+
+        if (device_id == "Device ID" || procedure_id == "Procedure ID" || name == "Name") {
+            return;
+        } else {
+            var isDuplicated = false;
+            $("tbody#device_data_table tr").each(function () {
+                var prev_device_id = $(this).find("td").eq(0).text();
+                var prev_procedure_id = $(this).find("td").eq(1).text();
+                var prev_name = $(this).find("td").eq(2).text();
+
+                if (device_id == prev_device_id && procedure_id == prev_procedure_id && name == prev_name) {
+                    isDuplicated = true;
+                }
+            });
+            if (isDuplicated) {
+                return;
+            }
+        }
+
+
+        var btn = "<button title='' type='button' class='btn btn-danger remove show_tip' data-original-title='Remove from list'><i class='fa fa-trash-o'></i></button>";
+        var row = '<tr onclick="showRow(this)"><td>' + device_id + '</td><td>' + procedure_id + '</td><td>' + name + '</td><td>' + btn + '</td></tr>';
+        $("#device_data_table").append(row);
+        console.log(row);
+//             var btn =       "<button title='' type='button' class='btn btn-danger remove show_tip' data-original-title='Remove from list'><i class='fa fa-trash-o'></i></button>"
+
+    }
+
+
+    // ------------------------------------  End of adding info into the devices management table  ------------------------------------------------------
+
+
+    function showRow(obj) {
+
+
+
+
+        // ----------------- end of adding the device info to DeviceTable  ------------------------
+
+        // ----------- get the parameter in the control panel --------------------------
+        var time_span = $('#time_span').val();
+        var elems = time_span.trim().split("-");
+        var start = elems[0].slice(6, 10) + "-" + elems[0].slice(0, 2) + "-" + elems[0].slice(3, 5) + " 00:00:00";
+        var end = elems[1].slice(7, 12) + "-" + elems[1].slice(1, 3) + "-" + elems[1].slice(4, 6) + " 23:59:59";
+
+        var device_id = $(obj).find('td').eq(0).text();
+        var procedure_id = $(obj).find('td').eq(1).text();
+        var name = $(obj).find('td').eq(2).text();
+
+        $.ajax({
+            'url': 'get_data',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {start: start, end: end, device_id: device_id, procedure_id: procedure_id, name: name},
+            'success': function (data) {
+
+                //console.log(data);
+
+
+                ractive.set({mixed_data: data.mixed_data});
+                ractive.set({output_data: data.output_data});
+                ractive.set({log_data: data.log_data});
+                console.log(data);
+
+                //  ---------- showing test output dygraph ----------
+                dy_plot();
+            }
+        });
+
+        //  ---------- showing test output dygraph ----------
+        dy_plot();
+    } // -------- END Refresh Button --------
+
+
+    // ------------------------------------ START Refresh Button  ------------------------------------
+    function refresh() {
+
+
+
+
+        // ----------------- end of adding the device info to DeviceTable  ------------------------
+
+        // ----------- get the parameter in the control panel --------------------------
+        var time_span = $('#time_span').val();
+        var elems = time_span.trim().split("-");
+        var start = elems[0].slice(6, 10) + "-" + elems[0].slice(0, 2) + "-" + elems[0].slice(3, 5) + " 00:00:00";
+        var end = elems[1].slice(7, 12) + "-" + elems[1].slice(1, 3) + "-" + elems[1].slice(4, 6) + " 23:59:59";
+
+        var device_id = $('#select_device_id option:selected').text();
+        var procedure_id = $('#select_procedure_id option:selected').text();
+        var name = $('#select_name option:selected').text();
+
+        $.ajax({
+            'url': 'get_data',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {start: start, end: end, device_id: device_id, procedure_id: procedure_id, name: name},
+            'success': function (data) {
+
+                console.log(data);
+
+
+                ractive.set({mixed_data: data.mixed_data});
+                ractive.set({output_data: data.output_data});
+                ractive.set({log_data: data.log_data});
+                //  ---------- showing test output dygraph ----------
+                dy_plot();
+            }
+        });
+
+        //  ---------- showing test output dygraph ----------
+        dy_plot();
+    } // -------- END Refresh Button --------
+
+
+    // ------------------------------------  Tab  ------------------------------------
+    $('#myTabs a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+    // ------------  Date Picker  ------------
+    $(function () {
+        $('#time_span').daterangepicker();
+    });
+
+    // ------------  Dygraph testing  ------------
+    function barChartPlotter(e) {
+        var ctx = e.drawingContext;
+        var points = e.points;
+        var y_bottom = e.dygraph.toDomYCoord(0);  // see <a href="http://dygraphs.com/jsdoc/symbols/Dygraph.html#toDomYCoord">jsdoc</a>
+
+        // This should really be based on the minimum gap
+        var bar_width = 2 / 3 * (points[1].canvasx - points[0].canvasx);
+        ctx.fillStyle = e.color;  // a lighter shade might be more aesthetically pleasing
+
+        // Do the actual plotting.
+        for (var i = 0; i < points.length; i++) {
+            var p = points[i];
+            var center_x = p.canvasx;  // center of the bar
+
+            ctx.fillRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
+            ctx.strokeRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
+        }
+    }
+
+
+    dy_plot = function () {
+        var graph_com = document.getElementById("dygraph_target1");
+        var output_data = ractive.get('output_data'); //"{{=URL('static', 'temper.csv')}}";
+
+
+        // collecting output data
+        if (typeof output_data === "undefined") {
+            g = new Dygraph(
+                    graph_com,
                     {
-                        rollPeriod: 5,
-                        showRoller: true,
+                        //rollPeriod: 5,
+                        //showRoller: true,
                         title: 'Temperature Line Chart',
                         ylabel: 'Temperature (C)',
                         legend: 'always',
@@ -350,91 +662,46 @@
                         rangeSelectorHeight: 30,
                         rangeSelectorPlotStrokeColor: 'green',
                         rangeSelectorPlotFillColor: 'lightgreen'
-                    });
-            // append the dygraph object to the list
-            graphs["#" + $(this).parents(".tab-pane").attr("id")] = g;
-        });
-
-        $(".dygraph-target2").each(function () {
-
-            // bar chart
-            // Darken a color
-            function darkenColor(colorStr) {
-                // Defined in dygraph-utils.js
-                var color = Dygraph.toRGB_(colorStr);
-                color.r = Math.floor((255 + color.r) / 2);
-                color.g = Math.floor((255 + color.g) / 2);
-                color.b = Math.floor((255 + color.b) / 2);
-                return 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
-            }
-
-            function multiColumnBarPlotter(e) {
-                // We need to handle all the series simultaneously.
-                if (e.seriesIndex !== 0) return;
-
-                var g = e.dygraph;
-                var ctx = e.drawingContext;
-                var sets = e.allSeriesPoints;
-                var y_bottom = e.dygraph.toDomYCoord(0);
-
-                // Find the minimum separation between x-values.
-                // This determines the bar width.
-                var min_sep = Infinity;
-                for (var j = 0; j < sets.length; j++) {
-                    var points = sets[j];
-                    for (var i = 1; i < points.length; i++) {
-                        var sep = points[i].canvasx - points[i - 1].canvasx;
-                        if (sep < min_sep) min_sep = sep;
                     }
-                }
-                var bar_width = Math.floor(2.0 / 3 * min_sep);
-
-                var fillColors = [];
-                var strokeColors = g.getColors();
-                for (var i = 0; i < strokeColors.length; i++) {
-                    fillColors.push(darkenColor(strokeColors[i]));
-                }
-
-                for (var j = 0; j < sets.length; j++) {
-                    ctx.fillStyle = fillColors[j];
-                    ctx.strokeStyle = strokeColors[j];
-                    for (var i = 0; i < sets[j].length; i++) {
-                        var p = sets[j][i];
-                        var center_x = p.canvasx;
-                        var x_left = center_x - (bar_width / 2) * (1 - j / (sets.length - 1));
-
-                        ctx.fillRect(x_left, p.canvasy,
-                                bar_width / sets.length, y_bottom - p.canvasy);
-
-                        ctx.strokeRect(x_left, p.canvasy,
-                                bar_width / sets.length, y_bottom - p.canvasy);
-                    }
-                }
+            );
+        }
+        else if (output_data.length > 0) {
+            var data = "Date, Temperature\n";   //[['Date', 'Temperature']];
+            var dateRange = [];
+            var timeSpan = $('#time_span').val();
+            for (var i = 0; i < output_data.length; i++) {
+                var output = output_data[i];
+                data = data + output.time_stamp + ',' + output.output_value.toString() + '\n';
+                if (i == 0 || i == output_data.length - 1)
+                    dateRange.push(Date.parse(output.time_stamp));
+                //data.push([output.time_stamp, output.output_value]);
             }
+            /*if (typeof timeSpan !== "undefined") {
+             var time2 = timeSpan.split("-");
+             dateRange = [Date.parse(time2[0]), Date.parse(time2[1])];
+             }*/
 
-            g1 = new Dygraph(
-                    $(this)[0],
-                    "{{=URL('static', 'temper.csv')}}",
+            g2 = new Dygraph(
+                    graph_com,
+                    data,
                     {
-                        title: 'Temperature Bar Chart',
+                        //labels: ['Date', 'Temperature'],
+                        //plotter: barChartPlotter,
+                        title: 'Temperature Line Chart',
                         ylabel: 'Temperature (C)',
-                        rangeSelectorPlotStrokeColor: 'green',
-                        rangeSelectorPlotFillColor: 'lightgreen',
-                        includeZero: true,
-                        showRoller: true,
                         legend: 'always',
+                        dateWindow: dateRange,
                         showRangeSelector: true,
                         rangeSelectorHeight: 30,
                         rangeSelectorPlotStrokeColor: 'green',
-                        rangeSelectorPlotFillColor: 'lightgreen',
-                        plotter: multiColumnBarPlotter
+                        rangeSelectorPlotFillColor: 'lightgreen'
+                        //xTicker: Dygraph.dateTicker
+                    }
+            );
 
-                    });
-            // append the dygraph object to the list
-            graphs["#" + $(this).parents(".tab-pane").attr("id")] = g1;
-        });
-    });*/
+        }
+
+    };
+
+    dy_plot();
 </script>
-
-
-</div>

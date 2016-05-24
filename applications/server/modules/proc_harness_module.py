@@ -5,9 +5,10 @@ import access
 import logging
 import re
 
-test_device_id = "test"
 logger = logging.getLogger("web2py.app.server")
 logger.setLevel(logging.INFO)
+
+auth = current.auth
 
 ####### Helper Functions ##########
 
@@ -77,7 +78,6 @@ def create_procedure(procedure_name, device_id):
 
     return pid
 
-#@auth.requires_login()
 def change_procedure_name(procedure_id, new_procedure_name):
     """
     This function should be called when a procedure name change is desired
@@ -103,7 +103,6 @@ def change_procedure_name(procedure_id, new_procedure_name):
     record = db(proc_table.id == procedure_id).select().first()
     record.update_record(name = new_procedure_name)
 
-#@auth.requires_login()
 def get_procedures_for_edit(device_id):
     """
     This function returns all procedure IDs that are associated with a given user to edit
@@ -130,7 +129,6 @@ def get_procedures_for_edit(device_id):
 
     return procedure_ids
 
-#@auth.requires_login()
 def get_procedures_for_view(device_id):
     """
     This function returns all procedure IDs that are associated with a given user to view ONLY
@@ -159,7 +157,6 @@ def get_procedures_for_view(device_id):
 
     return procedure_ids
 
-#@auth.requires_login()
 def get_procedure_data(procedure_id, is_stable):
     """
     Returns actual code that corresponds to a given procedure ID.
@@ -181,7 +178,6 @@ def get_procedure_data(procedure_id, is_stable):
     # Return the data corresponding the procedure ID and determined date
     return db((revisions_table.procedure_id == procedure_id) & (revisions_table.last_update == date)).select(revisions_table.procedure_data).first().procedure_data
 
-#@auth.requires_login()
 def get_procedure_name(procedure_id):
     """
     Returns actual code that corresponds to a given procedure ID.
@@ -201,7 +197,6 @@ def get_procedure_name(procedure_id):
     # Return the data corresponding the procedure ID and determined date
     return db(proc_table.id == procedure_id).select(proc_table.name).first().name
 
-#@auth.requires_login()
 def save(procedure_id, procedure_data, is_stable):
     """
     Save code corresponding to a procedure ID as either a stable version or a temporary version
