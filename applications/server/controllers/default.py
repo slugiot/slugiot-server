@@ -70,6 +70,8 @@ def add():
     form = SQLFORM(db.device)
     form.custom.widget.name['requires'] = IS_NOT_EMPTY()
     if form.process().accepted:
+        device_id = form.vars.device_id
+        access.add_permission(user_email=auth.user.email, perm_type='a', device_id=device_id)
         session.flash = "Device added!"
         redirect(URL('default', 'new_device', args=[form.vars.id], user_signature=True))
     return dict(form=form)
@@ -116,7 +118,7 @@ def add_new_procedure():
         name = db(db.device.device_id == val).select()[0].name + " procedure"
 
     if form.process().accepted:
-        access.add_permission(val, auth.user.email, perm_type="a")
+
         proc_id = proc_harness_module.create_procedure(name, val)
         # Initialize some starter Python code
         proc_harness_module.save(proc_id, "#This is your new (stable) procedure. Happy coding!", True)
