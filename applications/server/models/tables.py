@@ -18,7 +18,7 @@
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
 
-from datetime import datetime
+import datetime
 import uuid
 
 
@@ -39,6 +39,9 @@ db.define_table('device',
                 Field('description', 'text')
                 )
 
+db.device.name.widget = lambda f, v: SQLFORM.widgets.string.widget(f, v, _placeholder='Enter the name of device')
+db.device.description.widget = lambda f, v: SQLFORM.widgets.string.widget(f, v, _placeholder='Enter a description here')
+
 # with this new split table definition it makes sense to just use the automatic id in this table as the procedure_id
 db.define_table('procedures',
                 Field('device_id', 'string', required=True),
@@ -49,8 +52,8 @@ db.define_table('procedure_revisions',
                 Field('procedure_id', 'bigint', required=True),  # key
                 Field('procedure_data', 'text', required=True),  # Actual code for procedure - is check IS_LENGTH(65536) ok?
                 # Otherwise use string and specifiy larger length
-                Field('last_update', 'datetime', default=datetime.utcnow(), required=True),
-                Field('is_stable', 'boolean', required=True) # True for stable False for not stable
+                Field('last_update', 'datetime', default=datetime.datetime.utcnow(), required=True),
+                Field('is_stable', 'boolean', required=True)  # True for stable False for not stable
                 )
 
 db.device.id.readable = False
@@ -81,7 +84,7 @@ db.define_table('client_setting',
                 Field('procedure_id'), # Can be Null for device-wide settings.
                 Field('setting_name'),
                 Field('setting_value'), # Encoded in json-plus.
-                Field('last_updated', 'datetime', update=datetime.utcnow())
+                Field('last_updated', 'datetime', update=datetime.datetime.utcnow())
                 )
 
 
@@ -94,9 +97,8 @@ db.define_table('logs',
                 Field('procedure_id'), ## MOVE TO procedure_id
                 Field('log_level', 'integer'), #  int, 0 = most important.
                 Field('log_message', 'text'),
-                Field('time_stamp', 'datetime'),
-                Field('received_time_stamp', 'datetime', default=datetime.utcnow()),
-
+                Field('logged_time_stamp', 'datetime'),
+                Field('received_time_stamp', 'datetime', default=datetime.datetime.utcnow())
                 )
 
 # Synched client -> server
@@ -106,8 +108,8 @@ db.define_table('outputs',
                 Field('name'), # Name of variable
                 Field('output_value', 'text'), # Json, short please
                 Field('tag'),
-                Field('time_stamp', 'datetime'),
-                Field('received_time_stamp', 'datetime', default=datetime.utcnow()),
+                Field('output_time_stamp', 'datetime'),
+                Field('received_time_stamp', 'datetime', default=datetime.datetime.utcnow()),
 )
 
 # Synched client -> server
@@ -115,9 +117,9 @@ db.define_table('module_values',
                 Field('device_id'),
                 Field('procedure_id'),
                 Field('name'),  # Name of variable
-                Field('module_value', 'text'),  # Json, short please
-                Field('time_stamp', 'datetime'),
-                Field('received_time_stamp', 'datetime', default=datetime.utcnow())
+                Field('output_value', 'text'),  # Json, short please
+                Field('value_time_stamp', 'datetime'),
+                Field('received_time_stamp', 'datetime', default=datetime.datetime.utcnow())
                 )
 
 

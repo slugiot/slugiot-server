@@ -7,7 +7,10 @@ gluon_utils: Used to generate UUID passed to index for signature
 proc_harness_module: Used for adding procedures
 """
 from gluon import utils as gluon_utils
-import time, access, proc_harness_module
+import time
+import access
+import proc_harness_module
+import uuid
 
 
 class DeviceIDVerification:
@@ -27,14 +30,21 @@ class DeviceIDVerification:
 def index():
     """
     Description: Controller for the home page.
-    Returns: a redirect to the splash page if not logged in or a list of the devices + UUID to index.html if you are.
+    Returns (if not logged in): a redirect to the splash page.
+    Returns (if logged in): A list of all the devices that are associated with your email (and a UUID for signatures)
     """
-    if auth.user_id is None:
+    # Redirect to splash page if not logged in
+    if auth.is_logged_in() is False:
         redirect(URL('default', 'login.html'))
         return dict(message=T('Please sign in!'))
     else:
+        # Generate a UUID for user signatures
         sign_uuid = gluon_utils.web2py_uuid()
+
+        # Generate a list of device associated with the user's email address.
         device_list = db(db.device.user_email == auth.user.email).select()
+
+        # Return the list of devices and UUID
         return dict(device_list=device_list, sign_uuid=sign_uuid)
 
 
@@ -43,7 +53,9 @@ def login():
     Description: Controller for the login/splash page.
     Returns: Nothing of substance
     """
-    return dict(message=T('Welcome to SlugIOT!'))
+    if auth.is_logged_in() is True:
+        redirect(URL('default', 'index'))
+    return dict()
 
 
 @auth.requires_login()
@@ -56,6 +68,7 @@ def add():
     db.device.device_id.readable = False # We don't want to display it here.
     db.device.user_email.readable = False # We know who we are.
     form = SQLFORM(db.device)
+    form.custom.widget.name['requires'] = IS_NOT_EMPTY()
     if form.process().accepted:
         session.flash = "Device added!"
         redirect(URL('default', 'new_device', args=[form.vars.id], user_signature=True))
@@ -68,6 +81,9 @@ def new_device():
     device = db.device[request.args(0)]
     db.device.user_email.readable = False
     form = SQLFORM(db.device, record=device, readonly=True)
+    if form.process().accepted:
+        session.flash = T(form.vars.name + ' added!')
+        redirect(URL('default', 'manage', vars=dict(device=device.id)))
     return dict(form=form)
 
 
@@ -128,6 +144,7 @@ def edit_device():
         session.flash = T('No such device')
         redirect(URL('default', 'index'))
     form = SQLFORM(db.device, record=int(table_id))
+    form.custom.widget.name['requires'] = IS_NOT_EMPTY()
     if form.process().accepted:
         session.flash = T('Device edited')
         redirect(URL('default', 'index'))
@@ -137,13 +154,27 @@ def edit_device():
 @auth.requires_login()
 def manage():
     """
-    Controller for the procedure manager page.
+    Controller for the procedure manager page. Parses the device ID and returns a list of procedures
+    that are associated with the device ID.
     :return: procedure_list, uuid, and vars for URL
     """
-    val = request.vars['device']
+    # Extract the device ID from the URL
+    device_id = request.vars['device']
+
+    # Go back if there's no device ID for some reason
+    # TODO: Also ensure that the device ID is actually in the database.
+    if device_id is None:
+        session.flash = T('Device not found.')
+        redirect(URL('default', 'index'))
+
+    # Generate a UUID for user signature
     sign_uuid = gluon_utils.web2py_uuid()
-    procedure_list = db(db.procedures.device_id == val).select()
-    return dict(procedures_list=procedure_list, sign_uuid=sign_uuid, val=val)
+
+    # Find all the procedures for this device
+    procedure_list = db(db.procedures.device_id == device_id).select()
+
+    # Return the procedure list, UUID, and device ID (as val) to be used in the page.
+    return dict(procedures_list=procedure_list, sign_uuid=sign_uuid, val=device_id)
 
 
 @auth.requires_login()
@@ -226,6 +257,8 @@ def user():
     to decorate functions that need access control
     also notice there is http://..../[app]/appadmin/manage/auth to allow administrator to manage users
     """
+    if request.args(0) == 'profile':
+        db.auth_user.email.writable = False
     return dict(form=auth())
 
 
