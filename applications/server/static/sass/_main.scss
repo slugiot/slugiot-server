@@ -88,3 +88,10 @@ body {
   margin-left:0px !important;
   margin-right:0px !important;
 }
+
+@media (min-width: 768px) {
+  .form-horizontal
+  .control-label {
+    padding-top: 0px !important;
+  }
+}
