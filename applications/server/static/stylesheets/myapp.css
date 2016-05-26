@@ -86,20 +86,21 @@ html, body, #wrapper {
 /* line 67, ../sass/_main.scss */
 body {
   background-color: #fff;
+  margin-bottom: 0px !important;
 }
 
-/* line 71, ../sass/_main.scss */
+/* line 73, ../sass/_main.scss */
 .footer {
   background: #222222;
 }
 
-/* line 73, ../sass/_main.scss */
+/* line 75, ../sass/_main.scss */
 .panel-footer.panel-custom {
   background: #222222;
   color: #222222;
 }
 
-/* line 78, ../sass/_main.scss */
+/* line 80, ../sass/_main.scss */
 .container-text {
   position: absolute;
   top: 50%;
