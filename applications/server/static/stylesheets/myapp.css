@@ -107,3 +107,9 @@ body {
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
 }
+
+/* line 87, ../sass/_main.scss */
+.row {
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}
