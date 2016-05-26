@@ -189,6 +189,8 @@
     <!-- dygraph library for the viz team-->
     <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
 
+    <script src="{{=URL('static','js/jquery.qrcode.min.js')}}"></script>
+
     <!-- The javascript for the editor team -->
     <script src="{{=cm}}/lib/codemirror.js"></script>
     <script src="{{=cm}}/addon/edit/matchbrackets.js"></script>
@@ -235,7 +237,7 @@
         });
 
         $.ajax({
-            'url': 'default/load_devices',
+            'url': '{{=URL('default', 'load_devices')}}',
             'type': 'post',
             'dataType': 'json',
             'data': {},

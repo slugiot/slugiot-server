@@ -44,19 +44,29 @@ html, body, #wrapper {
   color: #FFFFFF;
 }
 
-/* line 24, ../sass/_main.scss */
+/* line 25, ../sass/_main.scss */
+.selector h1 {
+  font-family: monospace;
+  font-size: 24px;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 500;
+  line-height: 26.4px;
+}
+
+/* line 35, ../sass/_main.scss */
 .border-c {
   background-color: #fff;
   padding: 2px;
 }
 
-/* line 29, ../sass/_main.scss */
+/* line 40, ../sass/_main.scss */
 .gravimg {
   line-height: 40px;
   vertical-align: middle;
 }
 
-/* line 35, ../sass/_main.scss */
+/* line 46, ../sass/_main.scss */
 .navbar-default {
   /* fallback for old browsers */
   background: #C04848 !important;
@@ -65,17 +75,17 @@ html, body, #wrapper {
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   background: linear-gradient(to left, #c04848, #480048) !important;
 }
-/* line 44, ../sass/_main.scss */
+/* line 55, ../sass/_main.scss */
 .navbar-default .social a {
   color: #FFFFFF !important;
 }
-/* line 50, ../sass/_main.scss */
+/* line 61, ../sass/_main.scss */
 .navbar-default .dropdown-toggle a {
   color: #FFFFFF !important;
 }
 
 /* https://css-tricks.com/quick-css-trick-how-to-center-an-object-exactly-in-the-center/ */
-/* line 59, ../sass/_main.scss */
+/* line 70, ../sass/_main.scss */
 .centered {
   position: fixed;
   top: 45%;
@@ -83,23 +93,23 @@ html, body, #wrapper {
   transform: translate(-50%, -50%);
 }
 
-/* line 67, ../sass/_main.scss */
+/* line 78, ../sass/_main.scss */
 body {
   background-color: #fff;
 }
 
-/* line 71, ../sass/_main.scss */
+/* line 82, ../sass/_main.scss */
 .footer {
   background: #222222;
 }
 
-/* line 73, ../sass/_main.scss */
+/* line 84, ../sass/_main.scss */
 .panel-footer.panel-custom {
   background: #222222;
   color: #222222;
 }
 
-/* line 78, ../sass/_main.scss */
+/* line 89, ../sass/_main.scss */
 .container-text {
   position: absolute;
   top: 50%;
