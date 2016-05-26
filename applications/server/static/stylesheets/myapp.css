@@ -1,91 +1,29 @@
 /* line 1, ../sass/_sidebar.scss */
-.fill {
-  height: 100%;
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+/* line 5, ../sass/_sidebar.scss */
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+
+/* line 9, ../sass/_sidebar.scss */
+.footer {
+  position: absolute;
+  bottom: 0;
   width: 100%;
-}
-
-/*
- * Top navigation
- * Hide default border to remove 1px line.
- */
-/* line 12, ../sass/_sidebar.scss */
-.navbar-fixed-top {
-  border: 0;
-}
-
-/* line 16, ../sass/_sidebar.scss */
-.sidebar {
-  padding-top: -10px;
-  display: none;
-  height: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
   background-color: #f5f5f5;
-}
-
-@media (min-width: 768px) {
-  /* line 23, ../sass/_sidebar.scss */
-  .sidebar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    top: -20;
-    z-index: 1000;
-    display: inline-block;
-    padding: 20px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    /* Scrollable contents if viewport is shorter than content. */
-    background-color: #f5f5f5;
-    border-right: 1px solid #eee;
-    height: 100%;
-  }
-}
-/* Sidebar navigation */
-/* line 40, ../sass/_sidebar.scss */
-.nav-sidebar {
-  margin-right: -21px;
-  /* 20px padding + 1px border */
-  margin-left: -20px;
-}
-
-/* line 44, ../sass/_sidebar.scss */
-.nav-sidebar > li > a {
-  padding-right: 20px;
-  padding-left: 20px;
-}
-
-/* line 48, ../sass/_sidebar.scss */
-.nav-sidebar > .active > a,
-.nav-sidebar > .active > a:hover,
-.nav-sidebar > .active > a:focus {
-  color: #fff;
-  background-color: #428bca;
-}
-
-/* test */
-/*
- * Main content
- */
-/* line 60, ../sass/_sidebar.scss */
-.main {
-  padding: 20px;
-}
-
-@media (min-width: 768px) {
-  /* line 64, ../sass/_sidebar.scss */
-  .main {
-    padding-right: 40px;
-    padding-left: 40px;
-  }
-}
-/* line 69, ../sass/_sidebar.scss */
-.main .page-header {
-  margin-top: 0;
 }
 
 /* line 2, ../sass/_main.scss */
 .img-circle {
   border-radius: 50%;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 /* line 7, ../sass/_main.scss */
@@ -102,44 +40,38 @@ html, body, #wrapper {
 }
 
 /* line 18, ../sass/_main.scss */
-.white-col a {
+.white-col a li ul {
   color: #FFFFFF;
 }
 
-/* line 21, ../sass/_main.scss */
-#web2py-logo {
-  font-size: 150%;
-}
-
-/* line 25, ../sass/_main.scss */
+/* line 24, ../sass/_main.scss */
 .border-c {
   background-color: #fff;
   padding: 2px;
 }
 
-/* line 30, ../sass/_main.scss */
+/* line 29, ../sass/_main.scss */
 .gravimg {
   line-height: 40px;
   vertical-align: middle;
 }
 
-/* line 36, ../sass/_main.scss */
-.navbar {
+/* line 35, ../sass/_main.scss */
+.navbar-default {
   /* fallback for old browsers */
-  background: #C04848;
+  background: #C04848 !important;
   /* Chrome 10-25, Safari 5.1-6 */
-  background: -webkit-linear-gradient(to left, #C04848, #480048);
+  background: -webkit-linear-gradient(to left, #C04848, #480048) !important;
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  background: linear-gradient(to left, #c04848, #480048);
+  background: linear-gradient(to left, #c04848, #480048) !important;
 }
-
 /* line 44, ../sass/_main.scss */
-.footer {
-  bottom: 0 !important;
+.navbar-default .social a {
+  color: #FFFFFF !important;
 }
 
 /* https://css-tricks.com/quick-css-trick-how-to-center-an-object-exactly-in-the-center/ */
-/* line 51, ../sass/_main.scss */
+/* line 53, ../sass/_main.scss */
 .centered {
   position: fixed;
   top: 45%;
@@ -147,23 +79,23 @@ html, body, #wrapper {
   transform: translate(-50%, -50%);
 }
 
-/* line 59, ../sass/_main.scss */
+/* line 61, ../sass/_main.scss */
 body {
   background-color: #fff;
 }
 
-/* line 63, ../sass/_main.scss */
+/* line 65, ../sass/_main.scss */
 .footer {
   background: #222222;
 }
 
-/* line 65, ../sass/_main.scss */
+/* line 67, ../sass/_main.scss */
 .panel-footer.panel-custom {
   background: #222222;
   color: #222222;
 }
 
-/* line 70, ../sass/_main.scss */
+/* line 72, ../sass/_main.scss */
 .container-text {
   position: absolute;
   top: 50%;

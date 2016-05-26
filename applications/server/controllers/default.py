@@ -202,7 +202,6 @@ def load_devices():
     Returns: A JSON with a dictionary of all the devices and their database fields.
     """
     rows = db(db.device.user_email == auth.user.email).select()
-    time.sleep(1)  # so we can some time to stare at the pretty animation :-)
     d = {r.device_id: {'name': r.name,
                        'description': r.description,
                        'user_email': r.user_email,

@@ -1,7 +1,7 @@
 // Makes images with the img-circle class into a circle
 .img-circle {
     border-radius: 50%;
-    margin-top:10px
+    margin-top:5px;
 }
 
 img.resize{
@@ -15,12 +15,11 @@ height:100%;
 }
 
 .white-col{
-  a {color: #FFFFFF;}
+  a li ul {
+    color: #FFFFFF;
+  }
 }
 
-#web2py-logo{
-    font-size: 150%;
-}
 
 .border-c{
   background-color: #fff;
@@ -33,17 +32,20 @@ height:100%;
 }
 
 // Navbar/theme colors
-.navbar{
+.navbar-default{
     /* fallback for old browsers */
-    background: $clrPink;
+    background: $clrPink !important;
     /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(to left, $clrPink, $clrPurple);
+    background: -webkit-linear-gradient(to left, $clrPink, $clrPurple) !important;
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(to left, $clrPink, $clrPurple);
+    background: linear-gradient(to left, $clrPink, $clrPurple) !important;
+
+    .social{
+        a {
+          color: #FFFFFF !important;
+        }
+    }
  }
-.footer{
-  bottom: 0 !important;
-}
 
 // end demo-specific
 
