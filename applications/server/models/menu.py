@@ -6,7 +6,7 @@
 response.logo = response.logo = A(IMG(_src=URL('static', 'images/logo.png')), _id="web2py-logo",
                                   _href=URL('default', 'index'), _class="navbar-brand")
 
-response.title = request.application.replace('_',' ').title()
+response.title = 'SlugIOT Server'
 response.subtitle = ''
 
 ## read more at http://dev.w3.org/html5/markup/meta.name.html
@@ -25,8 +25,7 @@ response.google_analytics_id = None
 # We don't the user to see things like "add new device" if they're not logged in
 if auth.user_id is not None:
     response.menu = [
-        (T('Devices'), False, URL('default', 'add'), []),
-        (T('Procedures'), False, URL('default', 'manage'), []),
+        (T('Add Device'), False, URL('default', 'add'), []),
         (T('Help'), False, URL('default', 'help'), [])
     ]
 else:
