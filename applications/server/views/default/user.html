@@ -6,20 +6,36 @@
 
 <div class="container">
     <div class="row">
-        <div id="web2py_user_form" class="col-lg-6">
-        {{
-        if request.args(0)=='login':
-            if not 'register' in auth.settings.actions_disabled:
-                form.add_button(T('Sign Up'),URL(args='register', vars={'_next': request.vars._next} if request.vars._next else None),_class='btn btn-default')
+        <div id="web2py_user_form" class="col-lg-12">
+        {{if 'profile' in request.args(0):}}
+            <div id="profile-information" align="center">
+                <img class="img-circle" src='{{=Gravatar(auth.user.email).thumb}}'>
+                <h3>{{=auth.user.first_name + " " + auth.user.last_name}}</h3><br>
+            </div>
+        {{pass}}
+        <div id="web2py_user_form" class="col-lg-10">
+            {{
+            if request.args(0)=='login':
+                if not 'register' in auth.settings.actions_disabled:
+                    form.add_button(T('Sign Up'),URL(args='register', vars={'_next': request.vars._next} if request.vars._next else None),_class='btn btn-default')
+                pass
+                if not 'request_reset_password' in auth.settings.actions_disabled:
+                    form.add_button(T('Lost Password'),URL(args='request_reset_password'),_class='btn btn-default')
+                pass
             pass
-            if not 'request_reset_password' in auth.settings.actions_disabled:
-                form.add_button(T('Lost Password'),URL(args='request_reset_password'),_class='btn btn-default')
-            pass
-        pass
-        =form
-        }}
+            =form
+            }}
         </div>
     </div>
+        {{if 'profile' in request.args(0):}}
+        <br>
+        <div class="settings-box" align="center">
+            <h3>Experimental Settings</h3><br>
+            <div class="checkbox">
+              <label><input type="checkbox" data-toggle="toggle">&nbsp;Enable QR codes</label>
+            </div>
+        </div>
+        {{pass}}
 </div>
 
 
