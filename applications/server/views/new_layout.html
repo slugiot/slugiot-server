@@ -92,131 +92,134 @@
 {{block head}}{{end}}
 </head>
 <body>
-<!--[if lt IE 8]><p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-<![endif]-->
-<div class="w2p_flash alert alert-dismissable">{{=response.flash or ''}}</div>
-<!-- Navbar =======================================
-http://web2py.com/books/default/chapter/29/05/the-views#Customizing-the-default-layout -->
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            {{=response.logo or ''}}
-        </div>
-    <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse white-col" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Devices <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <div id="device_target"></div>
-                <script id="device_template" type="text/ractive">
-                    {% #each device_dict:device_id %}
-                        <li><a href="#">{% name %}</a></li>
-                    {% /each %}
-                </script>
-              </ul>
-            </li>
-            <li class="social"><a href="#"><i class="fa fa-lg fa-area-chart"></i></a></li>
-            <li class="social"><a href="#"><i class="fa fa-lg fa-pencil-square-o"></i></a></li>
-            <li class="social"><a href="#"><i class="fa fa-lg fa-share-alt"></i></a></li>
-            <li class="social"><a href="#"><i class="fa fa-lg fa-cog"></i></a></li>
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-            <!-- Show a dropdown that lets you go to your profile or log out if signed in -->
-            {{if auth.is_logged_in():}}
-                <li><img class="img-circle resize border-c" src='{{=Gravatar(auth.user.email).thumb}}'></li>
+    <!--[if lt IE 8]><p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <div class="w2p_flash alert alert-dismissable">{{=response.flash or ''}}</div>
+    <!-- Navbar =======================================
+    http://web2py.com/books/default/chapter/29/05/the-views#Customizing-the-default-layout -->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                {{=response.logo or ''}}
+            </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse white-col" id="bs-example-navbar-collapse-1">
+              <ul class="nav navbar-nav">
                 <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome {{=auth.user.first_name}} <span class="caret"></span></a>
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Devices <span class="caret"></span></a>
                   <ul class="dropdown-menu">
-                    <li><a href="{{=URL('user', 'profile?_next')}}"><i class="fa fa-user fa-fw" aria-hidden="true"></i>Profile</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="{{=URL('user', 'logout?_next')}}"><i class="fa fa-sign-out fa-fw" aria-hidden="true"></i>Log Out</a></li>
+                    <div id="device_target"></div>
+                    <script id="device_template" type="text/ractive">
+                        <li><a href="#" data-toggle="modal" data-target="#myModalNorm"><i class="fa fa-plus fa-fw" aria-hidden="true"></i>Add New Device</a></li>
+                        <li role="separator" class="divider"></li>
+                        {% #each device_dict:device_id %}
+                            <li><a href="#">{% name %}</a></li>
+                        {% /each %}
+                    </script>
                   </ul>
                 </li>
-            <!-- If not signed in, only prompt to log in -->
-            {{else:}}
-              <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome Guest <span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="{{=URL('user', 'login?_next')}}"><i class="fa fa-sign-in fa-fw" aria-hidden="true"></i>Log In</a></li>
-                  </ul>
-                </li>
-            {{pass}}
-          </ul>
-        </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
-</nav>
-<!-- Masthead ===================================== -->
-{{block header}}
-<!-- Support for theme-color in Chrome for Android, see:
-https://developers.google.com/web/updates/2014/11/Support-for-theme-color-in-Chrome-39-for-Android -->
-<meta name="theme-color" content="#182848">
-{{end}}
-<!-- Main ========================================= -->
-<!-- Begin page content -->
-<div class="container-fluid main-container">
-    <div class="row">
-    {{include}}
+                <li class="social"><a href="{{=URL('default', 'viz.html')}}"><i class="fa fa-lg fa-area-chart"></i></a></li>
+                <li class="social"><a href="#"><i class="fa fa-lg fa-pencil-square-o"></i></a></li>
+                <li class="social"><a href="#"><i class="fa fa-lg fa-share-alt"></i></a></li>
+                <li class="social"><a href="#"><i class="fa fa-lg fa-cog"></i></a></li>
+              </ul>
+              <ul class="nav navbar-nav navbar-right">
+                <!-- Show a dropdown that lets you go to your profile or log out if signed in -->
+                {{if auth.is_logged_in():}}
+                    <li><img class="img-circle resize border-c" src='{{=Gravatar(auth.user.email).thumb}}'></li>
+                    <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome {{=auth.user.first_name}} <span class="caret"></span></a>
+                      <ul class="dropdown-menu">
+                        <li><a href="{{=URL('user', 'profile?_next')}}"><i class="fa fa-user fa-fw" aria-hidden="true"></i>Profile</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{{=URL('user', 'logout?_next')}}"><i class="fa fa-sign-out fa-fw" aria-hidden="true"></i>Log Out</a></li>
+                      </ul>
+                    </li>
+                <!-- If not signed in, only prompt to log in -->
+                {{else:}}
+                  <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome Guest <span class="caret"></span></a>
+                      <ul class="dropdown-menu">
+                        <li><a href="{{=URL('user', 'login?_next')}}"><i class="fa fa-sign-in fa-fw" aria-hidden="true"></i>Log In</a></li>
+                      </ul>
+                    </li>
+                {{pass}}
+              </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    {{include 'default/modal.html'}}
+    <!-- Masthead ===================================== -->
+    {{block header}}
+    <!-- Support for theme-color in Chrome for Android, see:
+    https://developers.google.com/web/updates/2014/11/Support-for-theme-color-in-Chrome-39-for-Android -->
+    <meta name="theme-color" content="#182848">
+    {{end}}
+    <!-- Main ========================================= -->
+    <!-- Begin page content -->
+    <div class="container-fluid main-container">
+        <div class="row">
+        {{include}}
+        </div>
     </div>
-</div>
 
-{{block footer}} <!-- this is default footer -->
-<footer class="footer">
-  <div class="container">
-    <p class="text-muted">Place sticky footer content here.</p>
-  </div>
-</footer>
-{{end}}
-<!-- The javascript =============================== -->
-<script src="{{=URL('static', 'js/ractive.min.js')}}"></script>
-<script src="{{=URL('static', 'js/jquery-1.12.4.js')}}"></script>
+    {{block footer}} <!-- this is default footer -->
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">Place sticky footer content here.</p>
+      </div>
+    </footer>
+    {{end}}
+    <!-- The javascript =============================== -->
+    <script src="{{=URL('static', 'js/ractive.min.js')}}"></script>
+    <script src="{{=URL('static', 'js/jquery-1.12.4.js')}}"></script>
 
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
-            integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
-            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+                integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+                crossorigin="anonymous"></script>
 
-<!-- Bootstrap plugins -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
-<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    <!-- Bootstrap plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
-<!-- Date range picker for the viz team-->
-<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+    <!-- Date range picker for the viz team-->
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 
-<!-- dygraph library for the viz team-->
-<script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
+    <!-- dygraph library for the viz team-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
 
-<!-- The javascript for the editor team -->
-<script src="{{=cm}}/lib/codemirror.js"></script>
-<script src="{{=cm}}/addon/edit/matchbrackets.js"></script>
-<script src="{{=cm}}/mode/python/python.js"></script>
-<script src="{{=cm}}/addon/hint/show-hint.js"></script>
-<script src="{{=cm}}/addon/hint/python-hint.js"></script>
-<script src="{{=cm}}/addon/search/search.js"></script>
-<script src="{{=cm}}/addon/search/searchcursor.js"></script>
-<script src="{{=cm}}/addon/dialog/dialog.js"></script>
-<script src="{{=cm}}/addon/edit/trailingspace.js"></script>
-<script src="{{=cm}}/addon/selection/active-line.js"></script>
-<script src="{{=cm}}/addon/display/fullscreen.js"></script>
-<script src="{{=cm}}/addon/fold/foldcode.js"></script>
-<script src="{{=cm}}/addon/fold/foldgutter.js"></script>
-<script src="{{=cm}}/addon/fold/brace-fold.js"></script>
-<script src="{{=cm}}/addon/fold/comment-fold.js"></script>
-<script src="{{=cm}}/addon/fold/indent-fold.js"></script>
-<script src="{{=cm}}/addon/comment/comment.js"></script>
-<script src="{{=cm}}/emmet.min.js"></script>
-<script src="{{=js_url}}/ajax_editor.js"></script>
-{{block page_js}}{{end page_js}}
-{{if response.google_analytics_id:}}
-<!-- Analytics ==================================== -->
-<script src="{{=URL('static','js/analytics.min.js')}}"></script>
-<script type="text/javascript">
-    analytics.initialize({
-        'Google Analytics': {trackingId: '{{=response.google_analytics_id}}'}
-    });
-</script>
-{{pass}}
-</body>
+    <!-- The javascript for the editor team -->
+    <script src="{{=cm}}/lib/codemirror.js"></script>
+    <script src="{{=cm}}/addon/edit/matchbrackets.js"></script>
+    <script src="{{=cm}}/mode/python/python.js"></script>
+    <script src="{{=cm}}/addon/hint/show-hint.js"></script>
+    <script src="{{=cm}}/addon/hint/python-hint.js"></script>
+    <script src="{{=cm}}/addon/search/search.js"></script>
+    <script src="{{=cm}}/addon/search/searchcursor.js"></script>
+    <script src="{{=cm}}/addon/dialog/dialog.js"></script>
+    <script src="{{=cm}}/addon/edit/trailingspace.js"></script>
+    <script src="{{=cm}}/addon/selection/active-line.js"></script>
+    <script src="{{=cm}}/addon/display/fullscreen.js"></script>
+    <script src="{{=cm}}/addon/fold/foldcode.js"></script>
+    <script src="{{=cm}}/addon/fold/foldgutter.js"></script>
+    <script src="{{=cm}}/addon/fold/brace-fold.js"></script>
+    <script src="{{=cm}}/addon/fold/comment-fold.js"></script>
+    <script src="{{=cm}}/addon/fold/indent-fold.js"></script>
+    <script src="{{=cm}}/addon/comment/comment.js"></script>
+    <script src="{{=cm}}/emmet.min.js"></script>
+    <script src="{{=js_url}}/ajax_editor.js"></script>
+    {{block page_js}}{{end page_js}}
+    {{if response.google_analytics_id:}}
+        <!-- Analytics ==================================== -->
+        <script src="{{=URL('static','js/analytics.min.js')}}"></script>
+        <script type="text/javascript">
+            analytics.initialize({
+                'Google Analytics': {trackingId: '{{=response.google_analytics_id}}'}
+            });
+        </script>
+    {{pass}}
+    </body>
 </html>
 <script>
     $(function() {

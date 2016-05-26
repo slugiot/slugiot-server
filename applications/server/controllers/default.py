@@ -10,7 +10,6 @@ from gluon import utils as gluon_utils
 import time
 import access
 import proc_harness_module
-import uuid
 
 
 class DeviceIDVerification:
@@ -59,25 +58,6 @@ def login():
 
 
 @auth.requires_login()
-def add():
-    """
-    Description: Controller for the add page, which lets you add a device into the DB
-    Returns: A form that lets you add things into db.devices (use by including {{=form}} in add.html)
-    """
-    db.device.device_id.writable = False
-    db.device.device_id.readable = False # We don't want to display it here.
-    db.device.user_email.readable = False # We know who we are.
-    form = SQLFORM(db.device)
-    form.custom.widget.name['requires'] = IS_NOT_EMPTY()
-    if form.process().accepted:
-        device_id = form.vars.device_id
-        access.add_permission(user_email=auth.user.email, perm_type='a', device_id=device_id)
-        session.flash = "Device added!"
-        redirect(URL('default', 'new_device', args=[form.vars.id], user_signature=True))
-    return dict(form=form)
-
-
-@auth.requires_login()
 @auth.requires_signature()
 def new_device():
     device = db.device[request.args(0)]
@@ -89,11 +69,16 @@ def new_device():
     return dict(form=form)
 
 
+def modal():
+    foo = "foo!"
+    return dict(fo3o=foo)
+
+
 @auth.requires_login()
 def add_new_procedure():
     """
     Description: Controller for the add page, which lets you add a device into the DB.
-    Returns: A form that lets you add things into db.devices (use by including {{=form}} in add.html)
+    Returns: A form that lets you add things into db.devices (use by including {{=form}})
     """
     # Device ID should not be changeable
     db.procedures.device_id.writable = False

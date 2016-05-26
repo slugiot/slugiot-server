@@ -69,9 +69,13 @@ html, body, #wrapper {
 .navbar-default .social a {
   color: #FFFFFF !important;
 }
+/* line 50, ../sass/_main.scss */
+.navbar-default .dropdown-toggle a {
+  color: #FFFFFF !important;
+}
 
 /* https://css-tricks.com/quick-css-trick-how-to-center-an-object-exactly-in-the-center/ */
-/* line 53, ../sass/_main.scss */
+/* line 59, ../sass/_main.scss */
 .centered {
   position: fixed;
   top: 45%;
@@ -79,23 +83,23 @@ html, body, #wrapper {
   transform: translate(-50%, -50%);
 }
 
-/* line 61, ../sass/_main.scss */
+/* line 67, ../sass/_main.scss */
 body {
   background-color: #fff;
 }
 
-/* line 65, ../sass/_main.scss */
+/* line 71, ../sass/_main.scss */
 .footer {
   background: #222222;
 }
 
-/* line 67, ../sass/_main.scss */
+/* line 73, ../sass/_main.scss */
 .panel-footer.panel-custom {
   background: #222222;
   color: #222222;
 }
 
-/* line 72, ../sass/_main.scss */
+/* line 78, ../sass/_main.scss */
 .container-text {
   position: absolute;
   top: 50%;
