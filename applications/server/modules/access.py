@@ -19,13 +19,22 @@ def add_permission(device_id, user_email, perm_type='v', procedure_id=None):
     @param user_email : user email
     @param procedure_id : procedure id if None add generic permission
     @param perm_type : permission type to share
-    @returns : if fail return this user's email else return None
+    @returns : error message if pass return None
     """
     # Check input type value is valid or not
     if perm_type not in ['v', 'e', 'a']:
         raise Exception("Invalid permission type input")
-
     db = current.db
+    # Check whether there is generic admin permission for this device
+    # if yes we can't share an generic admin permission to other people
+    if perm_type is 'a' and procedure_id == None:
+        p = db((db.user_permission.perm_user_email == user_email) &
+               (db.user_permission.device_id == device_id) &
+               (db.user_permission.procedure_id == procedure_id)).select().first()
+        if p is not None:
+            if p.perm_type == 'a': return 'Sharing generic admin permission is prohibited'
+
+
     permission = db.user_permission
     fail_email = None
     # Does the email exist in registered user table?
@@ -47,14 +56,16 @@ def add_permission(device_id, user_email, perm_type='v', procedure_id=None):
             if permission_entail(perm_type, p.perm_type):
                 p.update_record(perm_type=perm_type)
     db.commit()
-    return fail_email
+    error_message = None
+    if fail_email is not None: error_message = 'User ['+user_email,'] does not exist'
+    return error_message
 
 
 def delete_permission(user_email=None, device_id=None, procedure_id=None):
     """
     This function delete one permission record from user_permission table
-    if user_email is None delete all user for specific device_id and procedure.
-    if procedure_id is None delete all procedure for specific user and device.
+    if user_email is None: delete all user for specific device_id and procedure.
+    if procedure_id is None: delete all procedure for specific user and device.
     device_id can't be None.
     @param user_email : user's email
     @param device_id : device id
@@ -62,10 +73,10 @@ def delete_permission(user_email=None, device_id=None, procedure_id=None):
     @returns : Success or not
     """
     db = current.db
+    if device_id is None:
+        raise Exception("missing device_id")
     # if user_email is None then delete permissions for all permissions regarding that device_id and procedure_id
     if user_email is None:
-        if device_id is None:
-            raise Exception("missing device_id")
         # if procedure_id is None delete all procedure regarding this device_id
         if procedure_id is None:
             db(db.user_permission.device_id == device_id).delete()
@@ -73,8 +84,6 @@ def delete_permission(user_email=None, device_id=None, procedure_id=None):
             db((db.user_permission.device_id == device_id) &
                (db.user_permission.procedure_id == procedure_id)).delete()
     else:
-        if device_id is None:
-            raise Exception("missing device_id")
         # if procedure_id is None then delete all permissions regarding to the device
         if procedure_id is None:
             db((db.user_permission.perm_user_email == user_email) &
@@ -168,6 +177,16 @@ def can_delete_procedure(device_id, user_email, procedure_id=None):
     return check_generic_permission(user_email=user_email, device_id=device_id, perm_type='a') \
            or check_specific_permission(user_email=user_email, device_id=device_id, perm_type='a',
                                         procedure_id=procedure_id)
+
+
+def can_delete_user_permission(device_id, user_email):
+    """
+        This function check whether a user can delete a other user's permission, it need generic 'a' permission type
+        @param device_id : device id
+        @param user_email : the user who want to create procedure
+        @returns : whether this user has the permission.
+    """
+    return check_generic_permission(user_email=user_email, device_id=device_id, perm_type='a')
 
 
 def check_generic_permission(device_id, user_email, perm_type):
