@@ -102,10 +102,9 @@ def get_validated_data(request_body, data_key):
 
     return data
 
-def validate_device_id(device_id,data_key):
-    # TODO if the device ID isn't in our list of device IDs: raise Exception("invalid device id")
-    if (len(current.db(data_key == device_id).select()) > 0):
+def validate_device_id(device_id):
+    device_id_rows = current.db(current.db.device.device_id == device_id).select()
+    if (len(device_id_rows) > 0):
         return
-    # otherwise, just:
     else:
         raise Exception("invalid device id")
