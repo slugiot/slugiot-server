@@ -198,12 +198,12 @@
                             <!-- ------------ START DATA VISUALIZATION dyGraph ------------ -->
                             <div class="col-sm-6">
                                 <ul class="nav nav-tabs">
-                                    <li class="active" onclick="line_plot()" title={{=T("Line")}}>
+                                    <li id="line_tab" class="active" onclick="line_plot()" title={{=T("Line")}}>
                                         <a data-toggle="tab">
                                             <i class="fa fa-line-chart fa-2x" aria-hidden="true"></i>
                                         </a>
                                     </li>
-                                    <li onclick="bar_plot()" title={{=T("Bar")}}>
+                                    <li id="bar_tab" onclick="bar_plot()" title={{=T("Bar")}}>
                                         <a data-toggle="tab">
                                             <i class="fa fa-bar-chart fa-2x" aria-hidden="true"></i>
                                         </a>
@@ -247,9 +247,9 @@
                             <form class="navbar-form navbar-right" role="search">
                                 <div class="input-group">
                                     <input type="text" class="form-control" placeholder="Search for...">
-                                      <span class="input-group-btn">
+                                    <span class="input-group-btn">
                                         <button class="btn btn-default" type="button">Search</button>
-                                      </span>
+                                    </span>
                                 </div>
                             </form>
 
@@ -291,9 +291,9 @@
                             <form class="navbar-form navbar-right" role="search">
                                 <div class="input-group">
                                     <input type="text" class="form-control" placeholder="Search for...">
-                          <span class="input-group-btn">
-                            <button class="btn btn-default" type="button">Search</button>
-                          </span>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button">Search</button>
+                                    </span>
                                 </div>
                             </form>
 
@@ -336,9 +336,9 @@
                             <form class="navbar-form navbar-right" role="search">
                                 <div class="input-group">
                                     <input type="text" class="form-control" placeholder="Search for...">
-                          <span class="input-group-btn">
-                            <button class="btn btn-default" type="button">Search</button>
-                          </span>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button">Search</button>
+                                    </span>
                                 </div>
                             </form>
                             <br><br><br>
@@ -421,7 +421,6 @@
 
 
 <script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
-<script src="{{=URL('static','js/visualize_output.js')}}"></script>
 
 <script>
 
@@ -573,8 +572,6 @@
             }
         });
 
-        //  ---------- showing test output dygraph ----------
-        dy_plot();
     } // -------- END Refresh Button --------
 
 
@@ -614,8 +611,6 @@
             }
         });
 
-        //  ---------- showing test output dygraph ----------
-        dy_plot();
     } // -------- END Refresh Button --------
 
 
@@ -630,6 +625,7 @@
     });
 
     // ------------  Dygraph testing  ------------
+    var g2; // dygraph object (will declare in dy_plot())
     function barChartPlotter(e) {
         var ctx = e.drawingContext;
         var points = e.points;
@@ -654,6 +650,10 @@
         var graph_com = document.getElementById("dygraph_target1");
         var output_data = ractive.get('output_data'); //"{{=URL('static', 'temper.csv')}}";
 
+        // Checking the type of plotting
+        var plot_type = 'line';
+        if ($('#bar_tab').hasClass('active'))
+            plot_type = 'bar';
 
         // collecting output data
         if (typeof output_data === "undefined") {
@@ -705,9 +705,25 @@
                         //xTicker: Dygraph.dateTicker
                     }
             );
+            if (plot_type == 'bar')
+                g2.updateOptions({plotter: barChartPlotter, title: 'Temperature Bar Chart'});
 
         }
+        else if(output_data.length == 0){       // has a device with no data
+            if (typeof g2 !== "undefined")
+                if(g2.canvas_ != null)
+                    g2.destroy();
+        }
 
+    };
+
+    function line_plot(){
+        if (typeof g2 !== "undefined")
+            g2.updateOptions({plotter: DygraphCanvasRenderer._linePlotter, title: 'Temperature Line Chart'});
+    };
+    function bar_plot(){
+        if (typeof g2 !== "undefined")
+            g2.updateOptions({plotter: barChartPlotter, title: 'Temperature Bar Chart'});
     };
 
     dy_plot();
