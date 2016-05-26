@@ -678,9 +678,9 @@
             var timeSpan = $('#time_span').val();
             for (var i = 0; i < output_data.length; i++) {
                 var output = output_data[i];
-                data = data + output.time_stamp + ',' + output.output_value.toString() + '\n';
+                data = data + output.output_time_stamp + ',' + output.output_value.toString() + '\n';
                 if (i == 0 || i == output_data.length - 1)
-                    dateRange.push(Date.parse(output.time_stamp));
+                    dateRange.push(Date.parse(output.output_time_stamp));
                 //data.push([output.time_stamp, output.output_value]);
             }
             /*if (typeof timeSpan !== "undefined") {

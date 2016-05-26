@@ -16,16 +16,16 @@ def test_fill():
     db.module_values.insert(device_id=device_id,
                             procedure_id=procedure_id,
                             name=name,
-                            module_value="egg",
-                            time_stamp=datetime.datetime.now(),
+                            output_value="egg",
+                            value_time_stamp=datetime.datetime.now(),
                             received_time_stamp=datetime.datetime.now()
                             )
 
     db.module_values.insert(device_id=device_id,
                             procedure_id=procedure_id,
                             name=name,
-                            module_value="leg",
-                            time_stamp=datetime.datetime.now(),
+                            output_value="leg",
+                            value_time_stamp=datetime.datetime.now(),
                             received_time_stamp=datetime.datetime.now()
                             )
 
@@ -35,12 +35,12 @@ def test_fill():
         db.outputs.insert(device_id=device_id,
                           procedure_id=procedure_id,
                           name=name,
-                          time_stamp=now - datetime.timedelta(days=i) - datetime.timedelta(hours=i),
+                          output_time_stamp=now - datetime.timedelta(days=i) - datetime.timedelta(hours=i),
                           output_value=random.random() * 20,
                           tag="1")
         db.logs.insert(device_id=device_id,
                        procedure_id=procedure_id,
-                       time_stamp=now - datetime.timedelta(days=i),
+                       logged_time_stamp=now - datetime.timedelta(days=i),
                        log_level=random.randint(0, 4),
                        log_message='This is message' + str(i) + '.')
 
@@ -149,55 +149,61 @@ def get_data():
     end_minute = int(e[14:16])
     end_second = int(e[17:19])
 
+
+    # print 111111111111111111111111
     # transform the start date and end date into datetime format
     start = datetime.datetime(start_year, start_month, start_day, start_hour, start_minute, start_second)
     end = datetime.datetime(end_year, end_month, end_day, end_hour, end_minute, end_second)
 
     test_fill()
+
+    print "----------finish test fill-----------------------"
     # get output_data and sort by time_stamp
-    output_data = db((db.outputs.time_stamp >= start) &
-                     (db.outputs.time_stamp <= end) &
+    output_data = db((db.outputs.output_time_stamp >= start) &
+                     (db.outputs.output_time_stamp <= end) &
                      (db.outputs.device_id == device_id) &
                      (db.outputs.procedure_id == procedure_id) &
-                     (db.outputs.name == name)).select(orderby=db.outputs.time_stamp)
+                     (db.outputs.name == name)).select(orderby=db.outputs.output_time_stamp)
     # get log_data and sort by time_stamp
-    log_data = db((db.logs.time_stamp >= start) &
-                  (db.logs.time_stamp <= end) &
+    log_data = db((db.logs.logged_time_stamp >= start) &
+                  (db.logs.logged_time_stamp <= end) &
                   (db.logs.device_id == device_id) &
-                  (db.logs.procedure_id == procedure_id)).select(orderby=db.logs.time_stamp)
+                  (db.logs.procedure_id == procedure_id)).select(orderby=db.logs.logged_time_stamp)
     # generate mixed_data from output_data and log_data and sort by time_stamp
+    print 111111111111111111111111
     mixed_data = []
     # transform output_data into mixed_data
-    for row in db((db.outputs.time_stamp >= start) &
-                          (db.outputs.time_stamp <= end) &
+    for row in db((db.outputs.output_time_stamp >= start) &
+                          (db.outputs.output_time_stamp <= end) &
                           (db.outputs.device_id == device_id) &
                           (db.outputs.procedure_id == procedure_id) &
-                          (db.outputs.name == name)).select(orderby=db.outputs.time_stamp):
+                          (db.outputs.name == name)).select(orderby=db.outputs.output_time_stamp):
         type = 'output'
         device_id = row.device_id
         modulename = row.procedure_id
-        time_stamp = row.time_stamp
+        time_stamp = row.output_time_stamp
         name = row.name
         value = row.output_value
         tag = row.tag
         content = 'name: ' + str(name) + ', value: ' + str(value) + ', tag: ' + str(tag)
         mixed_data.append({'type': type, 'device_id': device_id, 'modulename': modulename, 'time_stamp': time_stamp,
                            'content': content})
-
+    print 111111111111111111111111
     # transform log_data into mixed_data
-    for row in db((db.logs.time_stamp >= start) &
-                          (db.logs.time_stamp <= end) &
+    for row in db((db.logs.logged_time_stamp >= start) &
+                          (db.logs.logged_time_stamp <= end) &
                           (db.logs.device_id == device_id) &
-                          (db.logs.procedure_id == procedure_id)).select(orderby=db.logs.time_stamp):
+                          (db.logs.procedure_id == procedure_id)).select(orderby=db.logs.logged_time_stamp):
         type = 'log'
         device_id = row.device_id
         modulename = row.procedure_id
-        time_stamp = row.time_stamp
+        time_stamp = row.logged_time_stamp
         log_level = row.log_level
         log_message = row.log_message
         content = 'name: ' + str(log_level) + ', value: ' + str(log_message)
         mixed_data.append({'type': type, 'device_id': device_id, 'modulename': modulename, 'time_stamp': time_stamp,
                            'content': content})
+    print 111111111111111111111111
     # sort the mixed_data by time_stamp
     mixed_data.sort(key=lambda r: r['time_stamp'])
     # build the return data in dict format
