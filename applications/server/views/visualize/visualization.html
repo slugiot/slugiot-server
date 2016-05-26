@@ -319,7 +319,7 @@
                                     <td>{% name %}</td>
                                     <td>{% output_value %}</td>
                                     <td>{% tag %}</td>
-                                    <td>{% time_stamp %}</td>
+                                    <td>{% output_time_stamp %}</td>
 
                                 </tr>
                                 {% /output_data %}
@@ -354,7 +354,7 @@
                                             <a role="button" data-toggle="collapse" data-parent="#accordion"
                                                href="#collapse{% index %}"
                                                aria-expanded="true" aria-controls="collapse{% index %}">
-                                                {% device_id %} : [ {% time_stamp %}] - [ level : {% log_level %} ]
+                                                {% device_id %} : [ {% logged_time_stamp %}] - [ level : {% log_level %} ]
                                             </a>
                                         </h4>
                                     </div>
@@ -372,7 +372,7 @@
                                             <a role="button" data-toggle="collapse" data-parent="#accordion"
                                                href="#collapse{% index %}"
                                                aria-expanded="true" aria-controls="collapse{% index %}">
-                                                {% device_id %} : [ {% time_stamp %}] - [ level : {% log_level %} ]
+                                                {% device_id %} : [ {% logged_time_stamp %}] - [ level : {% log_level %} ]
                                             </a>
                                         </h4>
                                     </div>
