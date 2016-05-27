@@ -18,7 +18,7 @@ def _check_name_and_perms_(user_email, device_id, procedure_name):
 
     # check that user has permissions to add a procedure to the device
     if not access.can_create_procedure(device_id, user_email):
-        logger.info("User " + str(user_email) +
+        logger.error("User " + str(user_email) +
                     " does not have permission to create a procedure on device: " + str(device_id))
         return False
 
@@ -26,13 +26,13 @@ def _check_name_and_perms_(user_email, device_id, procedure_name):
     query = db((proc_table.device_id == device_id) &
                (proc_table.name == procedure_name))
     if not query.isempty():
-        logger.info("Device " + str(device_id) + " already contains a procedure of name " + str(procedure_name))
+        logger.error("Device " + str(device_id) + " already contains a procedure of name " + str(procedure_name))
         return False
 
     # name should not break file system
     result = re.search("[^a-zA-Z0-9._-]", str(procedure_name))
     if result:
-        logger.info("Procedure name \"" + str(procedure_name) + "\" is not allowed. Use only numbers, letters, _, -, and .")
+        logger.error("Procedure name \"" + str(procedure_name) + "\" is not allowed. Use only numbers, letters, _, -, and .")
         return False
 
     return True
