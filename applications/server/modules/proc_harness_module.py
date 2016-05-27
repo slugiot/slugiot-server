@@ -78,6 +78,28 @@ def create_procedure(procedure_name, device_id):
 
     return pid
 
+def delete_procedure(procedure_id, device_id):
+    """
+    This function should be called when a procedure should be deleted
+
+    :param procedure_name: Name of the new procedure
+    :type procedure_name: str
+    :param device_id: Device ID associated with device on which user wants to create proc
+    :type device_id: str
+    :return:
+    :rtype:
+    """
+    db = current.db
+    auth = current.auth
+    proc_table = db.procedures
+    revisions_table = db.procedure_revisions
+
+    user_email = auth.user.email
+
+    if access.can_delete_procedure(device_id, user_email, procedure_id):
+        db(proc_table.id == procedure_id).delete()
+        db(revisions_table.procedure_id == procedure_id).delete()
+
 def change_procedure_name(procedure_id, new_procedure_name):
     """
     This function should be called when a procedure name change is desired
