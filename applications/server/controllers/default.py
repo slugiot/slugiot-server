@@ -100,7 +100,7 @@ def add_new_procedure():
 
     # Generate a name to be passed on to add_permission
     if db(db.device.device_id == val).select():
-        name = db(db.device.device_id == val).select()[0].name + " procedure"
+        name = db(db.device.device_id == val).select()[0].name + "_procedure"
 
     if form.process().accepted:
 
