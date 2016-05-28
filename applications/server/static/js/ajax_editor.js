@@ -4,13 +4,14 @@
  * @param procedure_id
  * request procedure data from server and initialize the html content of editor
  */
-function load_procedure(url ,procedure_id, stable) {
+function load_procedure(url ,procedure_id, stable, device_id) {
     $.ajax({
         dataType: "json",
         url: url,
         data: {
             procedure_id : procedure_id,
-            stable: stable
+            stable: stable,
+            device_id: device_id
         },
         success: function(json) {
             if(typeof (json['plain_html']) !== undefined) {
