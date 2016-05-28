@@ -18,19 +18,25 @@ def edit_procedure():
     preferences={'theme':'web2py', 'editor': 'default', 'closetag': 'true', 'codefolding': 'false', 'tabwidth':'4', 'indentwithtabs':'false', 'linenumbers':'true', 'highlightline':'true'}
 
     # get the procedure_id and stable state of procedure in TABLE procedure
+    device_id = request.vars['device_id']
     procedure_id = request.vars['procedure_id']
     stable = request.vars['stable']
-
     # the final edition will use Team 2 API "get_procedure_data(procedure_id, stable)"  to get the data
     #data = db(db.coding.id == procedure_id).select(db.coding.procedures).first().procedures
     if stable == 'false':
         data = proc_harness_module.get_procedure_data(procedure_id, False)
     else:
         data = proc_harness_module.get_procedure_data(procedure_id, True)
+
+    # get the list of procedure_id belongs to the device
+    proc_list = proc_harness_module.get_procedures_for_edit(device_id)
+    print proc_list
     file_details = dict(
                     editor_settings=preferences,     # the option parameters used for setting editor feature.
                     id=procedure_id,                 # the procedure_id in the procedures TALBE
                     data=data,                       # code for procedure which is related with the id.
+                    dev_id = device_id,              # id of the device
+                    id_list = proc_list             # id list of procedure belong to the device
                     )
 
     # generated HTML code for editor by parameters in file_details
@@ -156,10 +162,10 @@ def test_edit():
     :rtype: dict
     """
     # get the procedure_id and stable statues of procedure in TABLE procedure
+    device_id = request.vars.device_id
     procedure_id = request.vars.procedure_id
     stable = request.vars.stable
-
-    return dict(procedure_id = procedure_id, stable=stable)
+    return dict(device_id = device_id, procedure_id = procedure_id, stable=stable)
 
 def eprint():
     print('ok')
