@@ -23,7 +23,15 @@ function load_procedure(url ,procedure_id, stable, device_id) {
                     // Load procedure list at left side
                     var procedure_list = '';
                     for (var i = 0; i < json['id_list'].length; i++) {
-                        procedure_list += '<button type="button" class="list-group-item">' + json['id_list'][i] + '</button>';
+                        procedure_list += '<button ';
+                        procedure_list += 'type = "button" ';
+                        procedure_list += 'class="list-group-item" ';
+                        procedure_list += 'id="' + json['id_list'][i] + '" ';
+                        procedure_list += 'href="{{=URL(' + '"editor","test_edit",vars=dict(device_id=' + json['dev_id'] + ',procedure_id=' + json['id_list'][i] + ',stable="false"),user_signature=True)}}' + '">';
+                        // href="{{=URL('editor','test_edit',vars=dict(device_id='1',procedure_id=id_list[0],stable='false'),user_signature=True)}}"
+                        procedure_list += json['id_list'][i];
+                        procedure_list += '</button>';
+                        //procedure_list += '<button type="button" class="list-group-item" id="' + json['id_list'][i] + '">' + json['id_list'][i] + '</button>';
                     }
                     $('#procedures').append($(procedure_list));
                 }
