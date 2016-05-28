@@ -46,7 +46,7 @@
     <!-- the save button example integrated to UI team web page-->
     <button id = "save_unstable" type="button" class="btn btn-primary" onclick="save_procedure('{{=URL('editor','save_procedure',user_signature=True)}}',{{=procedure_id}}, false)">save temporary</button>
     <button id = "save_stable" type="button" class="btn btn-info" onclick="save_procedure('{{=URL('editor','save_procedure',user_signature=True)}}',{{=procedure_id}}, true)">save stable</button>
-
+    <button id = "delete" type="button" class="btn btn-danger" onclick="delete_procedure('{{=URL('editor','delete_procedure',user_signature=True)}}',{{=procedure_id}})">delete procedure</button>
     <!-- the text area to show the saving state for editor-->
     <div style="margin: 15px 0px 0px 0px;">
         <a class="list-group-item active" id="save_result"><div></div></a>

@@ -30,13 +30,15 @@ def edit_procedure():
 
     # get the list of procedure_id belongs to the device
     proc_list = proc_harness_module.get_procedures_for_edit(device_id)
-    print proc_list
+    #TO DO change the API to proc_harness_module.get_procedures_name_for_edit(device_id)
+    proc_name_list = proc_harness_module.get_procedures_for_edit(device_id)
     file_details = dict(
                     editor_settings=preferences,     # the option parameters used for setting editor feature.
                     id=procedure_id,                 # the procedure_id in the procedures TALBE
                     data=data,                       # code for procedure which is related with the id.
                     dev_id = device_id,              # id of the device
-                    id_list = proc_list             # id list of procedure belong to the device
+                    id_list = proc_list,              # id list of procedure belong to the device
+                    name_list = proc_name_list       # name list of the procedure belong to the device
                     )
 
     # generated HTML code for editor by parameters in file_details
@@ -115,6 +117,11 @@ def save_procedure():
     file_save = dict(result = result_html,
                      highlight = highlight)
     return response.json(file_save)
+
+def delete_procedure():
+
+    redirect(URL('default', 'index'))
+
 
 
 ## all the following function is used for self debug and will be deleted at final edition
