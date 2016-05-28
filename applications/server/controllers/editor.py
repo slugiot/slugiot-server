@@ -119,7 +119,9 @@ def save_procedure():
     return response.json(file_save)
 
 def delete_procedure():
-
+    procedure_id = request.vars.procedure_id
+    device_id = request.vars.device_id
+    proc_harness_module.delete_procedure(procedure_id,device_id)
     redirect(URL('default', 'index'))
 
 
