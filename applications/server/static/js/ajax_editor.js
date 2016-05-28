@@ -15,10 +15,17 @@ function load_procedure(url ,procedure_id, stable, device_id) {
         },
         success: function(json) {
             if(typeof (json['plain_html']) !== undefined) {
-            if($('#' + json['id']).length === 0 ) {
-              //  the code in it
-              var tab_body = '<div id="' + json['id'] + '" class="tab-pane fade in " >' + json['plain_html'] + '</div>';
-            $('#myTabContent').append($(tab_body)); // First load the body
+                if($('#' + json['id']).length === 0 ) {
+                    //  the code in it
+                    var tab_body = '<div id="' + json['id'] + '" class="tab-pane fade in " >' + json['plain_html'] + '</div>';
+                    $('#myTabContent').append($(tab_body)); // First load the body
+                    
+                    // Load procedure list at left side
+                    var procedure_list = '';
+                    for (var i = 0; i < json['id_list'].length; i++) {
+                        procedure_list += '<button type="button" class="list-group-item">' + json['id_list'][i] + '</button>';
+                    }
+                    $('#procedures').append($(procedure_list));
                 }
             }
         },
