@@ -118,7 +118,12 @@ def save_procedure():
                      highlight = highlight)
     return response.json(file_save)
 
+# @auth.requires_signature()
 def delete_procedure():
+    """
+    This function is used to delete specific procedure
+    :return:
+    """
     procedure_id = request.vars.procedure_id
     device_id = request.vars.device_id
     proc_harness_module.delete_procedure(procedure_id,device_id)
