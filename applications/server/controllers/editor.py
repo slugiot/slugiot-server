@@ -27,7 +27,6 @@ def edit_procedure():
         data = proc_harness_module.get_procedure_data(procedure_id, False)
     else:
         data = proc_harness_module.get_procedure_data(procedure_id, True)
-
     file_details = dict(
                     editor_settings=preferences,     # the option parameters used for setting editor feature.
                     id=procedure_id,                 # the procedure_id in the procedures TALBE

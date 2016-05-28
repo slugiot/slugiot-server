@@ -115,17 +115,17 @@ def add_new_procedure():
 
     # Generate a name to be passed on to add_permission
     if db(db.device.device_id == val).select():
-        name = db(db.device.device_id == val).select()[0].name + " procedure"
+        name = db(db.device.device_id == val).select()[0].name + "_procedure"
 
     if form.process().accepted:
 
         proc_id = proc_harness_module.create_procedure(name, val)
         # Initialize some starter Python code
-        proc_harness_module.save(proc_id, "#This is your new (stable) procedure. Happy coding!", True)
+        proc_harness_module.save(proc_id, "##This is your new (stable) procedure. Happy coding!\nfrom procedureapi import Procedure\n\nclass DeviceProdecure(Procedure):\n\n    def init(self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n    def run(self):\n        # Called each time the schedule is triggered", True)
         # Sleep a little bit to allow it to successfully save
         time.sleep(2)
         # Initalize the draft Python ocde as well
-        proc_harness_module.save(proc_id, "#This is your new (temporary) procedure. Happy coding!", False)
+        proc_harness_module.save(proc_id, "##This is your new (temporary) procedure. Happy coding!\nfrom procedureapi import Procedure\n\nclass DeviceProdecure(Procedure):\n\n    def init(self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n    def run(self):\n        # Called each time the schedule is triggered", False)
         # Sleep a little bit again
         time.sleep(2)
         # Go back to the home page.
