@@ -218,3 +218,7 @@ def visualization():
     session.device_id = "chicken"
     session.module = ["egg", "eggnog"]
     return dict(session=session)
+
+def visual_d3():
+    response.view = 'visualize/visual_d3.html'
+    return dict(message='Hello D3')
