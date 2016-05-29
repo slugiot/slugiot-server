@@ -140,7 +140,7 @@ def get_procedures_for_edit(device_id):
 
     user_email = auth.user.email
 
-    # Get all relevant records for user_email
+    # Get all relevant records for device_id
     records = db(proc_table.device_id == device_id).select()
 
     # Create list of procedure IDs from records
@@ -150,6 +150,32 @@ def get_procedures_for_edit(device_id):
             procedure_ids.append(row.id)
 
     return procedure_ids
+
+def get_procedures_name_for_edit(device_id):
+    """
+    This function returns all procedure names that are associated with a given user to edit
+
+    :param device_id: Device ID associated with device on which user wants to create proc
+    :type device_id: str
+    :return: List of procedure names associated with device
+    :rtype:
+    """
+    db = current.db
+    auth = current.auth
+    proc_table = db.procedures
+
+    user_email = auth.user.email
+
+    # Get all relevant records for device_id
+    records = db(proc_table.device_id == device_id).select()
+
+    # Create list of procedure names from records
+    procedure_names = []
+    for row in records:
+        if access.can_edit_procedure(user_email, device_id, row.id):
+            procedure_names.append(row.name)
+
+    return procedure_names
 
 def get_procedures_for_view(device_id):
     """
