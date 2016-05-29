@@ -1,0 +1,1486 @@
+{{extend 'layout.html'}}
+
+
+<!-- Bootstrap CSS & JS-->
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+      integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
+        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"
+        integrity="sha256-DI6NdAhhFRnO2k51mumYeDShet3I8AKCQf/tf7ARNhI=" crossorigin="anonymous"></script>
+
+
+<!--<link rel="stylesheet" type="text/css"-->
+<!--href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">-->
+<link rel="stylesheet" type="text/css"
+      href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+
+<!-- Bootstrap select -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+
+
+<!-- Date range picker -->
+<!-- Include Required Prerequisites -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<!-- Include Date Range Picker -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+
+<!-- dygraph library -->
+<script src="/server/static/js/dygraph-combined-dev.js"></script>
+
+<!-- D3 library -->
+<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<style type="text/css">
+
+svg {
+  font-family: "Helvetica Neue", Helvetica;
+}
+
+.line {
+  fill: none;
+  stroke: #000;
+  stroke-width: 2px;
+}
+
+/*.background {
+  fill: none;
+  pointer-events: all;
+}
+
+#states {
+  fill: #aaa;
+}
+
+#states .active {
+  fill: orange;
+}
+
+#state-borders {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  pointer-events: none;
+}*/
+
+.land {
+  fill: orange;
+}
+
+.county-boundary {
+  fill: none;
+  stroke: #fff;
+  stroke-width: .5px;
+}
+
+.state-boundary {
+  fill: none;
+  stroke: #fff;
+}
+
+circle {
+        fill: #00FA21;
+        opacity:0.65;
+        stroke: #398FBD;
+    }
+</style>
+
+
+
+<!-- table of all the chosen devices -->
+<!--<table id="DeviceTable">-->
+<!--<tr>-->
+<!--<td>Device ID</td>-->
+<!--<td>Procedure ID</td>-->
+<!--<td>name</td>-->
+<!--</tr>-->
+<!--</table>-->
+
+<!-- table of all the chosen devices -->
+<!-- Device_ID Procedure_ID Name Delete -->
+<!--<table class="table table-striped table-bordered"-->
+<!--id="device_table">-->
+<!--<thead>-->
+<!--<tr>-->
+<!--<th>Device ID</th>-->
+<!--<th>Procedure ID</th>-->
+<!--<th>Name</th>-->
+<!--<th>Delete</th>-->
+<!--</tr>-->
+<!--</thead>-->
+<!--<tbody id="device_data_table">-->
+<!--<tr>-->
+<!--<td>device1</td>-->
+<!--<td>procedure1</td>-->
+<!--<td>name1</td>-->
+<!--<td>-->
+<!--<button title="" type="button"-->
+<!--class="btn btn-danger remove show_tip"-->
+<!--data-original-title="Remove from list">-->
+<!--<i class="fa fa-trash-o"></i>-->
+<!--</button>-->
+<!--</td>-->
+<!--</tr>-->
+<!--</tbody>-->
+<!--</table>-->
+<!-- end of table -->
+
+
+<div id="target"></div>
+
+
+<!--start of typeadhead search module-->
+
+
+<!--end of  typeadhead search module-->
+
+
+<script id="template" type="text/ractive">
+<!-- ------------ START Ractive Body ------------ -->
+
+<div class="visualization">
+
+    <h1>Data Visualization</h1>
+
+    <!-- start of typeahead search -->
+
+    <!-- end of typeahead search -->
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+
+                <!-- ------------ START DATA VISUALIZATION  ------------ -->
+                <div class="panel panel-default" name="dataVisualization" style="margin-left: 15px; margin-right: 15px">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Data Visualization Panel</h3>
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="row">
+                        <!-- ------------ START CONTROL PANEL ------------ -->
+                            <div class="col-sm-3">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <label>Select:</label> <br>
+                                            <select id="select_device_id" class="selectpicker" data-live-search="true"
+                                                    title="Device ID" onchange="choose_device_id();">
+                                                <option>device1</option>
+                                                <option>device2</option>
+                                            </select>
+                                            <br>
+                                             <select id="select_procedure_id" class="selectpicker" data-live-search="true"
+                                                    title="Procedure ID">
+                                            </select>
+                                            <br>
+                                            <select id="select_name" class="selectpicker" data-live-search="true"
+                                                    title="Name">
+                                            </select>
+
+                                        </td>
+                                    </tr>
+
+
+                                    <tr>
+                                        <td>
+                                            <label>Time Span:</label>
+                                            <div>
+                                                <input id="time_span" type="text" class="form-control" name="time_span"
+                                                       value="05/11/2016 - 05/31/2016"/>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <br><br>
+
+                                            <button id="addButton" onclick="addDevice();" type="button"
+                                                    class="btn btn-info btn-block">ADD
+                                            </button>
+                                            <!-- Spinner icon -->
+                                            <div id="result-spinner" class="hidden">
+                                                <i class="fa fa-spinner fa-pulse fa-4x"></i>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <!-- ------------ END CONTROL PANEL ------------ -->
+
+
+
+                            <div class="col-sm-3">
+                                <!-- Device_ID Procedure_ID Name Delete -->
+                                <table class="table table-striped table-bordered"
+                                       id="device_table">
+                                    <thead>
+                                    <tr>
+                                        <th>Device</th>
+                                        <th>Procedure</th>
+                                        <th>Name</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="device_data_table">
+                                    <!--<tr onclick="clickTr(this);">-->
+                                        <!--<td>device1</td>-->
+                                        <!--<td>procedure1</td>-->
+                                        <!--<td>name1</td>-->
+                                        <!--<td>-->
+                                            <!--<button title="" type="button"-->
+                                                    <!--class="btn btn-danger remove show_tip"-->
+                                                    <!--data-original-title="Remove from list">-->
+                                                <!--<i class="fa fa-trash-o"></i>-->
+                                            <!--</button>-->
+                                        <!--</td>-->
+                                    <!--</tr>-->
+                                    </tbody>
+                                </table>
+                                <!-- end of table -->
+                            </div>
+
+
+
+
+
+
+                            <!-- ------------ START DATA VISUALIZATION dyGraph ------------ -->
+                            <div class="col-sm-6">
+                                <ul class="nav nav-tabs">
+                                    <li id="line_tab" class="active" onclick="line_plot()" title={{=T("Line")}}>
+                                        <a data-toggle="tab">
+                                            <i class="fa fa-line-chart fa-2x" aria-hidden="true"></i>
+                                        </a>
+                                    </li>
+                                    <li id="bar_tab" onclick="bar_plot()" title={{=T("Bar")}}>
+                                        <a data-toggle="tab">
+                                            <i class="fa fa-bar-chart fa-2x" aria-hidden="true"></i>
+                                        </a>
+                                    </li>
+                                    <li id="mix_tab" onclick="mix_plot()" title={{=T("Fun")}}>
+                                        <a data-toggle="tab">
+                                            <i class="fa fa-smile-o fa-2x" aria-hidden="true"></i>
+                                        </a>
+                                    </li>
+                                    <li id="world_tab" onclick="world_plot()" title={{=T("World")}}>
+                                        <a data-toggle="tab">
+                                            <i class="fa fa-globe fa-2x" aria-hidden="true"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                                <div id="dygraph_target1" style="width: 100%; height: 400px"></div>
+                                // <div id="d3graph_target1" style="width: 100%; height: 400px"></div>
+                            </div>
+                            <!-- ------------ END DATA VISUALIZATION dyGraph ------------ -->
+
+                        </div>
+                    </div>
+                </div>
+                <!-- ------------ END DATA VISUALIZATION  ------------ -->
+
+            </div>
+        </div>
+
+        <!-- ------------ START DATA DETAIL  ------------ -->
+        <div class="panel panel-default" name="dataDetail" ng-controller="dataDetailController">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data Detail Panel</h3>
+            </div>
+            <div class="panel-body">
+                <div>
+
+                    <!-- ------- Data Detail  Nav tabs  ------- -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active">
+                            <a href="#Mixed" aria-controls="Mixed" role="tab" data-toggle="tab">Mixed</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#Output" aria-controls="Output" role="tab" data-toggle="tab">Output</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#Log" aria-controls="Log" role="tab" data-toggle="tab">Log</a></li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <!-- ------------------ Mixed Tab ------------------ -->
+                        <div role="tabpanel" class="tab-pane active" id="Mixed">
+                            <form class="navbar-form navbar-right" role="search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search for...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button">Search</button>
+                                    </span>
+                                </div>
+                            </form>
+
+
+                            <table class="table table-hover">
+                                <thead>
+
+                                <tr>
+                                    <th>#</th>
+                                    <th>Type</th>
+                                    <th>Device ID</th>
+                                    <th>Procedure ID</th>
+                                    <th>Content</th>
+                                    <th>Timestamp</th>
+
+                                </tr>
+                                </thead>
+                                <tbody id="mixed_table_body">
+                                {% #mixed_data:index %}
+                                <tr>
+                                    <th scope="row">{% index+1 %}</th>
+                                    <td>{% type %}</td>
+                                    <td>{% device_id %}</td>
+                                    <td>{% modulename %}</td>
+                                    <td>{% content %}</td>
+                                    <td>{% time_stamp %}</td>
+
+                                </tr>
+                                {% /mixed_data %}
+                                </tbody>
+                            </table>
+
+
+                        </div>
+
+
+                        <!-- ------------------ Output Tab ------------------ -->
+                        <div role="tabpanel" class="tab-pane" id="Output">
+                            <form class="navbar-form navbar-right" role="search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search for...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button">Search</button>
+                                    </span>
+                                </div>
+                            </form>
+
+                            <table class="table table-hover">
+                                <thead>
+
+                                <tr>
+                                    <th>#</th>
+                                    <th>Device ID</th>
+                                    <th>Procedure ID</th>
+                                    <th>Name</th>
+                                    <th>Output Value</th>
+                                    <th>Tag</th>
+                                    <th>Output Time Stamp</th>
+                                </tr>
+                                </thead>
+                                <tbody id="output_table_body">
+                                {% #output_data:index %}
+                                <tr>
+                                    <th scope="row">{% index+1 %}</th>
+                                    <td>{% device_id %}</td>
+                                    <td>{% procedure_id %}</td>
+                                    <td>{% name %}</td>
+                                    <td>{% output_value %}</td>
+                                    <td>{% tag %}</td>
+                                    <td>{% output_time_stamp %}</td>
+
+                                </tr>
+                                {% /output_data %}
+
+                                </tbody>
+                            </table>
+
+
+                        </div>
+
+                        <!-- ------------------ Log Tab ------------------ -->
+                        <div role="tabpanel" class="tab-pane" id="Log">
+
+                            <form class="navbar-form navbar-right" role="search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search for...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button">Search</button>
+                                    </span>
+                                </div>
+                            </form>
+                            <br><br><br>
+
+
+                            <div class="panel-group" id="log_accordion" role="tablist" aria-multiselectable="true">
+
+                                {% #log_data:index %}
+                                {% #if log_level==0 %}
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading" role="tab" id="heading{% index %}">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordion"
+                                               href="#collapse{% index %}"
+                                               aria-expanded="true" aria-controls="collapse{% index %}">
+                                                {% device_id %} : [ {% logged_time_stamp %}] - [ level : {% log_level %} ]
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse{% index %}" class="panel-collapse collapse" role="tabpanel"
+                                         aria-labelledby="headingOne">
+                                        <div class="panel-body">
+                                            [{% procedure_id %}] - [ {% log_message %} ]
+                                        </div>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="heading{% index %}">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordion"
+                                               href="#collapse{% index %}"
+                                               aria-expanded="true" aria-controls="collapse{% index %}">
+                                                {% device_id %} : [ {% logged_time_stamp %}] - [ level : {% log_level %} ]
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse{% index %}" class="panel-collapse collapse" role="tabpanel"
+                                         aria-labelledby="headingOne">
+                                        <div class="panel-body">
+                                            [{% procedure_id %}] - [ {% log_message %} ]
+                                        </div>
+                                    </div>
+                                </div>
+                                {% /if %}
+                                {% /log_data %}
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+        <!-- ------------ END DATA DETAIL  ------------ -->
+    </div>
+</div>
+<!-- ------------ END Ractive Body ------------ -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+<script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
+
+<script>
+
+    function clickTr(obj) {
+        var c = $(obj).find("td").eq(0).text();
+        alert(c);
+    }
+
+    $(window).load(function () {
+        $(function () {
+            $("table#device_table").on("click", ".remove", function () {
+                $(this).closest('tr').remove();
+            });
+        });
+        $(function () {
+            $(".show_tip").tooltip({
+                container: 'body'
+            });
+        });
+        $(document).click(function () {
+            $('.tooltip').remove();
+            $('[title]').tooltip();
+        });
+    });
+
+
+    var ractive = new Ractive({
+        el: '#target',
+        template: '#template',
+        delimiters: ['{%', '%}'],
+        data: {
+            mixed_data: [],
+            output_data: [],
+            log_data: []
+        }
+    });
+
+
+    function choose_device_id() {
+//        alert($('#select_procedure_id option:selected').text());
+        $("#select_name").empty();
+        $("#select_procedure_id").empty();
+        $('.selectpicker').selectpicker('refresh');
+
+        var device_id = $('#select_device_id option:selected').text();
+//        alert(device_id);
+        // add value to select_name
+        // sending a ajax request
+        $.ajax({
+            'url': 'get_parameter',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {device_id: device_id},
+            'success': function (data) {
+                console.log(data);
+//                alert(data);
+                var name = data.name;
+                var procedure_id = data.procedure_id;
+                for (var val in name) {
+                    console.log(name[val].name);
+                    $("#select_name").append('<option>' + name[val].name + '</option>');
+                }
+                for (var val in procedure_id) {
+                    console.log(procedure_id[val].procedure_id);
+                    $("#select_procedure_id").append('<option>' + procedure_id[val].procedure_id + '</option>');
+                }
+                $('.selectpicker').selectpicker('refresh');
+            }
+        });
+
+    }
+    // -----------------------------  Add Device_id-Procedure_id-name pair into the devices management table  ------------------------------------------
+
+    function addDevice() {
+        // ----------------- add the device info to DeviceTable  ------------------------
+        // generate new row data
+        var device_id = $('#select_device_id option:selected').text();
+        var procedure_id = $('#select_procedure_id option:selected').text();
+        var name = $('#select_name option:selected').text();
+
+
+        console.log(device_id + " " + procedure_id + " " + name);
+
+        if (device_id == "Device ID" || procedure_id == "Procedure ID" || name == "Name") {
+            return;
+        } else {
+            var isDuplicated = false;
+            $("tbody#device_data_table tr").each(function () {
+                var prev_device_id = $(this).find("td").eq(0).text();
+                var prev_procedure_id = $(this).find("td").eq(1).text();
+                var prev_name = $(this).find("td").eq(2).text();
+
+                if (device_id == prev_device_id && procedure_id == prev_procedure_id && name == prev_name) {
+                    isDuplicated = true;
+                }
+            });
+            if (isDuplicated) {
+                return;
+            }
+        }
+
+
+        var btn = "<button title='' type='button' class='btn btn-danger remove show_tip' data-original-title='Remove from list'><i class='fa fa-trash-o'></i></button>";
+        var row = '<tr onclick="showRow(this)"><td>' + device_id + '</td><td>' + procedure_id + '</td><td>' + name + '</td><td>' + btn + '</td></tr>';
+        $("#device_data_table").append(row);
+        console.log(row);
+//             var btn =       "<button title='' type='button' class='btn btn-danger remove show_tip' data-original-title='Remove from list'><i class='fa fa-trash-o'></i></button>"
+
+    }
+
+
+    // ------------------------------------  End of adding info into the devices management table  ------------------------------------------------------
+
+
+    function showRow(obj) {
+
+
+
+
+        // ----------------- end of adding the device info to DeviceTable  ------------------------
+
+        // ----------- get the parameter in the control panel --------------------------
+        var time_span = $('#time_span').val();
+        var elems = time_span.trim().split("-");
+        var start = elems[0].slice(6, 10) + "-" + elems[0].slice(0, 2) + "-" + elems[0].slice(3, 5) + " 00:00:00";
+        var end = elems[1].slice(7, 12) + "-" + elems[1].slice(1, 3) + "-" + elems[1].slice(4, 6) + " 23:59:59";
+
+        var device_id = $(obj).find('td').eq(0).text();
+        var procedure_id = $(obj).find('td').eq(1).text();
+        var name = $(obj).find('td').eq(2).text();
+
+        $.ajax({
+            'url': 'get_data',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {start: start, end: end, device_id: device_id, procedure_id: procedure_id, name: name},
+            'success': function (data) {
+
+                //console.log(data);
+
+
+                ractive.set({mixed_data: data.mixed_data});
+                ractive.set({output_data: data.output_data});
+                ractive.set({log_data: data.log_data});
+                console.log(data);
+
+                //  ---------- showing test output dygraph ----------
+                dy_plot();
+            }
+        });
+
+    } // -------- END Refresh Button --------
+
+
+    // ------------------------------------ START Refresh Button  ------------------------------------
+    function refresh() {
+
+
+
+
+        // ----------------- end of adding the device info to DeviceTable  ------------------------
+
+        // ----------- get the parameter in the control panel --------------------------
+        var time_span = $('#time_span').val();
+        var elems = time_span.trim().split("-");
+        var start = elems[0].slice(6, 10) + "-" + elems[0].slice(0, 2) + "-" + elems[0].slice(3, 5) + " 00:00:00";
+        var end = elems[1].slice(7, 12) + "-" + elems[1].slice(1, 3) + "-" + elems[1].slice(4, 6) + " 23:59:59";
+
+        var device_id = $('#select_device_id option:selected').text();
+        var procedure_id = $('#select_procedure_id option:selected').text();
+        var name = $('#select_name option:selected').text();
+
+        $.ajax({
+            'url': 'get_data',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {start: start, end: end, device_id: device_id, procedure_id: procedure_id, name: name},
+            'success': function (data) {
+
+                console.log(data);
+
+
+                ractive.set({mixed_data: data.mixed_data});
+                ractive.set({output_data: data.output_data});
+                ractive.set({log_data: data.log_data});
+                //  ---------- showing test output dygraph ----------
+                dy_plot();
+            }
+        });
+
+    } // -------- END Refresh Button --------
+
+
+    // ------------------------------------  Tab  ------------------------------------
+    $('#myTabs a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+    // ------------  Date Picker  ------------
+    $(function () {
+        $('#time_span').daterangepicker();
+    });
+
+    // ------------  Dygraph testing  ------------
+    var g2; // dygraph object (will declare in dy_plot())
+    function barChartPlotter(e) {
+        var ctx = e.drawingContext;
+        var points = e.points;
+        var y_bottom = e.dygraph.toDomYCoord(0);  // see <a href="http://dygraphs.com/jsdoc/symbols/Dygraph.html#toDomYCoord">jsdoc</a>
+
+        // This should really be based on the minimum gap
+        var bar_width = 2 / 3 * (points[1].canvasx - points[0].canvasx);
+        ctx.fillStyle = e.color;  // a lighter shade might be more aesthetically pleasing
+
+        // Do the actual plotting.
+        for (var i = 0; i < points.length; i++) {
+            var p = points[i];
+            var center_x = p.canvasx;  // center of the bar
+
+            ctx.fillRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
+            ctx.strokeRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
+        }
+    }
+
+
+    dy_plot = function () {
+        var graph_com = document.getElementById("dygraph_target1");
+        var output_data = ractive.get('output_data'); //"{{=URL('static', 'temper.csv')}}";
+
+        // Checking the type of plotting
+        var plot_type = 'line';
+        if ($('#bar_tab').hasClass('active'))
+            plot_type = 'bar';
+
+        // collecting output data
+        if (typeof output_data === "undefined") {
+            g = new Dygraph(
+                    graph_com,
+                    {
+                        //rollPeriod: 5,
+                        //showRoller: true,
+                        title: 'Temperature Line Chart',
+                        ylabel: 'Temperature (C)',
+                        legend: 'always',
+                        showRangeSelector: true,
+                        rangeSelectorHeight: 30,
+                        rangeSelectorPlotStrokeColor: 'green',
+                        rangeSelectorPlotFillColor: 'lightgreen'
+                    }
+            );
+        }
+        else if (output_data.length > 0) {
+            var data = "Date, Temperature\n";   //[['Date', 'Temperature']];
+            var dateRange = [];
+            var timeSpan = $('#time_span').val();
+            for (var i = 0; i < output_data.length; i++) {
+                var output = output_data[i];
+                data = data + output.output_time_stamp + ',' + output.output_value.toString() + '\n';
+                if (i == 0 || i == output_data.length - 1)
+                    dateRange.push(Date.parse(output.output_time_stamp));
+                //data.push([output.time_stamp, output.output_value]);
+            }
+            /*if (typeof timeSpan !== "undefined") {
+             var time2 = timeSpan.split("-");
+             dateRange = [Date.parse(time2[0]), Date.parse(time2[1])];
+             }*/
+
+            g2 = new Dygraph(
+                    graph_com,
+                    data,
+                    {
+                        //labels: ['Date', 'Temperature'],
+                        //plotter: barChartPlotter,
+                        title: 'Temperature Line Chart',
+                        ylabel: 'Temperature (C)',
+                        legend: 'always',
+                        dateWindow: dateRange,
+                        showRangeSelector: true,
+                        rangeSelectorHeight: 30,
+                        rangeSelectorPlotStrokeColor: 'green',
+                        rangeSelectorPlotFillColor: 'lightgreen'
+                        //xTicker: Dygraph.dateTicker
+                    }
+            );
+            if (plot_type == 'bar')
+                g2.updateOptions({plotter: barChartPlotter, title: 'Temperature Bar Chart'});
+
+        }
+        else if(output_data.length == 0){       // has a device with no data
+            if (typeof g2 !== "undefined")
+                if(g2.canvas_ != null)
+                    g2.destroy();
+        }
+
+    };
+
+    function line_plot(){
+        if (typeof g2 !== "undefined")
+            g2.updateOptions({plotter: DygraphCanvasRenderer._linePlotter, title: 'Temperature Line Chart'});
+    };
+    function bar_plot(){
+        if (typeof g2 !== "undefined")
+            g2.updateOptions({plotter: barChartPlotter, title: 'Temperature Bar Chart'});
+    };
+
+    dy_plot();
+
+    function mix_plot() {
+
+    // Reference: http://bl.ocks.org/mbostock/1256572
+    var m = [15, 10, 15, 20],
+    w = 550 - m[1] - m[3],
+    h = 350 - m[0] - m[2];
+
+var x,
+    y,
+    duration = 2500,
+    delay = 500;
+
+var color = d3.scale.category20();
+//var color = d3.scale.ordinal()
+//  .domain(["Electricity", "Oil", "Water"])
+//  .range(["#aec7e8", "#ff7f0e" , "#1f77b4"]);
+
+var svg = d3.select("#dygraph_target1").append("svg")
+    .attr("width", w + m[1] + m[3])
+    .attr("height", h + m[0] + m[2])
+    .append("g")
+    .attr("transform", "translate(" + m[1] + "," + m[0] + ")");
+
+var prices,
+    symbols;
+
+// A line generator, for the dark stroke.
+var line = d3.svg.line()
+    .interpolate("basis")
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d.price); });
+
+// A line generator, for the dark stroke.
+var axis = d3.svg.line()
+    .interpolate("basis")
+    .x(function(d) { return x(d.date); })
+    .y(h);
+
+// A area generator, for the dark stroke.
+var area = d3.svg.area()
+    .interpolate("basis")
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d.price); });
+
+d3.csv("/server/static/data.csv", function(data) {
+  var parse = d3.time.format("%b %Y").parse;
+
+  // Nest price values by symbol.
+  symbols = d3.nest()
+      .key(function(d) { return d.symbol; })
+      .entries(prices = data);
+
+  // Parse dates and numbers. We assume values are sorted by date.
+  // Also compute the maximum price per symbol, needed for the y-domain.
+  symbols.forEach(function(s) {
+    s.values.forEach(function(d) { d.date = parse(d.date); d.price = +d.price; });
+    s.maxPrice = d3.max(s.values, function(d) { return d.price; });
+    s.sumPrice = d3.sum(s.values, function(d) { return d.price; });
+  });
+
+  // Sort by maximum price, descending.
+  symbols.sort(function(a, b) { return b.maxPrice - a.maxPrice; });
+
+  var g = svg.selectAll("g")
+      .data(symbols)
+      .enter().append("g")
+      .attr("class", "symbol");
+
+  setTimeout(lines, duration);
+});
+
+function lines() {
+  x = d3.time.scale().range([0, w - 60]);
+  y = d3.scale.linear().range([h/4 - 20, 0]);
+    
+//  var xAxis = d3.svg.axis()
+//                .scale(x)
+//                .orient("bottom");
+//    
+//  var yAxis = d3.svg.axis()
+//    .scale(y)
+//    .orient("left");
+  console.log(symbols);
+   //Compute the minimum and maximum date across symbols.
+  x.domain([
+    d3.min(symbols, function(d) { return d.values[0].date; }),
+    d3.max(symbols, function(d) { return d.values[d.values.length -1].date; })
+  ]);
+//
+//  y.domain([
+//    d3.min(symbols, function(c) { return d3.min(c.values, function(v) { return v.price; }); }),
+//    d3.max(symbols, function(c) { return d3.max(c.values, function(v) { return v.price; }); })
+//    ]);
+    
+//  svg.append("g")
+//      .attr("class", "x axis")
+//      .attr("transform", "translate(0," + h + ")")
+//      .call(xAxis);
+//    
+//  svg.append("g")
+//      .attr("class", "y axis")
+//      .call(yAxis)
+//      .append("text")
+//      .attr("transform", "rotate(-90)")
+//      .attr("y", 6)
+//      .attr("dy", ".71em")
+//      .style("text-anchor", "end")
+//      .text("Consumption($)");
+
+  var g = svg.selectAll(".symbol")
+      .attr("transform", function(d, i) { return "translate(0," + (i * h / 4 + 10) + ")"; });
+
+  g.each(function(d) {
+    var e = d3.select(this);
+
+    e.append("path")
+        .attr("class", "line");
+
+    e.append("circle")
+        .attr("r", 5)
+        .style("fill", function(d) { return color(d.key); })
+        .style("stroke", "#000")
+        .style("stroke-width", "2px");
+
+    e.append("text")
+        .attr("x", 12)
+        .attr("dy", ".31em")
+        .text(d.key);
+  });
+
+  function draw(k) {
+    g.each(function(d) {
+      var e = d3.select(this);
+      y.domain([0, d.maxPrice]);
+
+      e.select("path")
+          .attr("d", function(d) { return line(d.values.slice(0, k + 1)); });
+
+      e.selectAll("circle, text")
+          .data(function(d) { return [d.values[k], d.values[k]]; })
+          .attr("transform", function(d) { return "translate(" + x(d.date) + "," + y(d.price) + ")"; });
+    });
+  }
+
+  var k = 1, n = symbols[0].values.length;
+  d3.timer(function() {
+    draw(k);
+    if ((k += 2) >= n - 1) {
+      draw(n - 1);
+      setTimeout(horizons, 500);
+      return true;
+    }
+  });
+}
+
+function horizons() {
+  svg.insert("defs", ".symbol")
+    .append("clipPath")
+      .attr("id", "clip")
+    .append("rect")
+      .attr("width", w)
+      .attr("height", h / 4 - 20);
+
+  var color = d3.scale.ordinal()
+      .range(["#c6dbef", "#9ecae1", "#6baed6"]);
+
+  var g = svg.selectAll(".symbol")
+      .attr("clip-path", "url(#clip)");
+
+  area
+      .y0(h / 4 - 20);
+
+  g.select("circle").transition()
+      .duration(duration)
+      .attr("transform", function(d) { return "translate(" + (w - 60) + "," + (-h / 4) + ")"; })
+      .remove();
+
+  g.select("text").transition()
+      .duration(duration)
+      .attr("transform", function(d) { return "translate(" + (w - 60) + "," + (h / 4 - 20) + ")"; })
+      .attr("dy", "0em");
+
+  g.each(function(d) {
+    y.domain([0, d.maxPrice]);
+
+    d3.select(this).selectAll(".area")
+        .data(d3.range(3))
+      .enter().insert("path", ".line")
+        .attr("class", "area")
+        .attr("transform", function(d) { return "translate(0," + (d * (h / 4 - 20)) + ")"; })
+        .attr("d", area(d.values))
+        .style("fill", function(d, i) { return color(i); })
+        .style("fill-opacity", 1e-6);
+
+    y.domain([0, d.maxPrice/2]);
+
+    d3.select(this).selectAll(".line").transition()
+        .duration(duration)
+        .attr("d", line(d.values))
+        .style("stroke-opacity", 1e-6);
+
+    d3.select(this).selectAll(".area").transition()
+        .duration(duration)
+        .style("fill-opacity", 1)
+        .attr("d", area(d.values))
+        .each("end", function() { d3.select(this).style("fill-opacity", null); });
+  });
+
+  setTimeout(areas, duration + delay);
+}
+
+function areas() {
+  var g = svg.selectAll(".symbol");
+
+  axis
+      .y(h / 4 - 21);
+
+  g.select(".line")
+      .attr("d", function(d) { return axis(d.values); });
+
+  g.each(function(d) {
+    y.domain([0, d.maxPrice]);
+
+//    d3.select(this).select(".line").transition()
+//        .duration(duration)
+//        .style("stroke-opacity", 1)
+//        .each("end", function() { d3.select(this).style("stroke-opacity", null); });
+
+    d3.select(this).selectAll(".area")
+        .filter(function(d, i) { return i; })
+      .transition()
+        .duration(duration)
+        .style("fill-opacity", 1e-6)
+        .attr("d", area(d.values))
+        .remove();
+
+    d3.select(this).selectAll(".area")
+        .filter(function(d, i) { return !i; })
+      .transition()
+        .duration(duration)
+        .style("fill", color(d.key))
+        .attr("d", area(d.values));
+  });
+
+  svg.select("defs").transition()
+      .duration(duration)
+      .remove();
+
+  g.transition()
+      .duration(duration)
+      .each("end", function() { d3.select(this).attr("clip-path", null); });
+
+  setTimeout(stackedArea, duration + delay);
+}
+
+function stackedArea() {
+  var stack = d3.layout.stack()
+      .values(function(d) { return d.values; })
+      .x(function(d) { return d.date; })
+      .y(function(d) { return d.price; })
+      .out(function(d, y0, y) { d.price0 = y0; })
+      .order("reverse");
+
+  stack(symbols);
+
+  y
+      .domain([0, d3.max(symbols[0].values.map(function(d) { return d.price + d.price0; }))])
+      .range([h, 0]);
+
+  line
+      .y(function(d) { return y(d.price0); });
+
+  area
+      .y0(function(d) { return y(d.price0); })
+      .y1(function(d) { return y(d.price0 + d.price); });
+
+  var t = svg.selectAll(".symbol").transition()
+      .duration(duration)
+      .attr("transform", "translate(0,0)")
+      .each("end", function() { d3.select(this).attr("transform", null); });
+
+  t.select("path.area")
+      .attr("d", function(d) { return area(d.values); });
+
+  t.select("path.line")
+      .style("stroke-opacity", function(d, i) { return i < 3 ? 1e-6 : 1; })
+      .attr("d", function(d) { return line(d.values); });
+
+  t.select("text")
+      .attr("transform", function(d) { d = d.values[d.values.length - 1]; return "translate(" + (w - 60) + "," + y(d.price / 2 + d.price0) + ")"; });
+
+  setTimeout(streamgraph, duration + delay);
+}
+
+function streamgraph() {
+  var stack = d3.layout.stack()
+      .values(function(d) { return d.values; })
+      .x(function(d) { return d.date; })
+      .y(function(d) { return d.price; })
+      .out(function(d, y0, y) { d.price0 = y0; })
+      .order("reverse")
+      .offset("wiggle");
+
+  stack(symbols);
+
+  line
+      .y(function(d) { return y(d.price0); });
+
+  var t = svg.selectAll(".symbol").transition()
+      .duration(duration);
+
+  t.select("path.area")
+      .attr("d", function(d) { return area(d.values); });
+
+  t.select("path.line")
+      .style("stroke-opacity", 1e-6)
+      .attr("d", function(d) { return line(d.values); });
+
+  t.select("text")
+      .attr("transform", function(d) { d = d.values[d.values.length - 1]; return "translate(" + (w - 60) + "," + y(d.price / 2 + d.price0) + ")"; });
+
+  setTimeout(overlappingArea, duration + delay);
+}
+
+function overlappingArea() {
+  var g = svg.selectAll(".symbol");
+
+  line
+      .y(function(d) { return y(d.price0 + d.price); });
+
+  g.select(".line")
+      .attr("d", function(d) { return line(d.values); });
+
+  y
+      .domain([0, d3.max(symbols.map(function(d) { return d.maxPrice; }))])
+      .range([h, 0]);
+
+  area
+      .y0(h)
+      .y1(function(d) { return y(d.price); });
+
+  line
+      .y(function(d) { return y(d.price); });
+
+  var t = g.transition()
+      .duration(duration);
+
+  t.select(".line")
+      .style("stroke-opacity", 1)
+      .attr("d", function(d) { return line(d.values); });
+
+  t.select(".area")
+      .style("fill-opacity", .5)
+      .attr("d", function(d) { return area(d.values); });
+
+  t.select("text")
+      .attr("dy", ".31em")
+      .attr("transform", function(d) { d = d.values[d.values.length - 1]; return "translate(" + (w - 60) + "," + y(d.price) + ")"; });
+
+  svg.append("line")
+      .attr("class", "line")
+      .attr("x1", 0)
+      .attr("x2", w - 60)
+      .attr("y1", h)
+      .attr("y2", h)
+      .style("stroke-opacity", 1e-6)
+    .transition()
+      .duration(duration)
+      .style("stroke-opacity", 1);
+
+  setTimeout(groupedBar, duration + delay);
+}
+
+function groupedBar() {
+  x = d3.scale.ordinal()
+      .domain(symbols[0].values.map(function(d) { return d.date; }))
+      .rangeBands([0, w - 60], .1);
+
+  var x1 = d3.scale.ordinal()
+      .domain(symbols.map(function(d) { return d.key; }))
+      .rangeBands([0, x.rangeBand()]);
+
+  var g = svg.selectAll(".symbol");
+
+  var t = g.transition()
+      .duration(duration);
+
+  t.select(".line")
+      .style("stroke-opacity", 1e-6)
+      .remove();
+
+  t.select(".area")
+      .style("fill-opacity", 1e-6)
+      .remove();
+
+  g.each(function(p, j) {
+    d3.select(this).selectAll("rect")
+        .data(function(d) { return d.values; })
+      .enter().append("rect")
+        .attr("x", function(d) { return x(d.date) + x1(p.key); })
+        .attr("y", function(d) { return y(d.price); })
+        .attr("width", x1.rangeBand())
+        .attr("height", function(d) { return h - y(d.price); })
+        .style("fill", color(p.key))
+        .style("fill-opacity", 1e-6)
+      .transition()
+        .duration(duration)
+        .style("fill-opacity", 1);
+  });
+
+  setTimeout(stackedBar, duration + delay);
+}
+
+function stackedBar() {
+  x.rangeRoundBands([0, w - 60], .1);
+
+  var stack = d3.layout.stack()
+      .values(function(d) { return d.values; })
+      .x(function(d) { return d.date; })
+      .y(function(d) { return d.price; })
+      .out(function(d, y0, y) { d.price0 = y0; })
+      .order("reverse");
+
+  var g = svg.selectAll(".symbol");
+
+  stack(symbols);
+
+  y
+      .domain([0, d3.max(symbols[0].values.map(function(d) { return d.price + d.price0; }))])
+      .range([h, 0]);
+
+  var t = g.transition()
+      .duration(duration / 2);
+
+  t.select("text")
+      .delay(symbols[0].values.length * 10)
+      .attr("transform", function(d) { d = d.values[d.values.length - 1]; return "translate(" + (w - 60) + "," + y(d.price / 2 + d.price0) + ")"; });
+
+  t.selectAll("rect")
+      .delay(function(d, i) { return i * 10; })
+      .attr("y", function(d) { return y(d.price0 + d.price); })
+      .attr("height", function(d) { return h - y(d.price); })
+      .each("end", function() {
+        d3.select(this)
+            .style("stroke", "#fff")
+            .style("stroke-opacity", 1e-6)
+          .transition()
+            .duration(duration / 2)
+            .attr("x", function(d) { return x(d.date); })
+            .attr("width", x.rangeBand())
+            .style("stroke-opacity", 1);
+      });
+
+  setTimeout(transposeBar, duration + symbols[0].values.length * 10 + delay);
+}
+
+function transposeBar() {
+  x
+      .domain(symbols.map(function(d) { return d.key; }))
+      .rangeRoundBands([0, w], .2);
+
+  y
+      .domain([0, d3.max(symbols.map(function(d) { return d3.sum(d.values.map(function(d) { return d.price; })); }))]);
+
+  var stack = d3.layout.stack()
+      .x(function(d, i) { return i; })
+      .y(function(d) { return d.price; })
+      .out(function(d, y0, y) { d.price0 = y0; });
+
+  stack(d3.zip.apply(null, symbols.map(function(d) { return d.values; }))); // transpose!
+
+  var g = svg.selectAll(".symbol");
+
+  var t = g.transition()
+      .duration(duration / 2);
+
+  t.selectAll("rect")
+      .delay(function(d, i) { return i * 10; })
+      .attr("y", function(d) { return y(d.price0 + d.price) - 1; })
+      .attr("height", function(d) { return h - y(d.price) + 1; })
+      .attr("x", function(d) { return x(d.symbol); })
+      .attr("width", x.rangeBand())
+      .style("stroke-opacity", 1e-6);
+
+  t.select("text")
+      .attr("x", 0)
+      .attr("transform", function(d) { return "translate(" + (x(d.key) + x.rangeBand() / 2) + "," + h + ")"; })
+      .attr("dy", "1.31em")
+      .each("end", function() { d3.select(this).attr("x", null).attr("text-anchor", "middle"); });
+
+  svg.select("line").transition()
+      .duration(duration)
+      .attr("x2", w);
+
+  setTimeout(donut,  duration / 2 + symbols[0].values.length * 10 + delay);
+}
+
+function donut() {
+  var g = svg.selectAll(".symbol");
+
+  g.selectAll("rect").remove();
+
+  var pie = d3.layout.pie()
+      .value(function(d) { return d.sumPrice; });
+
+  var arc = d3.svg.arc();
+
+  g.append("path")
+      .style("fill", function(d) { return color(d.key); })
+      .data(function() { return pie(symbols); })
+    .transition()
+      .duration(duration)
+      .tween("arc", arcTween);
+
+  g.select("text").transition()
+      .duration(duration)
+      .attr("dy", ".31em");
+
+  svg.select("line").transition()
+      .duration(duration)
+      .attr("y1", 2 * h)
+      .attr("y2", 2 * h)
+      .remove();
+
+  function arcTween(d) {
+    var path = d3.select(this),
+        text = d3.select(this.parentNode.appendChild(this.previousSibling)),
+        x0 = x(d.data.key),
+        y0 = h - y(d.data.sumPrice);
+
+    return function(t) {
+      var r = h / 2 / Math.min(1, t + 1e-3),
+          a = Math.cos(t * Math.PI / 2),
+          xx = (-r + (a) * (x0 + x.rangeBand()) + (1 - a) * (w + h) / 2),
+          yy = ((a) * h + (1 - a) * h / 2),
+          f = {
+            innerRadius: r - x.rangeBand() / (2 - a),
+            outerRadius: r,
+            startAngle: a * (Math.PI / 2 - y0 / r) + (1 - a) * d.startAngle,
+            endAngle: a * (Math.PI / 2) + (1 - a) * d.endAngle
+          };
+
+      path.attr("transform", "translate(" + xx + "," + yy + ")");
+      path.attr("d", arc(f));
+      text.attr("transform", "translate(" + arc.centroid(f) + ")translate(" + xx + "," + yy + ")rotate(" + ((f.startAngle + f.endAngle) / 2 + 3 * Math.PI / 2) * 180 / Math.PI + ")");
+    };
+  }
+
+  setTimeout(donutExplode, duration + delay);
+}
+
+function donutExplode() {
+  var r0a = h / 2 - x.rangeBand() / 2,
+      r1a = h / 2,
+      r0b = 2 * h - x.rangeBand() / 2,
+      r1b = 2 * h,
+      arc = d3.svg.arc();
+
+  svg.selectAll(".symbol path")
+      .each(transitionExplode);
+
+  function transitionExplode(d, i) {
+    d.innerRadius = r0a;
+    d.outerRadius = r1a;
+    d3.select(this).transition()
+        .duration(duration / 2)
+        .tween("arc", tweenArc({
+          innerRadius: r0b,
+          outerRadius: r1b
+        }));
+  }
+
+  function tweenArc(b) {
+    return function(a) {
+      var path = d3.select(this),
+          text = d3.select(this.nextSibling),
+          i = d3.interpolate(a, b);
+      for (var key in b) a[key] = b[key]; // update data
+      return function(t) {
+        var a = i(t);
+        path.attr("d", arc(a));
+        text.attr("transform", "translate(" + arc.centroid(a) + ")translate(" + w / 2 + "," + h / 2 +")rotate(" + ((a.startAngle + a.endAngle) / 2 + 3 * Math.PI / 2) * 180 / Math.PI + ")");
+      };
+    }
+  }
+
+  setTimeout(function() {
+    svg.selectAll("*").remove();
+    svg.selectAll("g").data(symbols).enter().append("g").attr("class", "symbol");
+    lines();
+  }, duration);
+}
+};
+
+function world_plot () {
+    //Reference: http://bl.ocks.org/mbostock/4090848
+    // var m = [15, 10, 15, 20],
+    // // w = 550 - m[1] - m[3],
+    // // h = 350 - m[0] - m[2];
+    var width = 550,
+    height = 350;
+
+var projection = d3.geo.albersUsa()
+    .scale(600)
+    .translate([width/2, height/2]);
+
+var path = d3.geo.path()
+    .projection(projection);
+
+var svg = d3.select("#dygraph_target1").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+d3.json("/server/static/us.json", function(error, us) {
+  if (error) throw error;
+
+  svg.insert("path", ".graticule")
+      .datum(topojson.feature(us, us.objects.land))
+      .attr("class", "land")
+      .attr("d", path);
+
+  svg.insert("path", ".graticule")
+      .datum(topojson.mesh(us, us.objects.counties, function(a, b) { return a !== b && !(a.id / 1000 ^ b.id / 1000); }))
+      .attr("class", "county-boundary")
+      .attr("d", path);
+
+  svg.insert("path", ".graticule")
+      .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+      .attr("class", "state-boundary")
+      .attr("d", path);
+
+  d3.csv("/server/static/us-cities.csv", function(data) {
+                        
+                        svg.selectAll("circle")
+                           .data(data)
+                           .enter()
+                           .append("circle")
+                           .attr("cx", function(d) {
+                               return projection([d.lon, d.lat])[0];
+                           })
+                           .attr("cy", function(d) {
+                               return projection([d.lon, d.lat])[1];
+                           })
+                           .attr("r", function(d) {
+                                return Math.sqrt(parseInt(d.population) * 0.0001);
+                           });
+
+                           svg.selectAll("circle").each(
+    function(d) {
+        var temp_r = d3.select(this).attr("r");
+        console.log(temp_r);
+        var theCircle = d3.select(this);
+        console.log(theCircle);
+        repeat();
+        function repeat() {
+            theCircle = theCircle.transition()
+                                 .duration(900)
+                                 .attr("stroke-width", 2)
+                                .attr("r", temp_r/3)
+                                .transition()
+                                .duration(900)
+                                .attr('stroke-width', 1)
+                                .attr("r", temp_r)
+                                .ease('sine')
+                                .each("end", repeat);
+
+        }
+
+        
+    }
+
+    );
+
+
+    });
+
+  
+                        
+                   
+});
+
+d3.select(self.frameElement).style("height", height + "px");
+}
+
+</script>
