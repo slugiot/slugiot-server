@@ -1,5 +1,22 @@
 {{extend 'layout_blue.html'}}
 
+{{block head}}
+
+{{end head}}
+
+{{block device_dropdown}}
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        <i class="pe-7s-plug"></i>
+        <p id="device_selected">Devices <b class="caret"></b></p>
+    </a>
+    <ul id="device_select" class="dropdown-menu  caret-left">
+        <li><a onclick="onDeviceChosen(this);">device1</a></li>
+        <li><a onclick="onDeviceChosen(this);">device2</a></li>
+    </ul>
+</li>
+{{end device_dropdown}}
+
 {{block body}}
 <div id="target"></div>
 <script id="template" type="text/ractive">
@@ -7,7 +24,7 @@
 
 <div class="visualization">
 
-    <h1>Data Visualization</h1>
+    <h1></h1>
 
     <!-- start of typeahead search -->
 
@@ -329,6 +346,12 @@
 
 
 
+
+
+
+
+
+
 </script>
 
 
@@ -338,47 +361,58 @@
 
 
 {{block pagejs}}
-<!-- Bootstrap CSS & JS-->
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
-      integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
-        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
-        crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"
-        integrity="sha256-DI6NdAhhFRnO2k51mumYeDShet3I8AKCQf/tf7ARNhI=" crossorigin="anonymous"></script>
 
 
-<!--<link rel="stylesheet" type="text/css"-->
-<!--href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">-->
+<link rel="stylesheet" type="text/css"
+      href="http://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 <link rel="stylesheet" type="text/css"
       href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
 
-<!-- Bootstrap select -->
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
-
-
-<!-- Date range picker -->
-<!-- Include Required Prerequisites -->
 <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<!-- Include Date Range Picker -->
 <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
-
-<!-- dygraph library -->
-<script src="/server/static/js/dygraph-combined-dev.js"></script>
-
+<script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
 <script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
+
 <script>
     // global variable for device_id in this script
     var device_id;
 
+    function onDeviceChosen(obj) {
+        device_id = $(obj).text();
+        $("#device_selected").text(device_id);
 
+        $.ajax({
+            'url': 'get_parameter',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {device_id: device_id},
+            'success': function (data) {
+                console.log(device_id);
+                console.log(data);
+                console.log("11111");
+
+//                alert(data);
+                var name = data.name;
+                var procedure_id = data.procedure_id;
+                for (var val in name) {
+                    console.log(name[val].name);
+                    $("#select_name").append('<option>' + name[val].name + '</option>');
+                }
+                for (var val in procedure_id) {
+                    console.log(procedure_id[val].procedure_id);
+                    $("#select_procedure_id").append('<option>' + procedure_id[val].procedure_id + '</option>');
+                }
+                $('.selectpicker').selectpicker('refresh');
+            }
+        });
+
+    }
 
     function clickTr(obj) {
         var c = $(obj).find("td").eq(0).text();
@@ -414,32 +448,12 @@
         }
     });
 
-    $(function(){
+    $(function () {
         // receive data from layout_blue.html rendering
         // device_id =
         // fake data to device_id;
-        device_id = "device1";
-        $.ajax({
-            'url': 'get_parameter',
-            'type': 'post',
-            'dataType': 'json',
-            'data': {device_id: device_id},
-            'success': function (data) {
-                console.log(data);
-//                alert(data);
-                var name = data.name;
-                var procedure_id = data.procedure_id;
-                for (var val in name) {
-                    console.log(name[val].name);
-                    $("#select_name").append('<option>' + name[val].name + '</option>');
-                }
-                for (var val in procedure_id) {
-                    console.log(procedure_id[val].procedure_id);
-                    $("#select_procedure_id").append('<option>' + procedure_id[val].procedure_id + '</option>');
-                }
-                $('.selectpicker').selectpicker('refresh');
-            }
-        });
+//        device_id = "device1";
+
     });
     function choose_device_id() {
 //        alert($('#select_procedure_id option:selected').text());
@@ -448,6 +462,8 @@
         $('.selectpicker').selectpicker('refresh');
 
         var device_id = $('#select_device_id option:selected').text();
+        $("#device_selected").text(device_id);
+
 //        alert(device_id);
         // add value to select_name
         // sending a ajax request
@@ -537,6 +553,29 @@
             if (isDuplicated) {
                 return;
             }
+            // reload the Procedure ID and Name list:
+            $("#select_name").empty();
+            $("#select_procedure_id").empty();
+            $.ajax({
+                'url': 'get_parameter',
+                'type': 'post',
+                'dataType': 'json',
+                'data': {device_id: device_id},
+                'success': function (data) {
+                    console.log(data);
+                    var name = data.name;
+                    var procedure_id = data.procedure_id;
+                    for (var val in name) {
+                        console.log(name[val].name);
+                        $("#select_name").append('<option>' + name[val].name + '</option>');
+                    }
+                    for (var val in procedure_id) {
+                        console.log(procedure_id[val].procedure_id);
+                        $("#select_procedure_id").append('<option>' + procedure_id[val].procedure_id + '</option>');
+                    }
+                    $('.selectpicker').selectpicker('refresh');
+                }
+            });
         }
 
 
@@ -734,12 +773,11 @@
         if (typeof g2 !== "undefined")
             g2.updateOptions({plotter: DygraphCanvasRenderer._linePlotter, title: 'Temperature Line Chart'});
     }
-    ;
+
     function bar_plot() {
         if (typeof g2 !== "undefined")
             g2.updateOptions({plotter: barChartPlotter, title: 'Temperature Bar Chart'});
     }
-    ;
 
     dy_plot();
 </script>
