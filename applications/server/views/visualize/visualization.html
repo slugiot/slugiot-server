@@ -319,7 +319,7 @@
                                     <td>{% name %}</td>
                                     <td>{% output_value %}</td>
                                     <td>{% tag %}</td>
-                                    <td>{% output_time_stamp %}</td>
+                                    <td>{% time_stamp %}</td>
 
                                 </tr>
                                 {% /output_data %}
@@ -354,7 +354,7 @@
                                             <a role="button" data-toggle="collapse" data-parent="#accordion"
                                                href="#collapse{% index %}"
                                                aria-expanded="true" aria-controls="collapse{% index %}">
-                                                {% device_id %} : [ {% logged_time_stamp %}] - [ level : {% log_level %} ]
+                                                {% device_id %} : [ {% time_stamp %}] - [ level : {% log_level %} ]
                                             </a>
                                         </h4>
                                     </div>
@@ -372,7 +372,7 @@
                                             <a role="button" data-toggle="collapse" data-parent="#accordion"
                                                href="#collapse{% index %}"
                                                aria-expanded="true" aria-controls="collapse{% index %}">
-                                                {% device_id %} : [ {% logged_time_stamp %}] - [ level : {% log_level %} ]
+                                                {% device_id %} : [ {% time_stamp %}] - [ level : {% log_level %} ]
                                             </a>
                                         </h4>
                                     </div>
@@ -678,9 +678,9 @@
             var timeSpan = $('#time_span').val();
             for (var i = 0; i < output_data.length; i++) {
                 var output = output_data[i];
-                data = data + output.output_time_stamp + ',' + output.output_value.toString() + '\n';
+                data = data + output.time_stamp + ',' + output.output_value.toString() + '\n';
                 if (i == 0 || i == output_data.length - 1)
-                    dateRange.push(Date.parse(output.output_time_stamp));
+                    dateRange.push(Date.parse(output.time_stamp));
                 //data.push([output.time_stamp, output.output_value]);
             }
             /*if (typeof timeSpan !== "undefined") {

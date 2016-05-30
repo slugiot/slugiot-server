@@ -12,12 +12,13 @@ def test_fill():
     db(db.logs).delete()
 
     # fill some data for module_values table
+    #simple-time-stamp
     db(db.module_values).delete()
     db.module_values.insert(device_id=device_id,
                             procedure_id=procedure_id,
                             name=name,
                             output_value="egg",
-                            value_time_stamp=datetime.datetime.now(),
+                            time_stamp=datetime.datetime.now(),
                             received_time_stamp=datetime.datetime.now()
                             )
 
@@ -25,25 +26,53 @@ def test_fill():
                             procedure_id=procedure_id,
                             name=name,
                             output_value="leg",
-                            value_time_stamp=datetime.datetime.now(),
+                            time_stamp=datetime.datetime.now(),
                             received_time_stamp=datetime.datetime.now()
                             )
-
+    # non-simple-time-stamp
+    # db.module_values.insert(device_id=device_id,
+    #                         procedure_id=procedure_id,
+    #                         name=name,
+    #                         output_value="egg",
+    #                         value_time_stamp=datetime.datetime.now(),
+    #                         received_time_stamp=datetime.datetime.now()
+    #                         )
+    #
+    #
+    # db.module_values.insert(device_id=device_id,
+    #                         procedure_id=procedure_id,
+    #                         name=name,
+    #                         output_value="leg",
+    #                         value_time_stamp=datetime.datetime.now(),
+    #                         received_time_stamp=datetime.datetime.now()
+    #                         )
     # Let us insert some new random data.
     now = datetime.datetime.utcnow()
     for i in range(5):
         db.outputs.insert(device_id=device_id,
                           procedure_id=procedure_id,
                           name=name,
-                          output_time_stamp=now - datetime.timedelta(days=i) - datetime.timedelta(hours=i),
+                          time_stamp=now - datetime.timedelta(days=i) - datetime.timedelta(hours=i),
                           output_value=random.random() * 20,
                           tag="1")
         db.logs.insert(device_id=device_id,
                        procedure_id=procedure_id,
-                       logged_time_stamp=now - datetime.timedelta(days=i),
+                       time_stamp=now - datetime.timedelta(days=i),
                        log_level=random.randint(0, 4),
                        log_message='This is message' + str(i) + '.')
-
+        #non-simple-time-stamp
+        # for i in range(5):
+        #     db.outputs.insert(device_id=device_id,
+        #                       procedure_id=procedure_id,
+        #                       name=name,
+        #                       output_time_stamp=now - datetime.timedelta(days=i) - datetime.timedelta(hours=i),
+        #                       output_value=random.random() * 20,
+        #                       tag="1")
+        #     db.logs.insert(device_id=device_id,
+        #                    procedure_id=procedure_id,
+        #                    logged_time_stamp=now - datetime.timedelta(days=i),
+        #                    log_level=random.randint(0, 4),
+        #                    log_message='This is message' + str(i) + '.')
 
 def fill_device():
     db(db.procedure_revisions).delete()
@@ -84,7 +113,6 @@ def fill_device():
                          name='cpp03'
                          )
 
-
 # @auth.requires_signature()
 def get_modulename():
     device_id = request.vars.device_id
@@ -95,7 +123,6 @@ def get_modulename():
     print "end of get_modulename"
     result = {'module_name': modulename}
     return response.json(result)
-
 
 def get_parameter():
     fill_device()
@@ -159,29 +186,49 @@ def get_data():
 
     print "----------finish test fill-----------------------"
     # get output_data and sort by time_stamp
-    output_data = db((db.outputs.output_time_stamp >= start) &
-                     (db.outputs.output_time_stamp <= end) &
+
+    output_data = db((db.outputs.time_stamp >= start) &
+                     (db.outputs.time_stamp <= end) &
                      (db.outputs.device_id == device_id) &
                      (db.outputs.procedure_id == procedure_id) &
-                     (db.outputs.name == name)).select(orderby=db.outputs.output_time_stamp)
+                     (db.outputs.name == name)).select(orderby=db.outputs.time_stamp)
     # get log_data and sort by time_stamp
-    log_data = db((db.logs.logged_time_stamp >= start) &
-                  (db.logs.logged_time_stamp <= end) &
+    log_data = db((db.logs.time_stamp >= start) &
+                  (db.logs.time_stamp <= end) &
                   (db.logs.device_id == device_id) &
-                  (db.logs.procedure_id == procedure_id)).select(orderby=db.logs.logged_time_stamp)
+                  (db.logs.procedure_id == procedure_id)).select(orderby=db.logs.time_stamp)
+
+    #non-simple-time-stamp
+    # output_data = db((db.outputs.output_time_stamp >= start) &
+    #                  (db.outputs.output_time_stamp <= end) &
+    #                  (db.outputs.device_id == device_id) &
+    #                  (db.outputs.procedure_id == procedure_id) &
+    #                  (db.outputs.name == name)).select(orderby=db.outputs.output_time_stamp)
+    # # get log_data and sort by time_stamp
+    # log_data = db((db.logs.logged_time_stamp >= start) &
+    #               (db.logs.logged_time_stamp <= end) &
+    #               (db.logs.device_id == device_id) &
+    #               (db.logs.procedure_id == procedure_id)).select(orderby=db.logs.logged_time_stamp)
+
     # generate mixed_data from output_data and log_data and sort by time_stamp
     print 111111111111111111111111
     mixed_data = []
     # transform output_data into mixed_data
-    for row in db((db.outputs.output_time_stamp >= start) &
-                          (db.outputs.output_time_stamp <= end) &
+    for row in db((db.outputs.time_stamp >= start) &
+                          (db.outputs.time_stamp <= end) &
                           (db.outputs.device_id == device_id) &
                           (db.outputs.procedure_id == procedure_id) &
-                          (db.outputs.name == name)).select(orderby=db.outputs.output_time_stamp):
+                          (db.outputs.name == name)).select(orderby=db.outputs.time_stamp):
+    # for row in db((db.outputs.output_time_stamp >= start) &
+    #                       (db.outputs.output_time_stamp <= end) &
+    #                       (db.outputs.device_id == device_id) &
+    #                       (db.outputs.procedure_id == procedure_id) &
+    #                       (db.outputs.name == name)).select(orderby=db.outputs.output_time_stamp):
         type = 'output'
         device_id = row.device_id
         modulename = row.procedure_id
-        time_stamp = row.output_time_stamp
+        time_stamp = row.time_stamp
+        # time_stamp = row.output_time_stamp
         name = row.name
         value = row.output_value
         tag = row.tag
@@ -190,14 +237,19 @@ def get_data():
                            'content': content})
     print 111111111111111111111111
     # transform log_data into mixed_data
-    for row in db((db.logs.logged_time_stamp >= start) &
-                          (db.logs.logged_time_stamp <= end) &
+    for row in db((db.logs.time_stamp >= start) &
+                          (db.logs.time_stamp <= end) &
                           (db.logs.device_id == device_id) &
-                          (db.logs.procedure_id == procedure_id)).select(orderby=db.logs.logged_time_stamp):
+                          (db.logs.procedure_id == procedure_id)).select(orderby=db.logs.time_stamp):
+    # for row in db((db.logs.logged_time_stamp >= start) &
+    #                       (db.logs.logged_time_stamp <= end) &
+    #                       (db.logs.device_id == device_id) &
+    #                       (db.logs.procedure_id == procedure_id)).select(orderby=db.logs.logged_time_stamp):
         type = 'log'
         device_id = row.device_id
         modulename = row.procedure_id
-        time_stamp = row.logged_time_stamp
+        time_stamp = row.time_stamp
+        # time_stamp = row.logged_time_stamp
         log_level = row.log_level
         log_message = row.log_message
         content = 'name: ' + str(log_level) + ', value: ' + str(log_message)
