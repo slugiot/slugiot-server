@@ -24,13 +24,21 @@ function load_procedure(url ,procedure_id, stable, device_id) {
                     var procedure_list = '';
                     for (var i = 0; i < json['id_list'].length; i++) {
                         // generate the link tag
-                        procedure_list += '<a ';
-                        procedure_list += 'type = "button" ';
-                        procedure_list += 'class="list-group-item" ';
-                        procedure_list += 'id="' + json['id_list'][i] + '"';
-                        procedure_list += 'href="?device_id=' + json['dev_id'] + '&procedure_id=' + json['id_list'][i] + '&stable=false">';
+                        procedure_list += '<button type="button" class="list-group-item" ';
+                        procedure_list += 'id="' + json['id_list'][i] + '">';
+                        // procedure_list += 'href="?device_id=' + json['dev_id'] + '&procedure_id=' + json['id_list'][i] + '&stable=false">';
                         procedure_list += json['name_list'][i];
+                        // button access to temporary saved procedure
+                        procedure_list += '<a href="?device_id=' + json['dev_id'] + '&procedure_id=' + json['id_list'][i] + '&stable=false">';
+                        var procedure_temp = '<span class="glyphicon glyphicon-edit"></span>';
+                        procedure_list += procedure_temp;
                         procedure_list += '</a>';
+                        // button access to stable saved procedure
+                        procedure_list += '<a href="?device_id=' + json['dev_id'] + '&procedure_id=' + json['id_list'][i] + '&stable=true">';
+                        var procedure_temp = '<span class="glyphicon glyphicon-check"></span>';
+                        procedure_list += procedure_temp;
+                        procedure_list += '</a>';
+                        procedure_list += '</button>';
                     }
                     $('#procedures').append($(procedure_list));
                 }
