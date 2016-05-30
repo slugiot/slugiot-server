@@ -1,90 +1,7 @@
-{{extend 'layout.html'}}
+{{extend 'layout_blue.html'}}
 
-
-<!-- Bootstrap CSS & JS-->
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
-      integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
-        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
-        crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"
-        integrity="sha256-DI6NdAhhFRnO2k51mumYeDShet3I8AKCQf/tf7ARNhI=" crossorigin="anonymous"></script>
-
-
-<!--<link rel="stylesheet" type="text/css"-->
-<!--href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">-->
-<link rel="stylesheet" type="text/css"
-      href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
-
-<!-- Bootstrap select -->
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
-
-
-<!-- Date range picker -->
-<!-- Include Required Prerequisites -->
-<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<!-- Include Date Range Picker -->
-<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
-
-<!-- dygraph library -->
-<script src="/server/static/js/dygraph-combined-dev.js"></script>
-
-
-<!-- table of all the chosen devices -->
-<!--<table id="DeviceTable">-->
-<!--<tr>-->
-<!--<td>Device ID</td>-->
-<!--<td>Procedure ID</td>-->
-<!--<td>name</td>-->
-<!--</tr>-->
-<!--</table>-->
-
-<!-- table of all the chosen devices -->
-<!-- Device_ID Procedure_ID Name Delete -->
-<!--<table class="table table-striped table-bordered"-->
-<!--id="device_table">-->
-<!--<thead>-->
-<!--<tr>-->
-<!--<th>Device ID</th>-->
-<!--<th>Procedure ID</th>-->
-<!--<th>Name</th>-->
-<!--<th>Delete</th>-->
-<!--</tr>-->
-<!--</thead>-->
-<!--<tbody id="device_data_table">-->
-<!--<tr>-->
-<!--<td>device1</td>-->
-<!--<td>procedure1</td>-->
-<!--<td>name1</td>-->
-<!--<td>-->
-<!--<button title="" type="button"-->
-<!--class="btn btn-danger remove show_tip"-->
-<!--data-original-title="Remove from list">-->
-<!--<i class="fa fa-trash-o"></i>-->
-<!--</button>-->
-<!--</td>-->
-<!--</tr>-->
-<!--</tbody>-->
-<!--</table>-->
-<!-- end of table -->
-
-
+{{block body}}
 <div id="target"></div>
-
-
-<!--start of typeadhead search module-->
-
-
-<!--end of  typeadhead search module-->
-
-
 <script id="template" type="text/ractive">
 <!-- ------------ START Ractive Body ------------ -->
 
@@ -95,7 +12,6 @@
     <!-- start of typeahead search -->
 
     <!-- end of typeahead search -->
-
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
@@ -420,8 +336,48 @@
 </script>
 
 
-<script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
 
+{{end body}}
+
+
+
+{{block pagejs}}
+<!-- Bootstrap CSS & JS-->
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+      integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
+        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"
+        integrity="sha256-DI6NdAhhFRnO2k51mumYeDShet3I8AKCQf/tf7ARNhI=" crossorigin="anonymous"></script>
+
+
+<!--<link rel="stylesheet" type="text/css"-->
+<!--href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">-->
+<link rel="stylesheet" type="text/css"
+      href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+
+<!-- Bootstrap select -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+
+
+<!-- Date range picker -->
+<!-- Include Required Prerequisites -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<!-- Include Date Range Picker -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+
+<!-- dygraph library -->
+<script src="/server/static/js/dygraph-combined-dev.js"></script>
+
+<script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
 <script>
 
     function clickTr(obj) {
@@ -728,3 +684,4 @@
 
     dy_plot();
 </script>
+{{end pagejs}}
