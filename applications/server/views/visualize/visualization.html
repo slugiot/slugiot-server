@@ -352,12 +352,11 @@
 
 
 
+
 </script>
 
 
-
 {{end body}}
-
 
 
 {{block pagejs}}
@@ -386,6 +385,9 @@
     function onDeviceChosen(obj) {
         device_id = $(obj).text();
         $("#device_selected").text(device_id);
+        $("#select_name").empty();
+        $("#select_procedure_id").empty();
+        $('.selectpicker').selectpicker('refresh');
 
         $.ajax({
             'url': 'get_parameter',
