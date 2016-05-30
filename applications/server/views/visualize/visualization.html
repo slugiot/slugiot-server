@@ -114,12 +114,7 @@
                                     <tr>
                                         <td>
                                             <label>Select:</label> <br>
-                                            <select id="select_device_id" class="selectpicker" data-live-search="true"
-                                                    title="Device ID" onchange="choose_device_id();">
-                                                <option>device1</option>
-                                                <option>device2</option>
-                                            </select>
-                                            <br>
+
                                              <select id="select_procedure_id" class="selectpicker" data-live-search="true"
                                                     title="Procedure ID">
                                             </select>
@@ -417,12 +412,17 @@
 
 
 
+
 </script>
 
 
 <script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
 
 <script>
+    // global variable for device_id in this script
+    var device_id;
+
+
 
     function clickTr(obj) {
         var c = $(obj).find("td").eq(0).text();
@@ -458,7 +458,33 @@
         }
     });
 
-
+    $(function(){
+        // receive data from layout_blue.html rendering
+        // device_id =
+        // fake data to device_id;
+        device_id = "device1";
+        $.ajax({
+            'url': 'get_parameter',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {device_id: device_id},
+            'success': function (data) {
+                console.log(data);
+//                alert(data);
+                var name = data.name;
+                var procedure_id = data.procedure_id;
+                for (var val in name) {
+                    console.log(name[val].name);
+                    $("#select_name").append('<option>' + name[val].name + '</option>');
+                }
+                for (var val in procedure_id) {
+                    console.log(procedure_id[val].procedure_id);
+                    $("#select_procedure_id").append('<option>' + procedure_id[val].procedure_id + '</option>');
+                }
+                $('.selectpicker').selectpicker('refresh');
+            }
+        });
+    });
     function choose_device_id() {
 //        alert($('#select_procedure_id option:selected').text());
         $("#select_name").empty();
@@ -492,12 +518,47 @@
         });
 
     }
+
+
+    //    function choose_device_id() {
+    ////        alert($('#select_procedure_id option:selected').text());
+    //        $("#select_name").empty();
+    //        $("#select_procedure_id").empty();
+    //        $('.selectpicker').selectpicker('refresh');
+    //
+    //        var device_id = $('#select_device_id option:selected').text();
+    ////        alert(device_id);
+    //        // add value to select_name
+    //        // sending a ajax request
+    //        $.ajax({
+    //            'url': 'get_parameter',
+    //            'type': 'post',
+    //            'dataType': 'json',
+    //            'data': {device_id: device_id},
+    //            'success': function (data) {
+    //                console.log(data);
+    ////                alert(data);
+    //                var name = data.name;
+    //                var procedure_id = data.procedure_id;
+    //                for (var val in name) {
+    //                    console.log(name[val].name);
+    //                    $("#select_name").append('<option>' + name[val].name + '</option>');
+    //                }
+    //                for (var val in procedure_id) {
+    //                    console.log(procedure_id[val].procedure_id);
+    //                    $("#select_procedure_id").append('<option>' + procedure_id[val].procedure_id + '</option>');
+    //                }
+    //                $('.selectpicker').selectpicker('refresh');
+    //            }
+    //        });
+    //
+    //    }
     // -----------------------------  Add Device_id-Procedure_id-name pair into the devices management table  ------------------------------------------
 
     function addDevice() {
         // ----------------- add the device info to DeviceTable  ------------------------
         // generate new row data
-        var device_id = $('#select_device_id option:selected').text();
+//        var device_id = $('#select_device_id option:selected').text();
         var procedure_id = $('#select_procedure_id option:selected').text();
         var name = $('#select_name option:selected').text();
 
@@ -536,10 +597,6 @@
 
 
     function showRow(obj) {
-
-
-
-
         // ----------------- end of adding the device info to DeviceTable  ------------------------
 
         // ----------- get the parameter in the control panel --------------------------
@@ -709,22 +766,24 @@
                 g2.updateOptions({plotter: barChartPlotter, title: 'Temperature Bar Chart'});
 
         }
-        else if(output_data.length == 0){       // has a device with no data
+        else if (output_data.length == 0) {       // has a device with no data
             if (typeof g2 !== "undefined")
-                if(g2.canvas_ != null)
+                if (g2.canvas_ != null)
                     g2.destroy();
         }
 
     };
 
-    function line_plot(){
+    function line_plot() {
         if (typeof g2 !== "undefined")
             g2.updateOptions({plotter: DygraphCanvasRenderer._linePlotter, title: 'Temperature Line Chart'});
-    };
-    function bar_plot(){
+    }
+    ;
+    function bar_plot() {
         if (typeof g2 !== "undefined")
             g2.updateOptions({plotter: barChartPlotter, title: 'Temperature Bar Chart'});
-    };
+    }
+    ;
 
     dy_plot();
 </script>
