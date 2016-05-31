@@ -40,17 +40,20 @@
         <div class="row" style="height: 100%;">
             <!-- left side procedure list -->
             <div class="col-md-2">
+                <br>
                 <div class="list-group" id="procedures">
 
                 </div>
             </div>
             <!-- right side editor area -->
             <div class="col-md-10" style="height: 100%;">
-                <div id="editor_area" class="row-fluid" style="height: 80%;">
+                <br>
+                <div id="editor_area" class="row-fluid" style="height: 75%;">
                     <div id="placeholder" style="height: 100%">
                         <div id="myTabContent" class="tab-content" style="height: 100%"></div>
                     </div>
                 </div>
+                <br>
                 <button id = "save_unstable" type="button" class="btn btn-primary" onclick="save_procedure('{{=URL('editor','save_procedure',user_signature=True)}}',{{=procedure_id}}, false)">save temporary</button>
                 <button id = "save_stable" type="button" class="btn btn-info" onclick="save_procedure('{{=URL('editor','save_procedure',user_signature=True)}}',{{=procedure_id}}, true)">save stable</button>
                 <button id = "delete" type="button" class="btn btn-danger" onclick="delete_procedure('{{=URL('editor','delete_procedure',user_signature=True)}}',{{=procedure_id}}, {{=device_id}})">delete procedure</button>
