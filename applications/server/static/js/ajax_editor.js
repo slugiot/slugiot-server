@@ -26,7 +26,7 @@ function load_procedure(url ,procedure_id, stable, device_id) {
                         // generate the link tag
                         procedure_list += '<button type="button" class="list-group-item';
                         if (json['id'] == json['id_list'][i]) {
-                            procedure_list += ' list-group-item-info';
+                            procedure_list += ' active';
                         }
                         procedure_list += '"';
                         procedure_list += 'id="' + json['id_list'][i] + '">';
