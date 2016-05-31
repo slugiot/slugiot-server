@@ -15,7 +15,7 @@ function load_procedure(url ,procedure_id, stable, device_id) {
         },
         success: function(json) {
             if(typeof (json['plain_html']) !== undefined) {
-                if($('#' + json['id']).length === 0 ) {
+                if ($('#' + json['id']).length === 0 ) {
                     //  the code in it
                     var tab_body = '<div id="' + json['id'] + '" class="tab-pane fade in " >' + json['plain_html'] + '</div>';
                     $('#myTabContent').append($(tab_body)); // First load the body
@@ -24,9 +24,13 @@ function load_procedure(url ,procedure_id, stable, device_id) {
                     var procedure_list = '';
                     for (var i = 0; i < json['id_list'].length; i++) {
                         // generate the link tag
-                        procedure_list += '<button type="button" class="list-group-item" ';
+                        procedure_list += '<button type="button" class="list-group-item';
+                        if (json['id'] == json['id_list'][i]) {
+                            procedure_list += ' list-group-item-info';
+                        }
+                        procedure_list += '"';
                         procedure_list += 'id="' + json['id_list'][i] + '">';
-                        // procedure_list += 'href="?device_id=' + json['dev_id'] + '&procedure_id=' + json['id_list'][i] + '&stable=false">';
+                        // name of the procedure
                         procedure_list += json['name_list'][i];
                         // button access to temporary saved procedure
                         procedure_list += '<a href="?device_id=' + json['dev_id'] + '&procedure_id=' + json['id_list'][i] + '&stable=false">';
