@@ -70,8 +70,6 @@ def add():
     form = SQLFORM(db.device)
     form.custom.widget.name['requires'] = IS_NOT_EMPTY()
     if form.process().accepted:
-        device_id = form.vars.device_id
-        access.add_permission(user_email=auth.user.email, perm_type='a', device_id=device_id)
         session.flash = "Device added!"
         redirect(URL('default', 'new_device', args=[form.vars.id], user_signature=True))
     return dict(form=form)
@@ -83,6 +81,7 @@ def new_device():
     device = db.device[request.args(0)]
     db.device.user_email.readable = False
     form = SQLFORM(db.device, record=device, readonly=True)
+    access.add_permission(user_email=auth.user.email, perm_type='a', device_id=device.device_id)
     if form.process().accepted:
         session.flash = T(form.vars.name + ' added!')
         redirect(URL('default', 'manage', vars=dict(device=device.id)))

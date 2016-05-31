@@ -15,7 +15,7 @@ def edit_view():
     user_emails = [u.perm_user_email for u in filter(lambda x: x.perm_type=='v', user_list)]
     # Let's get a nice form for editing this.
     form = SQLFORM.factory(
-        Field('users', 'list:string', requires=IS_LIST_OF(IS_EMAIL(error_message='must be email!')), default=user_emails)
+        Field('users', 'list:string', requires=IS_LIST_OF(IS_EMAIL(error_message='must be email!') and IS_IN_DB(db, db.auth_user.email,'%(email)s')), default=user_emails)
     )
     if form.process().accepted:
         new_users = set(form.vars.users) if type(form.vars.users) == type([]) else set([form.vars.users])
