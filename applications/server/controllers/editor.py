@@ -210,15 +210,15 @@ def run_test():
 
     # create procedure name=demo_1 for the device whose id = 1 and saved it
     proc_id = proc_harness_module.create_procedure("demo_1", "1")
-    proc_harness_module.save(proc_id, "#demo1 stable edition code\nfrom procedureapi import Procedure\n\nclass DeviceProdecure(Procedure):\n\n    def init(self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n\n    def run(self):\n        # Called each time the schedule is triggered", True)
+    proc_harness_module.save(proc_id, "#demo1 stable edition code\nfrom procedureapi import Procedure\n\nclass DeviceProdecure (Procedure):\n\n    def init (self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n\n    def run (self):\n        # Called each time the schedule is triggered", True)
     time.sleep(2)
-    proc_harness_module.save(proc_id, "#demo1 temporary edition code\nfrom procedureapi import Procedure\n\nclass DeviceProdecure(Procedure):\n\n    def init(self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n\n    def run(self):\n        # Called each time the schedule is triggered", False)
+    proc_harness_module.save(proc_id, "#demo1 temporary edition code\nfrom procedureapi import Procedure\n\nclass DeviceProdecure (Procedure):\n\n    def init (self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n\n    def run (self):\n        # Called each time the schedule is triggered", False)
     time.sleep(2)
     # create procedure name=demo_2 for the device whose id = 1 and saved it
     proc_id2 = proc_harness_module.create_procedure("demo_2", "1")
-    proc_harness_module.save(proc_id2, "#demo2 stable edition code\nfrom procedureapi import Procedure\n\nclass DeviceProdecure(Procedure):\n\n    def init(self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n\n    def run(self):\n        # Called each time the schedule is triggered", True)
+    proc_harness_module.save(proc_id2, "#demo2 stable edition code\nfrom procedureapi import Procedure\n\nclass DeviceProdecure (Procedure):\n\n    def init (self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n\n    def run (self):\n        # Called each time the schedule is triggered", True)
     time.sleep(2)
-    proc_harness_module.save(proc_id2, "#demo2 temporary edition code\nfrom procedureapi import Procedure\n\nclass DeviceProdecure(Procedure):\n\n    def init(self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n\n    def run(self):\n        # Called each time the schedule is triggered", False)
+    proc_harness_module.save(proc_id2, "#demo2 temporary edition code\nfrom procedureapi import Procedure\n\nclass DeviceProdecure (Procedure):\n\n    def init (self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n\n    def run (self):\n        # Called each time the schedule is triggered", False)
 
     # get the list of procedure_id from device whose id = 1
     proc_list1 = proc_harness_module.get_procedures_for_edit("1")
