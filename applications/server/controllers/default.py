@@ -190,10 +190,10 @@ def load_devices():
     Returns: A JSON with a dictionary of all the devices and their database fields.
     """
     rows = db(db.device.user_email == auth.user.email).select()
-    d = {r.device_id: {'name': r.name,
-                       'description': r.description,
-                       'user_email': r.user_email,
-                       'id': r.id}
+    d = {r.id: {'name': r.name,
+                'description': r.description,
+                'user_email': r.user_email,
+                'id': r.id}
          for r in rows}
     return response.json(dict(device_dict=d))
 

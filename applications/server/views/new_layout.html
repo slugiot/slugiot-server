@@ -114,13 +114,13 @@
                         <li><a href="#" data-toggle="modal" data-target="#myModalNorm"><i class="fa fa-plus fa-fw" aria-hidden="true"></i>Add New Device</a></li>
                         <li role="separator" class="divider"></li>
                         {% #each device_dict:device_id %}
-                            <li><a href="#">{% name %}</a></li>
+                            <li><a href="#" on-click="set_val:{% device_id %}">{% name %}</a></li>
                         {% /each %}
                   </ul>
                 </li>
-                <li class="social {% #if ptype_vis %} active {% /if %}"><a href="{{=URL('default', 'viz.html')}}"><i class="fa fa-lg fa-area-chart"></i></a></li>
+                <li class="social {% #if ptype_vis %} active {% /if %}"><a href="{{=URL('default', 'viz.html')}}/{% device_id %}"><i class="fa fa-lg fa-area-chart"></i></a></li>
                 <li class="social {% #if ptype_edit %} active {% /if %}"><a href="#"><i class="fa fa-lg fa-pencil-square-o"></i></a></li>
-                <li class="social {% #if ptype_share %} active {% /if %}"><a href="{{=URL('default', 'share')}}"><i class="fa fa-lg fa-share-alt"></i></a></li>
+                <li class="social {% #if ptype_share %} active {% /if %}"><a href="{{=URL('default', 'share')}}/{% device_id %}"><i class="fa fa-lg fa-share-alt"></i></a></li>
                 <li class="social {% #if ptype_set %} active {% /if %}"><a href="#"><i class="fa fa-lg fa-cog"></i></a></li>
               </ul>
               </script>
@@ -239,8 +239,13 @@
                 ptype_edit: {{='true' if response.ptype == 'edit' else 'false'}},
                 ptype_share: {{='true' if response.ptype == 'share' else 'false'}},
                 ptype_set: {{='true' if response.ptype == 'set' else 'false'}},
-                device_name: "{{= response.device_name or 'Device'}}"
+                device_name: "{{= response.device_name or 'Device'}}",
+                device_id: "{{= response.device_id or ''}}"
             }
+        });
+
+        ractive2.on("set_val", function(e, device_id){
+            ractive2.set('device_id', device_id);
         });
 
         $.ajax({
