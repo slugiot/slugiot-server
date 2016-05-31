@@ -10,7 +10,6 @@ from gluon import utils as gluon_utils
 import time
 import access
 import proc_harness_module
-import uuid
 
 
 class DeviceIDVerification:
@@ -36,6 +35,8 @@ def index():
     # Redirect to splash page if not logged in
     if auth.is_logged_in() is False:
         redirect(URL('default', 'login.html'))
+        response.ptype = 'share'
+        response.device_name = "Try"
         return dict(message=T('Please sign in!'))
     else:
         # Generate a UUID for user signatures
@@ -45,6 +46,7 @@ def index():
         device_list = db(db.device.user_email == auth.user.email).select()
 
         # Return the list of devices and UUID
+        response.device_name = "Cat"
         return dict(device_list=device_list, sign_uuid=sign_uuid)
 
 
@@ -59,25 +61,6 @@ def login():
 
 
 @auth.requires_login()
-def add():
-    """
-    Description: Controller for the add page, which lets you add a device into the DB
-    Returns: A form that lets you add things into db.devices (use by including {{=form}} in add.html)
-    """
-    db.device.device_id.writable = False
-    db.device.device_id.readable = False # We don't want to display it here.
-    db.device.user_email.readable = False # We know who we are.
-    form = SQLFORM(db.device)
-    form.custom.widget.name['requires'] = IS_NOT_EMPTY()
-    if form.process().accepted:
-        device_id = form.vars.device_id
-        access.add_permission(user_email=auth.user.email, perm_type='a', device_id=device_id)
-        session.flash = "Device added!"
-        redirect(URL('default', 'new_device', args=[form.vars.id], user_signature=True))
-    return dict(form=form)
-
-
-@auth.requires_login()
 @auth.requires_signature()
 def new_device():
     device = db.device[request.args(0)]
@@ -89,11 +72,16 @@ def new_device():
     return dict(form=form)
 
 
+def modal():
+    foo = "foo!"
+    return dict(fo3o=foo)
+
+
 @auth.requires_login()
 def add_new_procedure():
     """
     Description: Controller for the add page, which lets you add a device into the DB.
-    Returns: A form that lets you add things into db.devices (use by including {{=form}} in add.html)
+    Returns: A form that lets you add things into db.devices (use by including {{=form}})
     """
     # Device ID should not be changeable
     db.procedures.device_id.writable = False
@@ -115,7 +103,7 @@ def add_new_procedure():
 
     # Generate a name to be passed on to add_permission
     if db(db.device.device_id == val).select():
-        name = db(db.device.device_id == val).select()[0].name + " procedure"
+        name = db(db.device.device_id == val).select()[0].name + "_procedure"
 
     if form.process().accepted:
 
@@ -202,7 +190,6 @@ def load_devices():
     Returns: A JSON with a dictionary of all the devices and their database fields.
     """
     rows = db(db.device.user_email == auth.user.email).select()
-    time.sleep(1)  # so we can some time to stare at the pretty animation :-)
     d = {r.device_id: {'name': r.name,
                        'description': r.description,
                        'user_email': r.user_email,
@@ -281,3 +268,7 @@ def call():
     supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
     """
     return service()
+
+@auth.requires_login()
+def share():
+    return dict()

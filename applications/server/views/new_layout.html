@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<!--[if (gt IE 9)|!(IE)]><!-->
+<html class="no-js" lang="{{=T.accepted_language or 'en'}}"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <!-- www.phpied.com/conditional-comments-block-downloads/ -->
+    <!-- Always force latest IE rendering engine
+         (even in intranet) & Chrome Frame
+         Remove this if you use the .htaccess -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge{{=not request.is_local and ',chrome=1' or ''}}">
+    <!--  Mobile Viewport Fix
+          j.mp/mobileviewport & davidbcalhoun.com/2010/viewport-metatag
+          device-width: Occupy full width of the screen in its current orientation
+          initial-scale = 1.0 retains dimensions instead of zooming out if page height > device height
+          user-scalable = yes allows the user to zoom in -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{=response.title or request.application}}</title>
+    <!-- http://dev.w3.org/html5/markup/meta.name.html -->
+    <meta name="application-name" content="{{=request.application}}">
+    <!-- Speaking of Google, don't forget to set your site up:
+         http://google.com/webmasters -->
+    <meta name="google-site-verification" content="">
+
+    <!-- Definitions for the URL abbreviations -->
+    {{cm = URL('static', 'codemirror')}}
+    {{js_url = URL('static','js')}}
+    {{css_url = URL('static', 'css')}}
+
+    <!-- CSS from the editor team -->
+    <link rel="stylesheet" href="{{=cm}}/lib/codemirror.css">
+    <link rel="stylesheet" href="{{='%s/theme/web2py.css' % cm}}">
+    <link rel="stylesheet" href="{{=css_url}}/typeahead.js-bootstrap.css">
+    <link rel="stylesheet" href="{{=css_url}}/web2py-codemirror.css">
+    <link rel="stylesheet" href="{{=cm}}/addon/fold/foldgutter.css">
+    <link rel="stylesheet" href="{{=cm}}/addon/display/fullscreen.css">
+    <link rel="stylesheet" href="{{=cm}}/addon/dialog/dialog.css">
+    <link rel="stylesheet" href="{{=cm}}/addon/hint/show-hint.css">
+
+    <!-- Custom CSS from Compass (see /static/sass directory for individual components) -->
+    <link href="{{=URL('static', 'stylesheets/myapp.css')}}" rel="stylesheet" type="text/css"/>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+          integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+
+    <!-- Icons for favicon, iOS, and Microsoft browsers -->
+    <link rel="apple-touch-icon" href="{{=URL('static','images/favicon/apple-touch-icon-57x57.png')}}">
+    <link rel="apple-touch-icon-precomposed" sizes="57x57"
+          href="{{=URL('static','images/favicon/apple-touch-icon-57x57.png')}}"/>
+    <link rel="apple-touch-icon-precomposed" sizes="114x114"
+          href="{{=URL('static','images/favicon/apple-touch-icon-114x114.png')}}"/>
+    <link rel="apple-touch-icon-precomposed" sizes="72x72"
+          href="{{=URL('static','images/favicon/apple-touch-icon-72x72.png')}}"/>
+    <link rel="apple-touch-icon-precomposed" sizes="144x144"
+          href="{{=URL('static','images/favicon/apple-touch-icon-144x144.png')}}"/>
+    <link rel="apple-touch-icon-precomposed" sizes="60x60"
+          href="{{=URL('static','images/favicon/apple-touch-icon-60x60.png')}}"/>
+    <link rel="apple-touch-icon-precomposed" sizes="120x120"
+          href="{{=URL('static','images/favicon/apple-touch-icon-120x120.png')}}"/>
+    <link rel="apple-touch-icon-precomposed" sizes="76x76"
+          href="{{=URL('static','images/favicon/apple-touch-icon-76x76.png')}}"/>
+    <link rel="apple-touch-icon-precomposed" sizes="152x152"
+          href="{{=URL('static','images/favicon/apple-touch-icon-152x152.png')}}"/>
+    <link rel="icon" type="image/png" href="{{=URL('static','images/favicon/favicon-196x196.png')}}" sizes="196x196"/>
+    <link rel="icon" type="image/png" href="{{=URL('static','images/favicon/favicon-96x96.png')}}" sizes="96x96"/>
+    <link rel="icon" type="image/png" href="{{=URL('static','images/favicon/favicon-32x32.png')}}" sizes="32x32"/>
+    <link rel="icon" type="image/png" href="{{=URL('static','images/favicon/favicon-16x16.png')}}" sizes="16x16"/>
+    <link rel="icon" type="image/png" href="{{=URL('static','images/favicon/favicon-128.png')}}" sizes="128x128"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF"/>
+    <meta name="msapplication-TileImage" content="{{=URL('static','images/favicon/mstile-144x144.png')}}"/>
+    <meta name="msapplication-square70x70logo" content="{{=URL('static','images/favicon/mstile-70x70.png')}}"/>
+    <meta name="msapplication-square150x150logo" content="{{=URL('static','images/favicon/mstile-150x150.png')}}"/>
+    <meta name="msapplication-wide310x150logo" content="{{=URL('static','images/favicon/mstile-350x150.png')}}"/>
+    <meta name="msapplication-square310x310logo" content="{{=URL('static','images/favicon/mstile-310x310.png')}}"/>
+
+    <!-- All JavaScript at the bottom, except for Modernizr which enables
+         HTML5 elements & feature detects -->
+    <script src="{{=URL('static','js/modernizr-2.8.3.min.js')}}"></script>
+    <!--[if lt IE 9]>
+        <script src="{{=URL('static','js/respond-1.4.2.min.js')}}"></script>
+        <![endif]-->
+    <!-- Favicons -->
+{{block head}}{{end}}
+</head>
+<body>
+    <!--[if lt IE 8]><p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <div class="w2p_flash alert alert-dismissable">{{=response.flash or ''}}</div>
+    <!-- Navbar =======================================
+    http://web2py.com/books/default/chapter/29/05/the-views#Customizing-the-default-layout -->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                {{=response.logo or ''}}
+            </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse white-col" id="bs-example-navbar-collapse-1">
+            <div id="device_target"></div>
+            <script id="device_template" type="text/ractive">
+              <ul class="nav navbar-nav">
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    {% device_name %}<span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                        <li><a href="#" data-toggle="modal" data-target="#myModalNorm"><i class="fa fa-plus fa-fw" aria-hidden="true"></i>Add New Device</a></li>
+                        <li role="separator" class="divider"></li>
+                        {% #each device_dict:device_id %}
+                            <li><a href="#">{% name %}</a></li>
+                        {% /each %}
+                  </ul>
+                </li>
+                <li class="social {% #if ptype_vis %} active {% /if %}"><a href="{{=URL('default', 'viz.html')}}"><i class="fa fa-lg fa-area-chart"></i></a></li>
+                <li class="social {% #if ptype_edit %} active {% /if %}"><a href="#"><i class="fa fa-lg fa-pencil-square-o"></i></a></li>
+                <li class="social {% #if ptype_share %} active {% /if %}"><a href="{{=URL('default', 'share')}}"><i class="fa fa-lg fa-share-alt"></i></a></li>
+                <li class="social {% #if ptype_set %} active {% /if %}"><a href="#"><i class="fa fa-lg fa-cog"></i></a></li>
+              </ul>
+              </script>
+              <ul class="nav navbar-nav navbar-right">
+                <!-- Show a dropdown that lets you go to your profile or log out if signed in -->
+                {{if auth.is_logged_in():}}
+                    <li><img class="img-circle resize border-c" src='{{=Gravatar(auth.user.email).thumb}}'></li>
+                    <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome {{=auth.user.first_name}} <span class="caret"></span></a>
+                      <ul class="dropdown-menu">
+                        <li><a href="{{=URL('user', 'profile?_next')}}"><i class="fa fa-user fa-fw" aria-hidden="true"></i>Profile</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{{=URL('user', 'logout?_next')}}"><i class="fa fa-sign-out fa-fw" aria-hidden="true"></i>Log Out</a></li>
+                      </ul>
+                    </li>
+                <!-- If not signed in, only prompt to log in -->
+                {{else:}}
+                  <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome Guest <span class="caret"></span></a>
+                      <ul class="dropdown-menu">
+                        <li><a href="{{=URL('user', 'login?_next')}}"><i class="fa fa-sign-in fa-fw" aria-hidden="true"></i>Log In</a></li>
+                      </ul>
+                    </li>
+                {{pass}}
+              </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    {{include 'default/modal.html'}}
+    <!-- Masthead ===================================== -->
+    {{block header}}
+    <!-- Support for theme-color in Chrome for Android, see:
+    https://developers.google.com/web/updates/2014/11/Support-for-theme-color-in-Chrome-39-for-Android -->
+    <meta name="theme-color" content="#182848">
+    {{end}}
+    <!-- Main ========================================= -->
+    <!-- Begin page content -->
+    <div class="container-fluid main-container">
+        <div class="row">
+        {{include}}
+        </div>
+    </div>
+
+    {{block footer}} <!-- this is default footer -->
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">Place sticky footer content here.</p>
+      </div>
+    </footer>
+    {{end}}
+    <!-- The javascript =============================== -->
+    <script src="{{=URL('static', 'js/ractive.min.js')}}"></script>
+    <script src="{{=URL('static', 'js/jquery-1.12.4.js')}}"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+                integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+                crossorigin="anonymous"></script>
+
+    <!-- Bootstrap plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+    <!-- Date range picker for the viz team-->
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+
+    <!-- dygraph library for the viz team-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
+
+    <script src="{{=URL('static','js/jquery.qrcode.min.js')}}"></script>
+
+    <!-- The javascript for the editor team -->
+    <script src="{{=cm}}/lib/codemirror.js"></script>
+    <script src="{{=cm}}/addon/edit/matchbrackets.js"></script>
+    <script src="{{=cm}}/mode/python/python.js"></script>
+    <script src="{{=cm}}/addon/hint/show-hint.js"></script>
+    <script src="{{=cm}}/addon/hint/python-hint.js"></script>
+    <script src="{{=cm}}/addon/search/search.js"></script>
+    <script src="{{=cm}}/addon/search/searchcursor.js"></script>
+    <script src="{{=cm}}/addon/dialog/dialog.js"></script>
+    <script src="{{=cm}}/addon/edit/trailingspace.js"></script>
+    <script src="{{=cm}}/addon/selection/active-line.js"></script>
+    <script src="{{=cm}}/addon/display/fullscreen.js"></script>
+    <script src="{{=cm}}/addon/fold/foldcode.js"></script>
+    <script src="{{=cm}}/addon/fold/foldgutter.js"></script>
+    <script src="{{=cm}}/addon/fold/brace-fold.js"></script>
+    <script src="{{=cm}}/addon/fold/comment-fold.js"></script>
+    <script src="{{=cm}}/addon/fold/indent-fold.js"></script>
+    <script src="{{=cm}}/addon/comment/comment.js"></script>
+    <script src="{{=cm}}/emmet.min.js"></script>
+    <script src="{{=js_url}}/ajax_editor.js"></script>
+    {{block page_js}}{{end page_js}}
+    {{if response.google_analytics_id:}}
+        <!-- Analytics ==================================== -->
+        <script src="{{=URL('static','js/analytics.min.js')}}"></script>
+        <script type="text/javascript">
+            analytics.initialize({
+                'Google Analytics': {trackingId: '{{=response.google_analytics_id}}'}
+            });
+        </script>
+    {{pass}}
+    </body>
+</html>
+<script>
+    $(function() {
+
+        // Ractive object
+        var ractive2 = new Ractive({
+            el: '#device_target',
+            template: '#device_template',
+            delimiters: ['{%', '%}'],
+            tripleDelimiters: ['{%%', '%%}'],
+            data: {
+                device_dict: {},
+                ptype_vis: {{='true' if response.ptype == 'vis' else 'false'}},
+                ptype_edit: {{='true' if response.ptype == 'edit' else 'false'}},
+                ptype_share: {{='true' if response.ptype == 'share' else 'false'}},
+                ptype_set: {{='true' if response.ptype == 'set' else 'false'}},
+                device_name: "{{= response.device_name or 'Device'}}"
+            }
+        });
+
+        $.ajax({
+            'url': '{{=URL('default', 'load_devices')}}',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {},
+            'success': function (data) {
+                ractive2.set('device_dict', data['device_dict']);
+            }
+        });
+    });
+</script>
