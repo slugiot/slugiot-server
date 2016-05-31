@@ -35,6 +35,8 @@ def index():
     # Redirect to splash page if not logged in
     if auth.is_logged_in() is False:
         redirect(URL('default', 'login.html'))
+        response.ptype = 'share'
+        response.device_name = "Try"
         return dict(message=T('Please sign in!'))
     else:
         # Generate a UUID for user signatures
@@ -44,6 +46,7 @@ def index():
         device_list = db(db.device.user_email == auth.user.email).select()
 
         # Return the list of devices and UUID
+        response.device_name = "Cat"
         return dict(device_list=device_list, sign_uuid=sign_uuid)
 
 
