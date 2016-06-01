@@ -26,6 +26,7 @@ response.google_analytics_id = None
 if auth.user_id is not None:
     response.menu = [
         (T('Add Device'), False, URL('default', 'add'), []),
+        (T('Add Device'), False, URL('default', 'add'), []),
         (T('Help'), False, URL('default', 'help'), [])
     ]
 else:

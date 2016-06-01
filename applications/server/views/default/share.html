@@ -1,0 +1,65 @@
+{{extend 'new_layout.html'}}
+
+        <!-- The javascript =============================== -->
+<script src="/server/static/js/ractive.min.js"></script>
+<script src="/server/static/js/jquery-1.12.4.js"></script>
+
+<div>
+    <body>
+    <h3>Enter the email address of the user to share</h3>
+        <form>
+  User email:
+  <input type="text" name="user_email">
+  <br>
+</form>
+    </body>
+</div>
+
+
+<br>
+<br>
+<h3>Select the device to share</h3>
+<div class="collapse navbar-collapse white-col" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Devices <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <div id="share_target"></div>
+                <script id="share_template" type="text/ractive">
+                    {% #each device_dict:device_id %}
+                        <li><a href="#">{% name %}</a></li>
+                    {% /each %}
+                </script>
+              </ul>
+            </li>
+              </ul>
+            </div>
+<br>
+<br>
+{{=A(T('Share'), _class='btn btn-success', _href=URL('default', 'index'))}}
+
+
+<script>
+    $(function() {
+        // Ractive object
+        var ractive3 = new Ractive({
+            el: '#share_target',
+            template: '#share_template',
+            delimiters: ['{%', '%}'],
+            tripleDelimiters: ['{%%', '%%}'],
+            data: {
+                device_dict: {}
+            }
+        });
+
+        $.ajax({
+            'url': 'default/load_devices',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {},
+            'success': function (data) {
+                ractive3.set('device_dict', data['device_dict']);
+            }
+        });
+    });
+</script>
