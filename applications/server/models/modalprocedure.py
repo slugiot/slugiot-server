@@ -1,10 +1,10 @@
 import proc_harness_module
+import access
 import time
 
 
 def modalprocedure():
     # Device ID should not be changeable
-    db.procedures.device_id.writable = False
     val = request.vars['device']
     try:
         db.procedures.device_id.default = val
@@ -25,15 +25,18 @@ def modalprocedure():
     if db(db.device.device_id == val).select():
         name = db(db.device.device_id == val).select()[0].name + "_procedure"
 
+    access.add_permission("22", "blah@blah.com", perm_type="a")
+
     if form3.process().accepted:
-        proc_id = proc_harness_module.create_procedure(name, val)
-        # Initialize some starter Python code
-        proc_harness_module.save(proc_id, "#This is your new (stable) procedure. Happy coding!", True)
-        # Sleep a little bit to allow it to successfully save
+        # create procedure name=demo_1 for the device whose id = 1 and saved it
+        proc_id = proc_harness_module.create_procedure("demo_22", "22")
+        proc_harness_module.save(proc_id,
+                                 "#demo1 stable edition code\nfrom procedureapi import Procedure\n\nclass DeviceProdecure (Procedure):\n\n    def init (self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n\n    def run (self):\n        # Called each time the schedule is triggered",
+                                 True)
         time.sleep(2)
-        # Initalize the draft Python ocde as well
-        proc_harness_module.save(proc_id, "#This is your new (temporary) procedure. Happy coding!", False)
-        # Sleep a little bit again
+        proc_harness_module.save(proc_id,
+                                 "#demo1 temporary edition code\nfrom procedureapi import Procedure\n\nclass DeviceProdecure (Procedure):\n\n    def init (self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n\n    def run (self):\n        # Called each time the schedule is triggered",
+                                 False)
         time.sleep(2)
         # Go back to the home page.
         session.flash = "Procedure added!"
