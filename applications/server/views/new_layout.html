@@ -119,8 +119,21 @@
                   </ul>
                 </li>
                 <li class="social {% #if ptype_vis %} active {% /if %}"><a href="{{=URL('default', 'viz.html')}}/{% device_id %}"><i class="fa fa-lg fa-area-chart"></i></a></li>
-                <li class="social {% #if ptype_edit %} active {% /if %}"><a href="#"><i class="fa fa-lg fa-pencil-square-o"></i></a></li>
+                <!-- Dropdown for procedures (editor team) -->
+                <li class="dropdown {% #if ptype_edit %} active {% /if %}">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-lg fa-pencil-square-o"></i></a>
+                  <ul class="dropdown-menu">
+                        <li><a href="#" data-toggle="modal" data-target="#myModalNorm2"><i class="fa fa-plus fa-fw" aria-hidden="true"></i>Add New Procedure</a></li>
+                        <li role="separator" class="divider"></li>
+                        {% #each device_dict:device_id %}
+                            <li><a href="#" on-click="set_val:{% device_id %}">{% name %}</a></li>
+                        {% /each %}
+                  </ul>
+                </li>
+                <!-- Sharing page -->
                 <li class="social {% #if ptype_share %} active {% /if %}"><a href="{{=URL('default', 'share')}}/{% device_id %}"><i class="fa fa-lg fa-share-alt"></i></a></li>
+                <!-- Settings page -->
                 <li class="social {% #if ptype_set %} active {% /if %}"><a href="#"><i class="fa fa-lg fa-cog"></i></a></li>
               </ul>
               </script>
@@ -150,6 +163,7 @@
         </div><!-- /.container-fluid -->
     </nav>
     {{include 'default/modal.html'}}
+    {{include 'default/modal_proc.html'}}
     <!-- Masthead ===================================== -->
     {{block header}}
     <!-- Support for theme-color in Chrome for Android, see:
@@ -160,7 +174,7 @@
     <!-- Begin page content -->
     <div class="container-fluid main-container">
         <div class="row">
-        {{include}}
+        {{block}}{{include}}{{end}}
         </div>
     </div>
 

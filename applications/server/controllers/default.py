@@ -8,8 +8,6 @@ proc_harness_module: Used for adding procedures
 """
 from gluon import utils as gluon_utils
 import time
-import access
-import proc_harness_module
 
 
 class DeviceIDVerification:
@@ -39,15 +37,9 @@ def index():
         response.device_name = "Try"
         return dict(message=T('Please sign in!'))
     else:
-        # Generate a UUID for user signatures
-        sign_uuid = gluon_utils.web2py_uuid()
-
-        # Generate a list of device associated with the user's email address.
-        device_list = db(db.device.user_email == auth.user.email).select()
-
         # Return the list of devices and UUID
         response.device_name = "Cat"
-        return dict(device_list=device_list, sign_uuid=sign_uuid)
+        return dict()
 
 
 def login():
@@ -69,56 +61,6 @@ def new_device():
     if form.process().accepted:
         session.flash = T(form.vars.name + ' added!')
         redirect(URL('default', 'manage', vars=dict(device=device.id)))
-    return dict(form=form)
-
-
-def modal():
-    foo = "foo!"
-    return dict(fo3o=foo)
-
-
-@auth.requires_login()
-def add_new_procedure():
-    """
-    Description: Controller for the add page, which lets you add a device into the DB.
-    Returns: A form that lets you add things into db.devices (use by including {{=form}})
-    """
-    # Device ID should not be changeable
-    db.procedures.device_id.writable = False
-    val = request.vars['device']
-    if val is None:
-        session.flash = T('No such device')
-        redirect(URL('default', 'index'))
-    else:
-        db.procedures.device_id.default = val
-    form = SQLFORM(db.procedures)
-
-    # set the logger logger
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    logger.addHandler(ch)
-
-    # initialize name variable
-    name = ""
-
-    # Generate a name to be passed on to add_permission
-    if db(db.device.device_id == val).select():
-        name = db(db.device.device_id == val).select()[0].name + "_procedure"
-
-    if form.process().accepted:
-
-        proc_id = proc_harness_module.create_procedure(name, val)
-        # Initialize some starter Python code
-        proc_harness_module.save(proc_id, "#This is your new (stable) procedure. Happy coding!", True)
-        # Sleep a little bit to allow it to successfully save
-        time.sleep(2)
-        # Initalize the draft Python ocde as well
-        proc_harness_module.save(proc_id, "#This is your new (temporary) procedure. Happy coding!", False)
-        # Sleep a little bit again
-        time.sleep(2)
-        # Go back to the home page.
-        session.flash = "Procedure added!"
-        redirect(URL('default', 'index'))
     return dict(form=form)
 
 
