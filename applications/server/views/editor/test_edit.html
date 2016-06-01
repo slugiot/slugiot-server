@@ -1,10 +1,12 @@
 
-{{extend 'layout.html'}}
+{{extend 'new_layout.html'}}
 
 <!-- the editor js and css part used which will be integrated to UI team web page-->
 {{cm=URL('static', 'codemirror')}}
 {{js_url=URL('static','js')}}
 {{css_url=URL('static', 'css')}}
+<script src="{{=URL('static', 'js/ractive.min.js')}}"></script>
+<script src="{{=URL('static', 'js/jquery-1.12.4.js')}}"></script>
 <link rel="stylesheet" href="{{=cm}}/lib/codemirror.css">
 <link rel="stylesheet" href="{{='%s/theme/web2py.css' % cm}}">
 <script src="{{=cm}}/lib/codemirror.js"></script>
