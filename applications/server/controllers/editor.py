@@ -124,11 +124,18 @@ def delete_procedure():
     This function is used to delete specific procedure
     :return:
     """
+    print("delete begin now")
     procedure_id = request.vars.procedure_id
     device_id = request.vars.device_id
-    proc_harness_module.delete_procedure(procedure_id,device_id)
-    redirect(URL('default', 'index'))
-
+    print(procedure_id)
+    print(device_id)
+    proc_harness_module.delete_procedure(procedure_id, device_id)
+    print("delete end now")
+    data = dict(
+        a="a"
+    )
+    # redirect(URL('default', 'index'))
+    return response.json(data)
 
 
 ## all the following function is used for self debug and will be deleted at final edition
