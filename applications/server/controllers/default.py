@@ -63,7 +63,6 @@ def new_device():
         redirect(URL('default', 'manage', vars=dict(device=device.id)))
     return dict(form=form)
 
-
 @auth.requires_login()
 def edit_device():
     """
