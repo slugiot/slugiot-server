@@ -31,7 +31,7 @@ def edit_procedure():
     # get the list of procedure_id belongs to the device
     proc_list = proc_harness_module.get_procedures_for_edit(device_id)
     #TO DO change the API to proc_harness_module.get_procedures_name_for_edit(device_id)
-    proc_name_list = proc_harness_module.get_procedures_for_edit(device_id)
+    proc_name_list = proc_harness_module.get_procedures_name_for_edit(device_id)
     file_details = dict(
                     editor_settings=preferences,     # the option parameters used for setting editor feature.
                     id=procedure_id,                 # the procedure_id in the procedures TALBE
