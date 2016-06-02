@@ -10,6 +10,7 @@
 
     <h1></h1>
 
+<input id="select_device_id" type="hidden" value="{{=device_id}}">
 
     <div class="container-fluid">
         <div class="row">
@@ -29,12 +30,8 @@
                                     <tr>
                                         <td>
                                             <label>Select:</label> <br>
-                                            <select id="select_device_id" class="selectpicker" data-live-search="true"
-                                                    title="Device ID" onchange="choose_device_id();">
-                                                <option>device1</option>
-                                                <option>device2</option>
-                                            </select>
-                                            <br>
+
+
                                              <select id="select_procedure_id" class="selectpicker" data-live-search="true"
                                                     title="Procedure ID">
                                             </select>
@@ -81,25 +78,12 @@
                                        id="device_table">
                                     <thead>
                                     <tr>
-                                        <th>Device</th>
                                         <th>Procedure</th>
                                         <th>Name</th>
                                         <th>Delete</th>
                                     </tr>
                                     </thead>
                                     <tbody id="device_data_table">
-                                    <!--<tr onclick="clickTr(this);">-->
-                                        <!--<td>device1</td>-->
-                                        <!--<td>procedure1</td>-->
-                                        <!--<td>name1</td>-->
-                                        <!--<td>-->
-                                            <!--<button title="" type="button"-->
-                                                    <!--class="btn btn-danger remove show_tip"-->
-                                                    <!--data-original-title="Remove from list">-->
-                                                <!--<i class="fa fa-trash-o"></i>-->
-                                            <!--</button>-->
-                                        <!--</td>-->
-                                    <!--</tr>-->
                                     </tbody>
                                 </table>
                                 <!-- end of table -->
@@ -319,6 +303,8 @@
 
 
 
+
+
         </script>
     </div>
 </div>
@@ -353,27 +339,41 @@
 <script src="{{=URL('static', 'js/ractive.min.js')}}"></script>
 
 <script>
+
+    var global_device_id = -1;
+
     $(function () {
-        // Ractive object
-        var ractive2 = new Ractive({
-            el: '#device_target',
-            template: '#device_template',
-            delimiters: ['{%', '%}'],
-            tripleDelimiters: ['{%%', '%%}'],
-            data: {
-                device_dict: {}
-            }
-        });
+//        alert($('#select_procedure_id option:selected').text());
+        $("#select_name").empty();
+        $("#select_procedure_id").empty();
+        $('.selectpicker').selectpicker('refresh');
 
+        var device_id = $('#select_device_id').val();
+        global_device_id = device_id;
+        // add value to select_name
+        // sending a ajax request
         $.ajax({
-            'url': 'default/load_devices',
-            'type': 'post',
+            'url': '/get_parameter',
+            'type': 'get',
             'dataType': 'json',
-            'data': {},
+            'data': {device_id: device_id},
             'success': function (data) {
-
-
-                ractive2.set('device_dict', data['device_dict']);
+                console.log(data);
+//                alert(data);
+                var name = data.name;
+                var procedure_id = data.procedure_id;
+                for (var val in name) {
+                    console.log(name[val].name);
+                    $("#select_name").append('<option>' + name[val].name + '</option>');
+                }
+                for (var val in procedure_id) {
+                    console.log(procedure_id[val].procedure_id);
+                    $("#select_procedure_id").append('<option>' + procedure_id[val].procedure_id + '</option>');
+                }
+                $('.selectpicker').selectpicker('refresh');
+            },
+            error: function (error) {
+                console.log('error; ' + eval(error)+'fail to get parameter');
             }
         });
     });
@@ -414,39 +414,6 @@
     });
 
 
-    function choose_device_id() {
-//        alert($('#select_procedure_id option:selected').text());
-        $("#select_name").empty();
-        $("#select_procedure_id").empty();
-        $('.selectpicker').selectpicker('refresh');
-
-        var device_id = $('#select_device_id option:selected').text();
-//        alert(device_id);
-        // add value to select_name
-        // sending a ajax request
-        $.ajax({
-            'url': 'get_parameter',
-            'type': 'post',
-            'dataType': 'json',
-            'data': {device_id: device_id},
-            'success': function (data) {
-                console.log(data);
-//                alert(data);
-                var name = data.name;
-                var procedure_id = data.procedure_id;
-                for (var val in name) {
-                    console.log(name[val].name);
-                    $("#select_name").append('<option>' + name[val].name + '</option>');
-                }
-                for (var val in procedure_id) {
-                    console.log(procedure_id[val].procedure_id);
-                    $("#select_procedure_id").append('<option>' + procedure_id[val].procedure_id + '</option>');
-                }
-                $('.selectpicker').selectpicker('refresh');
-            }
-        });
-
-    }
     // -----------------------------  Add Device_id-Procedure_id-name pair into the devices management table  ------------------------------------------
 
     function addDevice() {
@@ -479,7 +446,7 @@
 
 
         var btn = "<button title='' type='button' class='btn btn-danger remove show_tip' data-original-title='Remove from list'><i class='fa fa-trash-o'></i></button>";
-        var row = '<tr onclick="showRow(this)"><td>' + device_id + '</td><td>' + procedure_id + '</td><td>' + name + '</td><td>' + btn + '</td></tr>';
+        var row = '<tr onclick="showRow(this)"><td>' + procedure_id + '</td><td>' + name + '</td><td>' + btn + '</td></tr>';
         $("#device_data_table").append(row);
         console.log(row);
 //             var btn =       "<button title='' type='button' class='btn btn-danger remove show_tip' data-original-title='Remove from list'><i class='fa fa-trash-o'></i></button>"
@@ -501,19 +468,16 @@
         var start = elems[0].slice(6, 10) + "-" + elems[0].slice(0, 2) + "-" + elems[0].slice(3, 5) + " 00:00:00";
         var end = elems[1].slice(7, 12) + "-" + elems[1].slice(1, 3) + "-" + elems[1].slice(4, 6) + " 23:59:59";
 
-        var device_id = $(obj).find('td').eq(0).text();
-        var procedure_id = $(obj).find('td').eq(1).text();
-        var name = $(obj).find('td').eq(2).text();
+//        var device_id = $(obj).find('td').eq(0).text();
+        var procedure_id = $(obj).find('td').eq(0).text();
+        var name = $(obj).find('td').eq(1).text();
 
         $.ajax({
-            'url': 'get_data',
+            'url': '/get_data',
             'type': 'post',
             'dataType': 'json',
-            'data': {start: start, end: end, device_id: device_id, procedure_id: procedure_id, name: name},
+            'data': {start: start, end: end, device_id: global_device_id, procedure_id: procedure_id, name: name},
             'success': function (data) {
-
-                //console.log(data);
-
 
                 ractive.set({mixed_data: data.mixed_data});
                 ractive.set({output_data: data.output_data});
@@ -552,7 +516,7 @@
             'url': 'get_data',
             'type': 'post',
             'dataType': 'json',
-            'data': {start: start, end: end, device_id: device_id, procedure_id: procedure_id, name: name},
+            'data': {start: start, end: end, device_id: global_device_id, procedure_id: procedure_id, name: name},
             'success': function (data) {
 
                 console.log(data);
