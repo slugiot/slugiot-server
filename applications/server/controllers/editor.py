@@ -126,10 +126,19 @@ def delete_procedure():
     """
     procedure_id = request.vars.procedure_id
     device_id = request.vars.device_id
-    proc_harness_module.delete_procedure(procedure_id,device_id)
-    redirect(URL('default', 'index'))
+    # call api to delete the procedure
+    proc_harness_module.delete_procedure(procedure_id, device_id)
+    data=URL('redirect_home')
+    #response a json type data to redirect to homepage after delete procedure
+    return response.json(data=data)
 
 
+def redirect_home():
+    """
+    This function is used to redirect page to homepage
+    :return:
+    """
+    redirect(URL('default','index'))
 
 ## all the following function is used for self debug and will be deleted at final edition
 def create():

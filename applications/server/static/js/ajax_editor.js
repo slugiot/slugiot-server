@@ -112,9 +112,9 @@ function doHighlight(highlight) {
  * delete procedure data to server
  */
 function delete_procedure(url ,procedure_id, device_id) {
-    console.log(procedure_id);
-    console.log("oo");
-    console.log(device_id);
+    console.log('procedure_id:', procedure_id);
+    // console.log("oo");
+    console.log('device_id:', device_id);
     $.ajax({
         dataType: "json",
         url: url,
@@ -123,7 +123,8 @@ function delete_procedure(url ,procedure_id, device_id) {
             procedure_id : procedure_id,
             device_id: device_id
         },
-        success: function(json) {
+        success: function() {
+            window.location.href = 'redirect_home';
         },
         error: function() {
             console.log('delete_procedure error');
