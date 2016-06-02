@@ -1,0 +1,676 @@
+{{extend "new_layout.html"}}
+
+
+<div class="container-fluid main-container">
+    <div class="row">
+        <div id="target"></div>
+        <script id="template" type="text/ractive">
+<!-- ------------ START Ractive Body ------------ -->
+
+<div class="visualization">
+
+    <h1>Data Visualization</h1>
+
+    <!-- start of typeahead search -->
+
+    <!-- end of typeahead search -->
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+
+                <!-- ------------ START DATA VISUALIZATION  ------------ -->
+                <div class="panel panel-default" name="dataVisualization" style="margin-left: 15px; margin-right: 15px">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Data Visualization Panel</h3>
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="row">
+                        <!-- ------------ START CONTROL PANEL ------------ -->
+                            <div class="col-sm-3">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <label>Select:</label> <br>
+                                            <select id="select_device_id" class="selectpicker" data-live-search="true"
+                                                    title="Device ID" onchange="choose_device_id();">
+                                                <option>device1</option>
+                                                <option>device2</option>
+                                            </select>
+                                            <br>
+                                             <select id="select_procedure_id" class="selectpicker" data-live-search="true"
+                                                    title="Procedure ID">
+                                            </select>
+                                            <br>
+                                            <select id="select_name" class="selectpicker" data-live-search="true"
+                                                    title="Name">
+                                            </select>
+
+                                        </td>
+                                    </tr>
+
+
+                                    <tr>
+                                        <td>
+                                            <label>Time Span:</label>
+                                            <div>
+                                                <input id="time_span" type="text" class="form-control" name="time_span"
+                                                       value="05/11/2016 - 05/31/2016"/>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <br><br>
+
+                                            <button id="addButton" onclick="addDevice();" type="button"
+                                                    class="btn btn-info btn-block">ADD
+                                            </button>
+                                            <!-- Spinner icon -->
+                                            <div id="result-spinner" class="hidden">
+                                                <i class="fa fa-spinner fa-pulse fa-4x"></i>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <!-- ------------ END CONTROL PANEL ------------ -->
+
+
+
+                            <div class="col-sm-3">
+                                <!-- Device_ID Procedure_ID Name Delete -->
+                                <table class="table table-striped table-bordered"
+                                       id="device_table">
+                                    <thead>
+                                    <tr>
+                                        <th>Device</th>
+                                        <th>Procedure</th>
+                                        <th>Name</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="device_data_table">
+                                    <!--<tr onclick="clickTr(this);">-->
+                                        <!--<td>device1</td>-->
+                                        <!--<td>procedure1</td>-->
+                                        <!--<td>name1</td>-->
+                                        <!--<td>-->
+                                            <!--<button title="" type="button"-->
+                                                    <!--class="btn btn-danger remove show_tip"-->
+                                                    <!--data-original-title="Remove from list">-->
+                                                <!--<i class="fa fa-trash-o"></i>-->
+                                            <!--</button>-->
+                                        <!--</td>-->
+                                    <!--</tr>-->
+                                    </tbody>
+                                </table>
+                                <!-- end of table -->
+                            </div>
+
+
+
+
+
+
+                            <!-- ------------ START DATA VISUALIZATION dyGraph ------------ -->
+                            <div class="col-sm-6">
+                                <ul class="nav nav-tabs">
+                                    <li class="active" onclick="line_plot()" title={{=T("Line")}}>
+                                        <a data-toggle="tab">
+                                            <i class="fa fa-line-chart fa-2x" aria-hidden="true"></i>
+                                        </a>
+                                    </li>
+                                    <li onclick="bar_plot()" title={{=T("Bar")}}>
+                                        <a data-toggle="tab">
+                                            <i class="fa fa-bar-chart fa-2x" aria-hidden="true"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                                <div id="dygraph_target1" style="width: 100%; height: 400px"></div>
+                            </div>
+                            <!-- ------------ END DATA VISUALIZATION dyGraph ------------ -->
+
+                        </div>
+                    </div>
+                </div>
+                <!-- ------------ END DATA VISUALIZATION  ------------ -->
+
+            </div>
+        </div>
+
+        <!-- ------------ START DATA DETAIL  ------------ -->
+        <div class="panel panel-default" name="dataDetail" ng-controller="dataDetailController">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data Detail Panel</h3>
+            </div>
+            <div class="panel-body">
+                <div>
+
+                    <!-- ------- Data Detail  Nav tabs  ------- -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active">
+                            <a href="#Mixed" aria-controls="Mixed" role="tab" data-toggle="tab">Mixed</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#Output" aria-controls="Output" role="tab" data-toggle="tab">Output</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#Log" aria-controls="Log" role="tab" data-toggle="tab">Log</a></li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <!-- ------------------ Mixed Tab ------------------ -->
+                        <div role="tabpanel" class="tab-pane active" id="Mixed">
+                            <form class="navbar-form navbar-right" role="search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search for...">
+                                      <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button">Search</button>
+                                      </span>
+                                </div>
+                            </form>
+
+
+                            <table class="table table-hover">
+                                <thead>
+
+                                <tr>
+                                    <th>#</th>
+                                    <th>Type</th>
+                                    <th>Device ID</th>
+                                    <th>Procedure ID</th>
+                                    <th>Content</th>
+                                    <th>Timestamp</th>
+
+                                </tr>
+                                </thead>
+                                <tbody id="mixed_table_body">
+                                {% #mixed_data:index %}
+                                <tr>
+                                    <th scope="row">{% index+1 %}</th>
+                                    <td>{% type %}</td>
+                                    <td>{% device_id %}</td>
+                                    <td>{% modulename %}</td>
+                                    <td>{% content %}</td>
+                                    <td>{% time_stamp %}</td>
+
+                                </tr>
+                                {% /mixed_data %}
+                                </tbody>
+                            </table>
+
+
+                        </div>
+
+
+                        <!-- ------------------ Output Tab ------------------ -->
+                        <div role="tabpanel" class="tab-pane" id="Output">
+                            <form class="navbar-form navbar-right" role="search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search for...">
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Search</button>
+                          </span>
+                                </div>
+                            </form>
+
+                            <table class="table table-hover">
+                                <thead>
+
+                                <tr>
+                                    <th>#</th>
+                                    <th>Device ID</th>
+                                    <th>Procedure ID</th>
+                                    <th>Name</th>
+                                    <th>Output Value</th>
+                                    <th>Tag</th>
+                                    <th>Output Time Stamp</th>
+                                </tr>
+                                </thead>
+                                <tbody id="output_table_body">
+                                {% #output_data:index %}
+                                <tr>
+                                    <th scope="row">{% index+1 %}</th>
+                                    <td>{% device_id %}</td>
+                                    <td>{% procedure_id %}</td>
+                                    <td>{% name %}</td>
+                                    <td>{% output_value %}</td>
+                                    <td>{% tag %}</td>
+                                    <td>{% time_stamp %}</td>
+
+                                </tr>
+                                {% /output_data %}
+
+                                </tbody>
+                            </table>
+
+
+                        </div>
+
+                        <!-- ------------------ Log Tab ------------------ -->
+                        <div role="tabpanel" class="tab-pane" id="Log">
+
+                            <form class="navbar-form navbar-right" role="search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search for...">
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Search</button>
+                          </span>
+                                </div>
+                            </form>
+                            <br><br><br>
+
+
+                            <div class="panel-group" id="log_accordion" role="tablist" aria-multiselectable="true">
+
+                                {% #log_data:index %}
+                                {% #if log_level==0 %}
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading" role="tab" id="heading{% index %}">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordion"
+                                               href="#collapse{% index %}"
+                                               aria-expanded="true" aria-controls="collapse{% index %}">
+                                                {% device_id %} : [ {% time_stamp %}] - [ level : {% log_level %} ]
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse{% index %}" class="panel-collapse collapse" role="tabpanel"
+                                         aria-labelledby="headingOne">
+                                        <div class="panel-body">
+                                            [{% procedure_id %}] - [ {% log_message %} ]
+                                        </div>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="heading{% index %}">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordion"
+                                               href="#collapse{% index %}"
+                                               aria-expanded="true" aria-controls="collapse{% index %}">
+                                                {% device_id %} : [ {% time_stamp %}] - [ level : {% log_level %} ]
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse{% index %}" class="panel-collapse collapse" role="tabpanel"
+                                         aria-labelledby="headingOne">
+                                        <div class="panel-body">
+                                            [{% procedure_id %}] - [ {% log_message %} ]
+                                        </div>
+                                    </div>
+                                </div>
+                                {% /if %}
+                                {% /log_data %}
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+        <!-- ------------ END DATA DETAIL  ------------ -->
+    </div>
+</div>
+<!-- ------------ END Ractive Body ------------ -->
+
+
+
+
+        </script>
+
+    </div>
+</div>
+
+
+
+{{block page_js}}
+<!-- Bootstrap select -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+
+
+<!-- Date range picker -->
+<!-- Include Required Prerequisites -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<!-- Include Date Range Picker -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+
+<!-- Bootstrap plugins -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+<!-- Date range picker for the viz team-->
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+
+<!-- dygraph library for the viz team-->
+<script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
+<script src="{{=URL('static', 'js/ractive.min.js')}}"></script>
+
+<script>
+    $(function () {
+        // Ractive object
+        var ractive2 = new Ractive({
+            el: '#device_target',
+            template: '#device_template',
+            delimiters: ['{%', '%}'],
+            tripleDelimiters: ['{%%', '%%}'],
+            data: {
+                device_dict: {}
+            }
+        });
+
+        $.ajax({
+            'url': 'default/load_devices',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {},
+            'success': function (data) {
+
+
+                ractive2.set('device_dict', data['device_dict']);
+            }
+        });
+    });
+
+
+    function clickTr(obj) {
+        var c = $(obj).find("td").eq(0).text();
+        alert(c);
+    }
+
+    $(window).load(function () {
+        $(function () {
+            $("table#device_table").on("click", ".remove", function () {
+                $(this).closest('tr').remove();
+            });
+        });
+        $(function () {
+            $(".show_tip").tooltip({
+                container: 'body'
+            });
+        });
+        $(document).click(function () {
+            $('.tooltip').remove();
+            $('[title]').tooltip();
+        });
+    });
+
+
+    var ractive = new Ractive({
+        el: '#target',
+        template: '#template',
+        delimiters: ['{%', '%}'],
+        data: {
+            mixed_data: [],
+            output_data: [],
+            log_data: []
+        }
+    });
+
+
+    function choose_device_id() {
+//        alert($('#select_procedure_id option:selected').text());
+        $("#select_name").empty();
+        $("#select_procedure_id").empty();
+        $('.selectpicker').selectpicker('refresh');
+
+        var device_id = $('#select_device_id option:selected').text();
+//        alert(device_id);
+        // add value to select_name
+        // sending a ajax request
+        $.ajax({
+            'url': 'get_parameter',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {device_id: device_id},
+            'success': function (data) {
+                console.log(data);
+//                alert(data);
+                var name = data.name;
+                var procedure_id = data.procedure_id;
+                for (var val in name) {
+                    console.log(name[val].name);
+                    $("#select_name").append('<option>' + name[val].name + '</option>');
+                }
+                for (var val in procedure_id) {
+                    console.log(procedure_id[val].procedure_id);
+                    $("#select_procedure_id").append('<option>' + procedure_id[val].procedure_id + '</option>');
+                }
+                $('.selectpicker').selectpicker('refresh');
+            }
+        });
+
+    }
+    // -----------------------------  Add Device_id-Procedure_id-name pair into the devices management table  ------------------------------------------
+
+    function addDevice() {
+        // ----------------- add the device info to DeviceTable  ------------------------
+        // generate new row data
+        var device_id = $('#select_device_id option:selected').text();
+        var procedure_id = $('#select_procedure_id option:selected').text();
+        var name = $('#select_name option:selected').text();
+
+
+        console.log(device_id + " " + procedure_id + " " + name);
+
+        if (device_id == "Device ID" || procedure_id == "Procedure ID" || name == "Name") {
+            return;
+        } else {
+            var isDuplicated = false;
+            $("tbody#device_data_table tr").each(function () {
+                var prev_device_id = $(this).find("td").eq(0).text();
+                var prev_procedure_id = $(this).find("td").eq(1).text();
+                var prev_name = $(this).find("td").eq(2).text();
+
+                if (device_id == prev_device_id && procedure_id == prev_procedure_id && name == prev_name) {
+                    isDuplicated = true;
+                }
+            });
+            if (isDuplicated) {
+                return;
+            }
+        }
+
+
+        var btn = "<button title='' type='button' class='btn btn-danger remove show_tip' data-original-title='Remove from list'><i class='fa fa-trash-o'></i></button>";
+        var row = '<tr onclick="showRow(this)"><td>' + device_id + '</td><td>' + procedure_id + '</td><td>' + name + '</td><td>' + btn + '</td></tr>';
+        $("#device_data_table").append(row);
+        console.log(row);
+//             var btn =       "<button title='' type='button' class='btn btn-danger remove show_tip' data-original-title='Remove from list'><i class='fa fa-trash-o'></i></button>"
+
+    }
+
+
+    // ------------------------------------  End of adding info into the devices management table  ------------------------------------------------------
+
+
+    function showRow(obj) {
+
+
+        // ----------------- end of adding the device info to DeviceTable  ------------------------
+
+        // ----------- get the parameter in the control panel --------------------------
+        var time_span = $('#time_span').val();
+        var elems = time_span.trim().split("-");
+        var start = elems[0].slice(6, 10) + "-" + elems[0].slice(0, 2) + "-" + elems[0].slice(3, 5) + " 00:00:00";
+        var end = elems[1].slice(7, 12) + "-" + elems[1].slice(1, 3) + "-" + elems[1].slice(4, 6) + " 23:59:59";
+
+        var device_id = $(obj).find('td').eq(0).text();
+        var procedure_id = $(obj).find('td').eq(1).text();
+        var name = $(obj).find('td').eq(2).text();
+
+        $.ajax({
+            'url': 'get_data',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {start: start, end: end, device_id: device_id, procedure_id: procedure_id, name: name},
+            'success': function (data) {
+
+                //console.log(data);
+
+
+                ractive.set({mixed_data: data.mixed_data});
+                ractive.set({output_data: data.output_data});
+                ractive.set({log_data: data.log_data});
+                console.log(data);
+
+                //  ---------- showing test output dygraph ----------
+                dy_plot();
+            }
+        });
+
+        //  ---------- showing test output dygraph ----------
+        dy_plot();
+    } // -------- END Refresh Button --------
+
+
+    // ------------------------------------ START Refresh Button  ------------------------------------
+    function refresh() {
+
+
+
+
+        // ----------------- end of adding the device info to DeviceTable  ------------------------
+
+        // ----------- get the parameter in the control panel --------------------------
+        var time_span = $('#time_span').val();
+        var elems = time_span.trim().split("-");
+        var start = elems[0].slice(6, 10) + "-" + elems[0].slice(0, 2) + "-" + elems[0].slice(3, 5) + " 00:00:00";
+        var end = elems[1].slice(7, 12) + "-" + elems[1].slice(1, 3) + "-" + elems[1].slice(4, 6) + " 23:59:59";
+
+        var device_id = $('#select_device_id option:selected').text();
+        var procedure_id = $('#select_procedure_id option:selected').text();
+        var name = $('#select_name option:selected').text();
+
+        $.ajax({
+            'url': 'get_data',
+            'type': 'post',
+            'dataType': 'json',
+            'data': {start: start, end: end, device_id: device_id, procedure_id: procedure_id, name: name},
+            'success': function (data) {
+
+                console.log(data);
+
+
+                ractive.set({mixed_data: data.mixed_data});
+                ractive.set({output_data: data.output_data});
+                ractive.set({log_data: data.log_data});
+                //  ---------- showing test output dygraph ----------
+                dy_plot();
+            }
+        });
+
+        //  ---------- showing test output dygraph ----------
+        dy_plot();
+    } // -------- END Refresh Button --------
+
+
+    // ------------------------------------  Tab  ------------------------------------
+    $('#myTabs a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+    // ------------  Date Picker  ------------
+    $(function () {
+        $('#time_span').daterangepicker();
+    });
+
+    // ------------  Dygraph testing  ------------
+    function barChartPlotter(e) {
+        var ctx = e.drawingContext;
+        var points = e.points;
+        var y_bottom = e.dygraph.toDomYCoord(0);  // see <a href="http://dygraphs.com/jsdoc/symbols/Dygraph.html#toDomYCoord">jsdoc</a>
+
+        // This should really be based on the minimum gap
+        var bar_width = 2 / 3 * (points[1].canvasx - points[0].canvasx);
+        ctx.fillStyle = e.color;  // a lighter shade might be more aesthetically pleasing
+
+        // Do the actual plotting.
+        for (var i = 0; i < points.length; i++) {
+            var p = points[i];
+            var center_x = p.canvasx;  // center of the bar
+
+            ctx.fillRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
+            ctx.strokeRect(center_x - bar_width / 2, p.canvasy, bar_width, y_bottom - p.canvasy);
+        }
+    }
+
+
+    dy_plot = function () {
+        var graph_com = document.getElementById("dygraph_target1");
+        var output_data = ractive.get('output_data');
+
+
+        // collecting output data
+        if (typeof output_data === "undefined") {
+            g = new Dygraph(
+                    graph_com,
+                    {
+                        //rollPeriod: 5,
+                        //showRoller: true,
+                        title: 'Temperature Line Chart',
+                        ylabel: 'Temperature (C)',
+                        legend: 'always',
+                        showRangeSelector: true,
+                        rangeSelectorHeight: 30,
+                        rangeSelectorPlotStrokeColor: 'green',
+                        rangeSelectorPlotFillColor: 'lightgreen'
+                    }
+            );
+        }
+        else if (output_data.length > 0) {
+            var data = "Date, Temperature\n";   //[['Date', 'Temperature']];
+            var dateRange = [];
+            var timeSpan = $('#time_span').val();
+            for (var i = 0; i < output_data.length; i++) {
+                var output = output_data[i];
+                data = data + output.output_time_stamp + ',' + output.output_value.toString() + '\n';
+                if (i == 0 || i == output_data.length - 1)
+                    dateRange.push(Date.parse(output.output_time_stamp));
+                //data.push([output.time_stamp, output.output_value]);
+            }
+            /*if (typeof timeSpan !== "undefined") {
+             var time2 = timeSpan.split("-");
+             dateRange = [Date.parse(time2[0]), Date.parse(time2[1])];
+             }*/
+
+            g2 = new Dygraph(
+                    graph_com,
+                    data,
+                    {
+                        //labels: ['Date', 'Temperature'],
+                        //plotter: barChartPlotter,
+                        title: 'Temperature Line Chart',
+                        ylabel: 'Temperature (C)',
+                        legend: 'always',
+                        dateWindow: dateRange,
+                        showRangeSelector: true,
+                        rangeSelectorHeight: 30,
+                        rangeSelectorPlotStrokeColor: 'green',
+                        rangeSelectorPlotFillColor: 'lightgreen'
+                        //xTicker: Dygraph.dateTicker
+                    }
+            );
+
+        }
+
+    };
+
+    dy_plot();
+</script>
+{{end page_js}}
+
+
+
+
