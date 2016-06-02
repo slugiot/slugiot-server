@@ -1,7 +1,7 @@
 // Makes images with the img-circle class into a circle
 .img-circle {
     border-radius: 50%;
-    margin-top:10px
+    margin-top:5px;
 }
 
 img.resize{
@@ -15,11 +15,22 @@ height:100%;
 }
 
 .white-col{
-  a {color: #FFFFFF;}
+  a li ul {
+    //test 2
+    color: #FFFFFF;
+  }
 }
 
-#web2py-logo{
-    font-size: 150%;
+
+.selector{
+  h1 {
+	font-family: monospace;
+	font-size: 24px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 26.4px;
+}
 }
 
 .border-c{
@@ -33,17 +44,26 @@ height:100%;
 }
 
 // Navbar/theme colors
-.navbar{
+.navbar-default{
     /* fallback for old browsers */
-    background: $clrPink;
+    background: $clrPink !important;
     /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(to left, $clrPink, $clrPurple);
+    background: -webkit-linear-gradient(to left, $clrPink, $clrPurple) !important;
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(to left, $clrPink, $clrPurple);
+    background: linear-gradient(to left, $clrPink, $clrPurple) !important;
+
+    .social{
+        a {
+          color: #FFFFFF !important;
+        }
+    }
+
+    .dropdown-toggle{
+      a {
+          color: #FFFFFF !important;
+        }
+    }
  }
-.footer{
-  bottom: 0 !important;
-}
 
 // end demo-specific
 
@@ -58,6 +78,8 @@ height:100%;
 // Self explanatory
 body {
   background-color: $clrWhite;
+  margin-bottom: 0px !important;
+
 }
 
 .footer { background: #222222; }
@@ -72,4 +94,16 @@ body {
     top: 50%;
     left: 50%;
     transform: translateX(-50%) translateY(-50%);
+}
+
+.row{
+  margin-left:0px !important;
+  margin-right:0px !important;
+}
+
+@media (min-width: 768px) {
+  .form-horizontal
+  .control-label {
+    padding-top: 0px !important;
+  }
 }
