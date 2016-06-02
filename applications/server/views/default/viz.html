@@ -318,6 +318,7 @@
 <!-- ------------ END Ractive Body ------------ -->
 
 
+
         </script>
     </div>
 </div>
@@ -665,6 +666,10 @@
         if (typeof g2 !== "undefined")
             g2.updateOptions({plotter: barChartPlotter, title: 'Temperature Bar Chart'});
 
+    }
+    function line_plot() {
+        if (typeof g2 !== "undefined")
+            g2.updateOptions({plotter: DygraphCanvasRenderer._linePlotter, title: 'Temperature Line Chart'});
     }
     dy_plot();
 
