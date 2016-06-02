@@ -1,6 +1,5 @@
 {{extend "new_layout.html"}}
 
-
 <div class="container-fluid main-container">
     <div class="row">
         <div id="target"></div>
@@ -9,11 +8,8 @@
 
 <div class="visualization">
 
-    <h1>Data Visualization</h1>
+    <h1></h1>
 
-    <!-- start of typeahead search -->
-
-    <!-- end of typeahead search -->
 
     <div class="container-fluid">
         <div class="row">
@@ -322,14 +318,12 @@
 <!-- ------------ END Ractive Body ------------ -->
 
 
-
-
         </script>
-
     </div>
 </div>
 
-
+{{block footer}}
+{{end footer}}
 
 {{block page_js}}
 <!-- Bootstrap select -->
@@ -635,9 +629,9 @@
             var timeSpan = $('#time_span').val();
             for (var i = 0; i < output_data.length; i++) {
                 var output = output_data[i];
-                data = data + output.output_time_stamp + ',' + output.output_value.toString() + '\n';
+                data = data + output.time_stamp + ',' + output.output_value.toString() + '\n';
                 if (i == 0 || i == output_data.length - 1)
-                    dateRange.push(Date.parse(output.output_time_stamp));
+                    dateRange.push(Date.parse(output.time_stamp));
                 //data.push([output.time_stamp, output.output_value]);
             }
             /*if (typeof timeSpan !== "undefined") {
@@ -667,7 +661,13 @@
 
     };
 
+    function bar_plot() {
+        if (typeof g2 !== "undefined")
+            g2.updateOptions({plotter: barChartPlotter, title: 'Temperature Bar Chart'});
+
+    }
     dy_plot();
+
 </script>
 {{end page_js}}
 
