@@ -18,7 +18,7 @@ def _check_name_and_perms_(user_email, device_id, procedure_name):
 
     # check that user has permissions to add a procedure to the device
     if not access.can_create_procedure(device_id, user_email):
-        logger.info("User " + str(user_email) +
+        logger.error("User " + str(user_email) +
                     " does not have permission to create a procedure on device: " + str(device_id))
         return False
 
@@ -26,13 +26,13 @@ def _check_name_and_perms_(user_email, device_id, procedure_name):
     query = db((proc_table.device_id == device_id) &
                (proc_table.name == procedure_name))
     if not query.isempty():
-        logger.info("Device " + str(device_id) + " already contains a procedure of name " + str(procedure_name))
+        logger.error("Device " + str(device_id) + " already contains a procedure of name " + str(procedure_name))
         return False
 
     # name should not break file system
     result = re.search("[^a-zA-Z0-9._-]", str(procedure_name))
     if result:
-        logger.info("Procedure name \"" + str(procedure_name) + "\" is not allowed. Use only numbers, letters, _, -, and .")
+        logger.error("Procedure name \"" + str(procedure_name) + "\" is not allowed. Use only numbers, letters, _, -, and .")
         return False
 
     return True
@@ -78,6 +78,28 @@ def create_procedure(procedure_name, device_id):
 
     return pid
 
+def delete_procedure(procedure_id, device_id):
+    """
+    This function should be called when a procedure should be deleted
+
+    :param procedure_name: Name of the new procedure
+    :type procedure_name: str
+    :param device_id: Device ID associated with device on which user wants to create proc
+    :type device_id: str
+    :return:
+    :rtype:
+    """
+    db = current.db
+    auth = current.auth
+    proc_table = db.procedures
+    revisions_table = db.procedure_revisions
+
+    user_email = auth.user.email
+
+    if access.can_delete_procedure(device_id, user_email, procedure_id):
+        db(proc_table.id == procedure_id).delete()
+        db(revisions_table.procedure_id == procedure_id).delete()
+
 def change_procedure_name(procedure_id, new_procedure_name):
     """
     This function should be called when a procedure name change is desired
@@ -118,7 +140,7 @@ def get_procedures_for_edit(device_id):
 
     user_email = auth.user.email
 
-    # Get all relevant records for user_email
+    # Get all relevant records for device_id
     records = db(proc_table.device_id == device_id).select()
 
     # Create list of procedure IDs from records
@@ -128,6 +150,32 @@ def get_procedures_for_edit(device_id):
             procedure_ids.append(row.id)
 
     return procedure_ids
+
+def get_procedures_name_for_edit(device_id):
+    """
+    This function returns all procedure names that are associated with a given user to edit
+
+    :param device_id: Device ID associated with device on which user wants to create proc
+    :type device_id: str
+    :return: List of procedure names associated with device
+    :rtype:
+    """
+    db = current.db
+    auth = current.auth
+    proc_table = db.procedures
+
+    user_email = auth.user.email
+
+    # Get all relevant records for device_id
+    records = db(proc_table.device_id == device_id).select()
+
+    # Create list of procedure names from records
+    procedure_names = []
+    for row in records:
+        if access.can_edit_procedure(user_email, device_id, row.id):
+            procedure_names.append(row.name)
+
+    return procedure_names
 
 def get_procedures_for_view(device_id):
     """
