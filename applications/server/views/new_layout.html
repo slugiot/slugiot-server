@@ -118,7 +118,7 @@
                         {% /each %}
                   </ul>
                 </li>
-                <li class="social {% #if ptype_vis %} active {% /if %}"><a href="{{=URL('default', 'viz.html')}}/{% device_id %}"><i class="fa fa-lg fa-area-chart"></i></a></li>
+                <li class="social {% #if ptype_vis %} active {% /if %}"><a href="{{=URL('default', 'viz')}}/{% device_id %}"><i class="fa fa-lg fa-area-chart"></i></a></li>
                 <li class="social {% #if ptype_edit %} active {% /if %}"><a href="#"><i class="fa fa-lg fa-pencil-square-o"></i></a></li>
                 <li class="social {% #if ptype_share %} active {% /if %}"><a href="{{=URL('default', 'share')}}/{% device_id %}"><i class="fa fa-lg fa-share-alt"></i></a></li>
                 <li class="social {% #if ptype_set %} active {% /if %}"><a href="#"><i class="fa fa-lg fa-cog"></i></a></li>
@@ -212,7 +212,8 @@
     <script src="{{=cm}}/addon/comment/comment.js"></script>
     <script src="{{=cm}}/emmet.min.js"></script>
     <script src="{{=js_url}}/ajax_editor.js"></script>
-    {{block page_js}}{{end page_js}}
+    {{block page_js}}
+    {{end page_js}}
     {{if response.google_analytics_id:}}
         <!-- Analytics ==================================== -->
         <script src="{{=URL('static','js/analytics.min.js')}}"></script>
@@ -258,4 +259,5 @@
             }
         });
     });
+
 </script>

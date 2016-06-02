@@ -1,35 +1,17 @@
-{{extend 'layout_blue.html'}}
+{{extend "new_layout.html"}}
 
-{{block head}}
-
-{{end head}}
-
-{{block device_dropdown}}
-<li class="dropdown">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-        <i class="pe-7s-plug"></i>
-        <p> <span id="device_selected">Devices</span>  <b class="caret"></b> </p>
-    </a>
-    <ul id="device_select" class="dropdown-menu  caret-left">
-        <li><a onclick="onDeviceChosen(this);">device1</a></li>
-        <li><a onclick="onDeviceChosen(this);">device2</a></li>
-    </ul>
-</li>
-{{end device_dropdown}}
-
-{{block body}}
-<div class="row">
-    <div id="target"></div>
-    <script id="template" type="text/ractive">
+<div class="container-fluid main-container">
+    <div class="row">
+        <div id="target"></div>
+        <script id="template" type="text/ractive">
 <!-- ------------ START Ractive Body ------------ -->
 
 <div class="visualization">
 
     <h1></h1>
 
-    <!-- start of typeahead search -->
+<input id="select_device_id" type="hidden" value="{{=device_id}}">
 
-    <!-- end of typeahead search -->
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
@@ -48,6 +30,7 @@
                                     <tr>
                                         <td>
                                             <label>Select:</label> <br>
+
 
                                              <select id="select_procedure_id" class="selectpicker" data-live-search="true"
                                                     title="Procedure ID">
@@ -95,25 +78,12 @@
                                        id="device_table">
                                     <thead>
                                     <tr>
-                                        <th>Device</th>
                                         <th>Procedure</th>
                                         <th>Name</th>
                                         <th>Delete</th>
                                     </tr>
                                     </thead>
                                     <tbody id="device_data_table">
-                                    <!--<tr onclick="clickTr(this);">-->
-                                        <!--<td>device1</td>-->
-                                        <!--<td>procedure1</td>-->
-                                        <!--<td>name1</td>-->
-                                        <!--<td>-->
-                                            <!--<button title="" type="button"-->
-                                                    <!--class="btn btn-danger remove show_tip"-->
-                                                    <!--data-original-title="Remove from list">-->
-                                                <!--<i class="fa fa-trash-o"></i>-->
-                                            <!--</button>-->
-                                        <!--</td>-->
-                                    <!--</tr>-->
                                     </tbody>
                                 </table>
                                 <!-- end of table -->
@@ -127,12 +97,12 @@
                             <!-- ------------ START DATA VISUALIZATION dyGraph ------------ -->
                             <div class="col-sm-6">
                                 <ul class="nav nav-tabs">
-                                    <li id="line_tab" class="active" onclick="line_plot()" title={{=T("Line")}}>
+                                    <li class="active" onclick="line_plot()" title={{=T("Line")}}>
                                         <a data-toggle="tab">
                                             <i class="fa fa-line-chart fa-2x" aria-hidden="true"></i>
                                         </a>
                                     </li>
-                                    <li id="bar_tab" onclick="bar_plot()" title={{=T("Bar")}}>
+                                    <li onclick="bar_plot()" title={{=T("Bar")}}>
                                         <a data-toggle="tab">
                                             <i class="fa fa-bar-chart fa-2x" aria-hidden="true"></i>
                                         </a>
@@ -176,9 +146,9 @@
                             <form class="navbar-form navbar-right" role="search">
                                 <div class="input-group">
                                     <input type="text" class="form-control" placeholder="Search for...">
-                                    <span class="input-group-btn">
+                                      <span class="input-group-btn">
                                         <button class="btn btn-default" type="button">Search</button>
-                                    </span>
+                                      </span>
                                 </div>
                             </form>
 
@@ -220,9 +190,9 @@
                             <form class="navbar-form navbar-right" role="search">
                                 <div class="input-group">
                                     <input type="text" class="form-control" placeholder="Search for...">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default" type="button">Search</button>
-                                    </span>
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Search</button>
+                          </span>
                                 </div>
                             </form>
 
@@ -265,9 +235,9 @@
                             <form class="navbar-form navbar-right" role="search">
                                 <div class="input-group">
                                     <input type="text" class="form-control" placeholder="Search for...">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default" type="button">Search</button>
-                                    </span>
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Search</button>
+                          </span>
                                 </div>
                             </form>
                             <br><br><br>
@@ -332,51 +302,63 @@
 <!-- ------------ END Ractive Body ------------ -->
 
 
-</script>
+
+
+
+        </script>
+    </div>
 </div>
-{{end body}}
 
+{{block footer}}
+{{end footer}}
 
-{{block pagejs}}
-
-
-<link rel="stylesheet" type="text/css"
-      href="http://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+{{block page_js}}
+<!-- Bootstrap select -->
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
-<link rel="stylesheet" type="text/css"
-      href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
-
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+
+
+<!-- Date range picker -->
+<!-- Include Required Prerequisites -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<!-- Include Date Range Picker -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+
+<!-- Bootstrap plugins -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+<!-- Date range picker for the viz team-->
 <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+
+<!-- dygraph library for the viz team-->
 <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
-<script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
+<script src="{{=URL('static', 'js/ractive.min.js')}}"></script>
 
 <script>
-    // global variable for device_id in this script
-    var device_id;
 
-    function onDeviceChosen(obj) {
-        device_id = $(obj).text();
-        $("#device_selected").text(device_id);
+    var global_device_id = -1;
+
+    $(function () {
+//        alert($('#select_procedure_id option:selected').text());
         $("#select_name").empty();
         $("#select_procedure_id").empty();
         $('.selectpicker').selectpicker('refresh');
 
+        var device_id = $('#select_device_id').val();
+        global_device_id = device_id;
+        // add value to select_name
+        // sending a ajax request
         $.ajax({
-            'url': 'get_parameter',
-            'type': 'post',
+            'url': '/get_parameter',
+            'type': 'get',
             'dataType': 'json',
             'data': {device_id: device_id},
             'success': function (data) {
-                console.log(device_id);
                 console.log(data);
-                console.log("11111");
-
 //                alert(data);
                 var name = data.name;
                 var procedure_id = data.procedure_id;
@@ -389,10 +371,13 @@
                     $("#select_procedure_id").append('<option>' + procedure_id[val].procedure_id + '</option>');
                 }
                 $('.selectpicker').selectpicker('refresh');
+            },
+            error: function (error) {
+                console.log('error; ' + eval(error)+'fail to get parameter');
             }
         });
+    });
 
-    }
 
     function clickTr(obj) {
         var c = $(obj).find("td").eq(0).text();
@@ -428,89 +413,13 @@
         }
     });
 
-    $(function () {
-        // receive data from layout_blue.html rendering
-        // device_id =
-        // fake data to device_id;
-//        device_id = "device1";
 
-    });
-    function choose_device_id() {
-//        alert($('#select_procedure_id option:selected').text());
-        $("#select_name").empty();
-        $("#select_procedure_id").empty();
-        $('.selectpicker').selectpicker('refresh');
-
-        var device_id = $('#select_device_id option:selected').text();
-        $("#device_selected").text(device_id);
-
-//        alert(device_id);
-        // add value to select_name
-        // sending a ajax request
-        $.ajax({
-            'url': 'get_parameter',
-            'type': 'post',
-            'dataType': 'json',
-            'data': {device_id: device_id},
-            'success': function (data) {
-                console.log(data);
-//                alert(data);
-                var name = data.name;
-                var procedure_id = data.procedure_id;
-                for (var val in name) {
-                    console.log(name[val].name);
-                    $("#select_name").append('<option>' + name[val].name + '</option>');
-                }
-                for (var val in procedure_id) {
-                    console.log(procedure_id[val].procedure_id);
-                    $("#select_procedure_id").append('<option>' + procedure_id[val].procedure_id + '</option>');
-                }
-                $('.selectpicker').selectpicker('refresh');
-            }
-        });
-
-    }
-
-
-    //    function choose_device_id() {
-    ////        alert($('#select_procedure_id option:selected').text());
-    //        $("#select_name").empty();
-    //        $("#select_procedure_id").empty();
-    //        $('.selectpicker').selectpicker('refresh');
-    //
-    //        var device_id = $('#select_device_id option:selected').text();
-    ////        alert(device_id);
-    //        // add value to select_name
-    //        // sending a ajax request
-    //        $.ajax({
-    //            'url': 'get_parameter',
-    //            'type': 'post',
-    //            'dataType': 'json',
-    //            'data': {device_id: device_id},
-    //            'success': function (data) {
-    //                console.log(data);
-    ////                alert(data);
-    //                var name = data.name;
-    //                var procedure_id = data.procedure_id;
-    //                for (var val in name) {
-    //                    console.log(name[val].name);
-    //                    $("#select_name").append('<option>' + name[val].name + '</option>');
-    //                }
-    //                for (var val in procedure_id) {
-    //                    console.log(procedure_id[val].procedure_id);
-    //                    $("#select_procedure_id").append('<option>' + procedure_id[val].procedure_id + '</option>');
-    //                }
-    //                $('.selectpicker').selectpicker('refresh');
-    //            }
-    //        });
-    //
-    //    }
     // -----------------------------  Add Device_id-Procedure_id-name pair into the devices management table  ------------------------------------------
 
     function addDevice() {
         // ----------------- add the device info to DeviceTable  ------------------------
         // generate new row data
-//        var device_id = $('#select_device_id option:selected').text();
+        var device_id = $('#select_device_id option:selected').text();
         var procedure_id = $('#select_procedure_id option:selected').text();
         var name = $('#select_name option:selected').text();
 
@@ -533,34 +442,11 @@
             if (isDuplicated) {
                 return;
             }
-            // reload the Procedure ID and Name list:
-            $("#select_name").empty();
-            $("#select_procedure_id").empty();
-            $.ajax({
-                'url': 'get_parameter',
-                'type': 'post',
-                'dataType': 'json',
-                'data': {device_id: device_id},
-                'success': function (data) {
-                    console.log(data);
-                    var name = data.name;
-                    var procedure_id = data.procedure_id;
-                    for (var val in name) {
-                        console.log(name[val].name);
-                        $("#select_name").append('<option>' + name[val].name + '</option>');
-                    }
-                    for (var val in procedure_id) {
-                        console.log(procedure_id[val].procedure_id);
-                        $("#select_procedure_id").append('<option>' + procedure_id[val].procedure_id + '</option>');
-                    }
-                    $('.selectpicker').selectpicker('refresh');
-                }
-            });
         }
 
 
         var btn = "<button title='' type='button' class='btn btn-danger remove show_tip' data-original-title='Remove from list'><i class='fa fa-trash-o'></i></button>";
-        var row = '<tr onclick="showRow(this)"><td>' + device_id + '</td><td>' + procedure_id + '</td><td>' + name + '</td><td>' + btn + '</td></tr>';
+        var row = '<tr onclick="showRow(this)"><td>' + procedure_id + '</td><td>' + name + '</td><td>' + btn + '</td></tr>';
         $("#device_data_table").append(row);
         console.log(row);
 //             var btn =       "<button title='' type='button' class='btn btn-danger remove show_tip' data-original-title='Remove from list'><i class='fa fa-trash-o'></i></button>"
@@ -572,6 +458,8 @@
 
 
     function showRow(obj) {
+
+
         // ----------------- end of adding the device info to DeviceTable  ------------------------
 
         // ----------- get the parameter in the control panel --------------------------
@@ -580,19 +468,16 @@
         var start = elems[0].slice(6, 10) + "-" + elems[0].slice(0, 2) + "-" + elems[0].slice(3, 5) + " 00:00:00";
         var end = elems[1].slice(7, 12) + "-" + elems[1].slice(1, 3) + "-" + elems[1].slice(4, 6) + " 23:59:59";
 
-        var device_id = $(obj).find('td').eq(0).text();
-        var procedure_id = $(obj).find('td').eq(1).text();
-        var name = $(obj).find('td').eq(2).text();
+//        var device_id = $(obj).find('td').eq(0).text();
+        var procedure_id = $(obj).find('td').eq(0).text();
+        var name = $(obj).find('td').eq(1).text();
 
         $.ajax({
-            'url': 'get_data',
+            'url': '/get_data',
             'type': 'post',
             'dataType': 'json',
-            'data': {start: start, end: end, device_id: device_id, procedure_id: procedure_id, name: name},
+            'data': {start: start, end: end, device_id: global_device_id, procedure_id: procedure_id, name: name},
             'success': function (data) {
-
-                //console.log(data);
-
 
                 ractive.set({mixed_data: data.mixed_data});
                 ractive.set({output_data: data.output_data});
@@ -604,6 +489,8 @@
             }
         });
 
+        //  ---------- showing test output dygraph ----------
+        dy_plot();
     } // -------- END Refresh Button --------
 
 
@@ -629,7 +516,7 @@
             'url': 'get_data',
             'type': 'post',
             'dataType': 'json',
-            'data': {start: start, end: end, device_id: device_id, procedure_id: procedure_id, name: name},
+            'data': {start: start, end: end, device_id: global_device_id, procedure_id: procedure_id, name: name},
             'success': function (data) {
 
                 console.log(data);
@@ -643,6 +530,8 @@
             }
         });
 
+        //  ---------- showing test output dygraph ----------
+        dy_plot();
     } // -------- END Refresh Button --------
 
 
@@ -657,7 +546,6 @@
     });
 
     // ------------  Dygraph testing  ------------
-    var g2; // dygraph object (will declare in dy_plot())
     function barChartPlotter(e) {
         var ctx = e.drawingContext;
         var points = e.points;
@@ -680,12 +568,8 @@
 
     dy_plot = function () {
         var graph_com = document.getElementById("dygraph_target1");
-        var output_data = ractive.get('output_data'); //"{{=URL('static', 'temper.csv')}}";
+        var output_data = ractive.get('output_data');
 
-        // Checking the type of plotting
-        var plot_type = 'line';
-        if ($('#bar_tab').hasClass('active'))
-            plot_type = 'bar';
 
         // collecting output data
         if (typeof output_data === "undefined") {
@@ -737,28 +621,25 @@
                         //xTicker: Dygraph.dateTicker
                     }
             );
-            if (plot_type == 'bar')
-                g2.updateOptions({plotter: barChartPlotter, title: 'Temperature Bar Chart'});
 
-        }
-        else if (output_data.length == 0) {       // has a device with no data
-            if (typeof g2 !== "undefined")
-                if (g2.canvas_ != null)
-                    g2.destroy();
         }
 
     };
 
+    function bar_plot() {
+        if (typeof g2 !== "undefined")
+            g2.updateOptions({plotter: barChartPlotter, title: 'Temperature Bar Chart'});
+
+    }
     function line_plot() {
         if (typeof g2 !== "undefined")
             g2.updateOptions({plotter: DygraphCanvasRenderer._linePlotter, title: 'Temperature Line Chart'});
     }
-
-    function bar_plot() {
-        if (typeof g2 !== "undefined")
-            g2.updateOptions({plotter: barChartPlotter, title: 'Temperature Bar Chart'});
-    }
-
     dy_plot();
+
 </script>
-{{end pagejs}}
+{{end page_js}}
+
+
+
+

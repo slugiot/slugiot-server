@@ -3,6 +3,7 @@ import random
 
 
 def test_fill():
+    print "start test_fill"
     """Fills some data for visualization."""
     device_id = "device1"
     procedure_id = 12580
@@ -75,6 +76,7 @@ def test_fill():
         #                    log_message='This is message' + str(i) + '.')
 
 def fill_device():
+    print "start fill_device"
     db(db.procedure_revisions).delete()
     db.procedure_revisions.insert(procedure_id=10086,
                                   procedure_data="text information",
@@ -115,6 +117,7 @@ def fill_device():
 
 # @auth.requires_signature()
 def get_modulename():
+    print "start get_modulename"
     device_id = request.vars.device_id
     modulename = []
     for row in db(db.module_values.device_id == device_id).select():
@@ -125,6 +128,7 @@ def get_modulename():
     return response.json(result)
 
 def get_parameter():
+    print "start get_parameter"
     fill_device()
 
     device_id = request.vars.device_id
@@ -177,7 +181,7 @@ def get_data():
     end_second = int(e[17:19])
 
 
-    # print 111111111111111111111111
+    print 111111111111111111111111
     # transform the start date and end date into datetime format
     start = datetime.datetime(start_year, start_month, start_day, start_hour, start_minute, start_second)
     end = datetime.datetime(end_year, end_month, end_day, end_hour, end_minute, end_second)
