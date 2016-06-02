@@ -1,7 +1,25 @@
-{{extend 'layout.html'}}
+{{extend 'new_layout.html'}}
+
+<!-- Including scripts here as a temporary hack because of an issue with layout -->
+<script src="{{=URL('static', 'js/jquery-1.12.4.js')}}"></script>
+<script src="{{=URL('static','js/jquery.qrcode.min.js')}}"></script>
 
 <div class="content">
-<h3>Please cut and paste the device id onto the device itself.</h3>
+    <h3 class="selector" align="center">Please cut and paste the device id onto the device itself.</h3>
+    <div id="qrcodeCanvas" align="center"></div><br>
     {{=form}}
-    {{=A(T('Done'), _class='btn btn-success', _href=URL('default', 'index'))}}
+    {{=A(T('Done'), _class='btn btn-success', _href=URL('default', 'index'), _align='center')}}
+    <button onclick="test()"></button>
 </div>
+
+<script>
+    jQuery('#qrcodeCanvas').qrcode({
+		text: "{{=form.vars.device_id}}"
+	});
+
+    function test() {
+        var t = document.getElementById('superman').value;
+        alert(t);
+    }
+</script>
+
