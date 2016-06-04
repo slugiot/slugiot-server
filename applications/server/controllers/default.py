@@ -435,6 +435,8 @@ def viz():
     result = -1
     if len(request.args) > 0:
         result = request.args[0]
+    print "???????"
+    print result
     return {"device_id": result}
 
 
