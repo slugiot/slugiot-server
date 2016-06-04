@@ -84,6 +84,7 @@
 'Disk Cleared': 'Disk Cleared',
 'Documentation': 'Documentation',
 "Don't know what to do?": "Don't know what to do?",
+'Done': 'Done',
 'done!': '完成!',
 'Download': '下载',
 'E-mail': '电子邮件',
