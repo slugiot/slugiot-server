@@ -5,7 +5,7 @@ import time
 
 def modalprocedure():
     # Device ID should not be changeable
-    val1 = request.vars['device']
+    val1 = request.vars['device_id']
     if val1 is None:
         print "val1 is None"
     else:
@@ -67,5 +67,5 @@ def modalprocedure():
                                  False)
         # Go back to the home page.
         session.flash = "Procedure added!"
-        redirect(URL('editor', 'test_edit', vars=dict(device_id=val1, procedure_id = proc_id, stable='true')))
+        redirect(URL('default', 'test_edit', vars=dict(device_id=val1, procedure_id = proc_id, stable='true')))
     return dict(form3=form3)

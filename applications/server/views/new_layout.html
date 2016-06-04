@@ -114,13 +114,13 @@
                         <li><a href="#" data-toggle="modal" data-target="#myModalNorm"><i class="fa fa-plus fa-fw" aria-hidden="true"></i>Add New Device</a></li>
                         <li role="separator" class="divider"></li>
                         {% #each device_dict:device_id %}
-                            <li><a href="?device={% device_id %}" on-click="set_val:{% device_id %}">{% name %}</a></li>
+                            <li><a href="?device_id={% device_id %}" on-click="set_val:{% device_id %}">{% name %}</a></li>
                         {% /each %}
                   </ul>
                 </li>
                 <li class="social {% #if ptype_vis %} active {% /if %}"><a href="{{=URL('default', 'viz.html')}}/{% device_id %}"><i class="fa fa-lg fa-area-chart"></i></a></li>
                 <!-- Dropdown for procedures (editor team) -->
-                {{if request.vars['device'] is None: }}
+                {{if request.vars['device_id'] is None: }}
                     <li class="social {% #if ptype_set %} active {% /if %}"><a href="#" on-click="alert"><i class="fa fa-lg fa-pencil-square-o"></i></a></li>
                 {{else:}}
                     <li class="dropdown {% #if ptype_edit %} active {% /if %}">
@@ -130,7 +130,7 @@
                             <li><a href="#" data-toggle="modal" data-target="#myModalNorm2"><i class="fa fa-plus fa-fw" aria-hidden="true"></i>Add New Procedure</a></li>
                             <li role="separator" class="divider"></li>
                             {% #each procedure_dict:num %}
-                                <li><a href="{{=URL('editor', 'test_edit')}}?device_id={{=request.vars['device']}}&procedure_id={% id %}&stable=false">{% name %}</a></li>
+                                <li><a href="{{=URL('default', 'test_edit')}}?device_id={{=request.vars['device_id']}}&procedure_id={% id %}&stable=false">{% name %}</a></li>
                             {% /each %}
                       </ul>
                     </li>
@@ -287,8 +287,9 @@
             }
         });
 
-        {{if request.vars['device'] is not None: }}
-            var url_string = '{{=URL('default', 'load_exist_procedures')}}' + '?device=' + {{=request.vars['device']}};
+        {{if request.vars['device_id'] is not None:}}
+            ractive2.set('anything_selected', true);
+            var url_string = '{{=URL('default', 'load_exist_procedures')}}' + '?device_id=' + {{=request.vars['device_id']}};
             $.ajax({
                 'url': url_string,
                 'type': 'post',
