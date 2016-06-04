@@ -230,7 +230,8 @@
     <script src="{{=cm}}/addon/comment/comment.js"></script>
     <script src="{{=cm}}/emmet.min.js"></script>
     <script src="{{=js_url}}/ajax_editor.js"></script>
-    {{block page_js}}{{end page_js}}
+    {{block page_js}}
+    {{end page_js}}
     {{if response.google_analytics_id:}}
         <!-- Analytics ==================================== -->
         <script src="{{=URL('static','js/analytics.min.js')}}"></script>
@@ -299,4 +300,5 @@
             });
         {{pass}}
     });
+
 </script>
