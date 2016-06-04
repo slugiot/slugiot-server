@@ -114,7 +114,7 @@
                         <li><a href="#" data-toggle="modal" data-target="#myModalNorm"><i class="fa fa-plus fa-fw" aria-hidden="true"></i>Add New Device</a></li>
                         <li role="separator" class="divider"></li>
                         {% #each device_dict:device_id %}
-                            <li><a href="?device_id={% device_id %}" on-click="set_val:{% device_id %}">{% name %}</a></li>
+                            <li><a href="{{=URL('default', 'index')}}?device_id={% device_id %}" on-click="set_val:{% device_id %}">{% name %}</a></li>
                         {% /each %}
                   </ul>
                 </li>
@@ -270,7 +270,6 @@
         ractive2.on("set_val", function(e, device_id){
             ractive2.set('device_id', device_id);
             ractive2.set('anything_selected', true);
-
         });
 
         ractive2.on("alert", function(e){
