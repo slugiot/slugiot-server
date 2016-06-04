@@ -7,7 +7,7 @@ gluon_utils: Used to generate UUID passed to index for signature
 proc_harness_module: Used for adding procedures
 """
 from gluon import utils as gluon_utils
-import time
+
 import proc_harness_module
 import datetime
 import random
@@ -42,7 +42,10 @@ def index():
         return dict(message=T('Please sign in!'))
     else:
         # Return the list of devices and UUID
-        response.device_name = "Cat"
+        val1 = request.vars['device_id']
+        if val1 is not None:
+            val = db(db.device.id == val1).select()[0].name
+            response.device_name = val
         return dict()
 
 
@@ -66,6 +69,7 @@ def new_device():
         session.flash = T(form.vars.name + ' added!')
         redirect(URL('default', 'manage', vars=dict(device=device.id)))
     return dict(form=form)
+
 
 @auth.requires_login()
 def edit_device():
@@ -112,7 +116,6 @@ def manage():
     return dict(procedures_list=procedure_list, sign_uuid=sign_uuid, val=device_id)
 
 
-
 @auth.requires_login()
 def load_devices():
     """
@@ -145,15 +148,15 @@ def load_exist_procedures():
     proc_list = proc_harness_module.get_procedures_for_edit(device_id)
     # TO DO change the API to proc_harness_module.get_procedures_name_for_edit(device_id)
     proc_name_list = proc_harness_module.get_procedures_name_for_edit(device_id)
-    #for proc_id in proc_list:
+    # for proc_id in proc_list:
     #    d['id'] = proc_id
     d = []
     for i in range(len(proc_list)):
-        d.append(dict(name=proc_name_list[i],id=proc_list[i]))
-    #d = dict(zip(proc_list, proc_name_list))
+        d.append(dict(name=proc_name_list[i], id=proc_list[i]))
+    # d = dict(zip(proc_list, proc_name_list))
     if d is not None:
         print "Is this none?"
-    #dic = dict(zip(proc_list, d))
+    # dic = dict(zip(proc_list, d))
     return response.json(dict(procedure_dict=d))
 
 
@@ -192,6 +195,12 @@ def user():
     """
     if request.args(0) == 'profile':
         db.auth_user.email.writable = False
+
+    val1 = request.vars['device_id']
+    if val1 is not None:
+        val = db(db.device.id == val1).select()[0].name
+        response.device_name = val
+
     return dict(form=auth())
 
 
@@ -216,6 +225,11 @@ def call():
 
 @auth.requires_login()
 def share():
+    val1 = request.vars['device_id']
+    if val1 is not None:
+        val = db(db.device.id == val1).select()[0].name
+        response.device_name = val
+
     return dict()
 
 
@@ -268,31 +282,31 @@ def test_fill(device_id):
     print "333333"
 
 
-def fill_device(device_id):
-    db(db.procedure_revisions).delete()
-    db.procedure_revisions.insert(procedure_id=10086,
-                                  procedure_data="text information",
-                                  is_stable=True,
-                                  )
-    db.procedure_revisions.insert(procedure_id=12580,
-                                  procedure_data="text information",
-                                  is_stable=True,
-                                  )
-    # db(db.device).delete()
-    db.device.insert(device_id=device_id,
-                     user_email='admin@google.com',
-                     name='admin'
-                     )
-    db(db.procedures).delete()
-    db.procedures.insert(device_id=device_id,
-                         name='app01'
-                         )
-    db.procedures.insert(device_id=device_id,
-                         name='bpp02'
-                         )
-    db.procedures.insert(device_id=device_id,
-                         name='cpp03'
-                         )
+# def fill_device(device_id):
+# db(db.procedure_revisions).delete()
+# db.procedure_revisions.insert(procedure_id=10086,
+#                               procedure_data="text information",
+#                               is_stable=True,
+#                               )
+# db.procedure_revisions.insert(procedure_id=12580,
+#                               procedure_data="text information",
+#                               is_stable=True,
+#                               )
+# # db(db.device).delete()
+# db.device.insert(device_id=device_id,
+#                  user_email='admin@google.com',
+#                  name='admin'
+#                  )
+# db(db.procedures).delete()
+# db.procedures.insert(device_id=device_id,
+#                      name='app01'
+#                      )
+# db.procedures.insert(device_id=device_id,
+#                      name='bpp02'
+#                      )
+# db.procedures.insert(device_id=device_id,
+#                      name='cpp03'
+#                      )
 
 
 # @auth.requires_signature()
@@ -307,24 +321,53 @@ def get_modulename():
     return response.json(result)
 
 
+def get_var_name():
+    id = request.vars.device_id
+    procedure_id = request.vars.procedure_id
+    record = db(db.device.id == id).select().first()
+    device_id = record.device_id
+    print '---------'
+    print device_id
+    print procedure_id
+    var_name = []
+    for row in db((db.module_values.device_id == device_id) &
+                          (db.module_values.procedure_id == procedure_id)).select():
+        var_name.append(row.name)
+
+    result = {'name': var_name}
+    return response.json(result)
+
+
+
 def get_parameter():
     id = request.vars.device_id
 
     record = db(db.device.id == id).select().first()
     print record.device_id
 
-    fill_device(record.device_id)
+    print "use api"
+    device_id = record.device_id
+    # get the list of procedure_id belongs to the device
+    procedure_id_list = proc_harness_module.get_procedures_for_edit(device_id)
+    print 'pro_id ------------'
+    print procedure_id_list
+    print 'finished'
+    # # get the list of procedure_id belongs to the device
+    # proc_list = proc_harness_module.get_procedures_for_edit(device_id)
+    # #TO DO change the API to proc_harness_module.get_procedures_name_for_edit(device_id)
+    # proc_name_list = proc_harness_module.get_procedures_name_for_edit(device_id)
+    # file_details = dict(
+
+
+
+    # fill_device(record.device_id)
     print 'finish adding device info'
     name = []
-    procedure_id = []
 
     for row in db(db.procedures.device_id == record.device_id).select():
         name.append({'name': row.name})
 
-    for row in db(db.procedure_revisions).select():
-        procedure_id.append({'procedure_id': row.procedure_id})
-
-    result = {'name': name, 'procedure_id': procedure_id}
+    result = {'name': name, 'procedure_id': procedure_id_list}
     return response.json(result)
 
 
@@ -342,8 +385,8 @@ def get_data():
     # device_id
     record = db(db.device.id == request.vars.device_id).select().first()
     device_id = record.device_id
-    print "??????????????????????"
     print device_id
+    print '-----------'
     # module_name or procedure_id
     procedure_id = request.vars.procedure_id
     # name
@@ -368,9 +411,19 @@ def get_data():
     # transform the start date and end date into datetime format
     start = datetime.datetime(start_year, start_month, start_day, start_hour, start_minute, start_second)
     end = datetime.datetime(end_year, end_month, end_day, end_hour, end_minute, end_second)
+    print "??????????????????????"
 
     print "before test_fill"
     test_fill(device_id)
+
+
+
+    print 'test the query parameter --------------------'
+    print device_id
+    print name
+    print procedure_id
+
+
 
     print "----------finish test fill-----------------------"
     # get output_data and sort by time_stamp
@@ -433,13 +486,10 @@ def viz():
     # session.module = ["egg", "eggnog"]
     # return dict(session=session)
     result = -1
-    if len(request.args) > 0:
-        result = request.args[0]
-    print "???????"
-    print result
+    id = request.vars['device_id']
+    if id is not None:
+        result = id
     return {"device_id": result}
-
-
 
 
 """
@@ -447,8 +497,6 @@ def viz():
 """
 
 
-import proc_harness_module
-from datetime import datetime
 # @auth.requires_signature()
 
 
@@ -462,7 +510,8 @@ def edit_procedure():
     :rtype: Json
     """
     # parameter for CodeMirror option parameter used for setting the editor feature
-    preferences={'theme':'web2py', 'editor': 'default', 'closetag': 'true', 'codefolding': 'false', 'tabwidth':'4', 'indentwithtabs':'false', 'linenumbers':'true', 'highlightline':'true'}
+    preferences = {'theme': 'web2py', 'editor': 'default', 'closetag': 'true', 'codefolding': 'false', 'tabwidth': '4',
+                   'indentwithtabs': 'false', 'linenumbers': 'true', 'highlightline': 'true'}
 
     # get the procedure_id and stable state of procedure in TABLE procedure
     pseudo_id = int(request.vars['device_id'])
@@ -470,7 +519,7 @@ def edit_procedure():
     procedure_id = request.vars['procedure_id']
     stable = request.vars['stable']
     # the final edition will use Team 2 API "get_procedure_data(procedure_id, stable)"  to get the data
-    #data = db(db.coding.id == procedure_id).select(db.coding.procedures).first().procedures
+    # data = db(db.coding.id == procedure_id).select(db.coding.procedures).first().procedures
     if stable == 'false':
         data = proc_harness_module.get_procedure_data(procedure_id, False)
     else:
@@ -478,16 +527,16 @@ def edit_procedure():
 
     # get the list of procedure_id belongs to the device
     proc_list = proc_harness_module.get_procedures_for_edit(device_id)
-    #TO DO change the API to proc_harness_module.get_procedures_name_for_edit(device_id)
+    # TO DO change the API to proc_harness_module.get_procedures_name_for_edit(device_id)
     proc_name_list = proc_harness_module.get_procedures_name_for_edit(device_id)
     file_details = dict(
-                    editor_settings=preferences,     # the option parameters used for setting editor feature.
-                    id=procedure_id,                 # the procedure_id in the procedures TALBE
-                    data=data,                       # code for procedure which is related with the id.
-                    dev_id = pseudo_id,              # id of the sudo device
-                    id_list = proc_list,              # id list of procedure belong to the device
-                    name_list = proc_name_list       # name list of the procedure belong to the device
-                    )
+        editor_settings=preferences,  # the option parameters used for setting editor feature.
+        id=procedure_id,  # the procedure_id in the procedures TALBE
+        data=data,  # code for procedure which is related with the id.
+        dev_id=pseudo_id,  # id of the sudo device
+        id_list=proc_list,  # id list of procedure belong to the device
+        name_list=proc_name_list  # name list of the procedure belong to the device
+    )
 
     # generated HTML code for editor by parameters in file_details
     plain_html = response.render('default/edit_js.html', file_details)
@@ -521,12 +570,12 @@ def save_procedure():
     result_html = DIV(T('file saved successfully'))
     highlight = None
 
-    #save the procedure data to the database
+    # save the procedure data to the database
     if stable == 'false':
 
-        #the final edition will use Team 2 API save(procedure_id, stable) to save the temporary procedure
-        #db(db.coding.id == procedure_id).update(procedures = data)
-        proc_harness_module.save(procedure_id,data,False)
+        # the final edition will use Team 2 API save(procedure_id, stable) to save the temporary procedure
+        # db(db.coding.id == procedure_id).update(procedures = data)
+        proc_harness_module.save(procedure_id, data, False)
 
     else:
         # compile the stable procedure and saved it if there is no exception during compiling
@@ -536,9 +585,9 @@ def save_procedure():
             code = request.vars.procedure.rstrip().replace('\r\n', '\n') + '\n'
             compile(code, '<string>', "exec", _ast.PyCF_ONLY_AST)
 
-            #the final edition will use Team 2 API save(procedure_id, stable) to save the data
-            #db(db.coding.id == procedure_id).update(procedures = data)
-            proc_harness_module.save(procedure_id,data,True)
+            # the final edition will use Team 2 API save(procedure_id, stable) to save the data
+            # db(db.coding.id == procedure_id).update(procedures = data)
+            proc_harness_module.save(procedure_id, data, True)
 
         except Exception, e:
             # DISCUSS
@@ -553,18 +602,18 @@ def save_procedure():
             else:
                 offset = 0
             highlight = {'start': start, 'end': start +
-                         offset + 1, 'lineno': e.lineno, 'offset': offset}
+                                                offset + 1, 'lineno': e.lineno, 'offset': offset}
             try:
                 ex_name = e.__class__.__name__
             except:
                 ex_name = 'unknown exception!'
             result_html = DIV(T('failed to compile and save file because:'), BR(),
-                                 B(ex_name), ' ' + T('at line %s', e.lineno),
-                                 offset and ' ' +
-                                 T('at char %s', offset) or '')
+                              B(ex_name), ' ' + T('at line %s', e.lineno),
+                              offset and ' ' +
+                              T('at char %s', offset) or '')
 
-    file_save = dict(result = result_html,
-                     highlight = highlight)
+    file_save = dict(result=result_html,
+                     highlight=highlight)
     return response.json(file_save)
 
 
@@ -579,8 +628,8 @@ def delete_procedure():
     device_id = db(db.device.id == pseudo_id).select()[0].device_id
     # call api to delete the procedure
     proc_harness_module.delete_procedure(procedure_id, device_id)
-    data=URL('redirect_home')
-    #response a json type data to redirect to homepage after delete procedure
+    data = URL('redirect_home')
+    # response a json type data to redirect to homepage after delete procedure
     return response.json(data=data)
 
 
@@ -589,7 +638,8 @@ def redirect_home():
     This function is used to redirect page to homepage
     :return:
     """
-    redirect(URL('default','index'))
+    redirect(URL('default', 'index'))
+
 
 ## all the following function is used for self debug and will be deleted at final edition
 
@@ -606,7 +656,13 @@ def test_edit():
     """
     # get the procedure_id and stable statues of procedure in TABLE procedure
     pseudo_id = int(request.vars.device_id)
-    device_id = ''+db(db.device.id == pseudo_id).select()[0].device_id
+    device_id = '' + db(db.device.id == pseudo_id).select()[0].device_id
     procedure_id = request.vars.procedure_id
     stable = request.vars.stable
-    return dict(device_id = pseudo_id, procedure_id = procedure_id, stable=stable)
+
+    val1 = request.vars['device_id']
+    if val1 is not None:
+        val = db(db.device.id == val1).select()[0].name
+        response.device_name = val
+
+    return dict(device_id=pseudo_id, procedure_id=procedure_id, stable=stable)

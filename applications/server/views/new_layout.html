@@ -118,11 +118,12 @@
                         {% /each %}
                   </ul>
                 </li>
-                <li class="social {% #if ptype_vis %} active {% /if %}"><a href="{{=URL('default', 'viz.html')}}/{% device_id %}"><i class="fa fa-lg fa-area-chart"></i></a></li>
                 <!-- Dropdown for procedures (editor team) -->
                 {{if request.vars['device_id'] is None: }}
+                    <li class="social {% #if ptype_vis %} active {% /if %}"><a href="#" on-click="alert"><i class="fa fa-lg fa-area-chart"></i></a></li>
                     <li class="social {% #if ptype_set %} active {% /if %}"><a href="#" on-click="alert"><i class="fa fa-lg fa-pencil-square-o"></i></a></li>
                 {{else:}}
+                    <li class="social {% #if ptype_vis %} active {% /if %}"><a href="{{=URL('default', 'viz')}}?device_id={{=request.vars['device_id']}}"><i class="fa fa-lg fa-area-chart"></i></a></li>
                     <li class="dropdown {% #if ptype_edit %} active {% /if %}">
                       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-lg fa-pencil-square-o"></i></a>
