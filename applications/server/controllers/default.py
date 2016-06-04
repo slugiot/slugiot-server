@@ -140,18 +140,32 @@ def load_devices():
 
 
 @auth.requires_login()
-def read_procedures():
+def load_procedures():
     """
     Description: Returns a list of devices to show on index.html. This is called from the JS.
     Returns: A JSON with a dictionary of all the devices and their database fields.
     """
-    val = request.vars['device']
-    rows = db(db.procedures.device_id == val).select()
-    time.sleep(1)  # so we can some time to stare at the pretty animation :-)
-    d = {r.device_id: {'name': r.name,
-                       'id': r.id}
-         for r in rows}
-    return response.json(dict(procedure_dict=d))
+    val = int(request.vars['device'])
+    if val is not None:
+        print "Test Record "
+        print val
+    device_id = db(db.device.id == val).select()[0].device_id
+    print device_id
+
+    # get the list of procedure_id belongs to the device
+    proc_list = proc_harness_module.get_procedures_for_edit(device_id)
+    # TO DO change the API to proc_harness_module.get_procedures_name_for_edit(device_id)
+    proc_name_list = proc_harness_module.get_procedures_name_for_edit(device_id)
+    #for proc_id in proc_list:
+    #    d['id'] = proc_id
+    d = []
+    for i in range(len(proc_list)):
+        d.append(dict(name=proc_name_list[i],id=proc_list[i]))
+    #d = dict(zip(proc_list, proc_name_list))
+    if d is not None:
+        print "Is this none?"
+    dic = dict(zip(proc_list, d))
+    return response.json(dict(procedure_dict=dic))
 
 
 @auth.requires_login()
