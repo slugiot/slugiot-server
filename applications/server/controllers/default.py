@@ -164,8 +164,8 @@ def load_procedures():
     #d = dict(zip(proc_list, proc_name_list))
     if d is not None:
         print "Is this none?"
-    dic = dict(zip(proc_list, d))
-    return response.json(dict(procedure_dict=dic))
+    #dic = dict(zip(proc_list, d))
+    return response.json(dict(procedure_dict=d))
 
 
 @auth.requires_login()

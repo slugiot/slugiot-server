@@ -129,8 +129,8 @@
                       <ul class="dropdown-menu">
                             <li><a href="#" data-toggle="modal" data-target="#myModalNorm2"><i class="fa fa-plus fa-fw" aria-hidden="true"></i>Add New Procedure</a></li>
                             <li role="separator" class="divider"></li>
-                            {% #each procedure_dict:id %}
-                                <li><a href="{{=URL('editor', 'test_edit')}}?={% id %}">{% name %}</a></li>
+                            {% #each procedure_dict:num %}
+                                <li><a href="{{=URL('editor', 'test_edit')}}?device_id={{=request.vars['device']}}&procedure_id={% id %}&stable=false">{% name %}</a></li>
                             {% /each %}
                       </ul>
                     </li>
@@ -264,20 +264,12 @@
             }
         });
 
+        ractive2.DEBUG = true;
+
         ractive2.on("set_val", function(e, device_id){
             ractive2.set('device_id', device_id);
             ractive2.set('anything_selected', true);
-            var url_string = '{{=URL('default', 'load_procedures')}}' + '?device=' + device_id;
-            console.log("Test URL:" + url_string);
-            $.ajax({
-                'url': url_string,
-                'type': 'post',
-                'dataType': 'json',
-                'data': {},
-                'success': function (data) {
-                    ractive2.set('procedure_dict', data['procedure_dict']);
-                }
-            });
+
         });
 
         ractive2.on("alert", function(e){
@@ -293,5 +285,18 @@
                 ractive2.set('device_dict', data['device_dict']);
             }
         });
+
+        {{if request.vars['device'] is not None: }}
+            var url_string = '{{=URL('default', 'load_procedures')}}' + '?device=' + {{=request.vars['device']}};
+            $.ajax({
+                'url': url_string,
+                'type': 'post',
+                'dataType': 'json',
+                'data': {},
+                'success': function (data) {
+                    ractive2.set('procedure_dict', data['procedure_dict']);
+                }
+            });
+        {{pass}}
     });
 </script>
