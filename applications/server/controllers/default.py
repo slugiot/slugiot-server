@@ -140,7 +140,7 @@ def load_devices():
 
 
 @auth.requires_login()
-def load_procedures():
+def load_exist_procedures():
     """
     Description: Returns a list of devices to show on index.html. This is called from the JS.
     Returns: A JSON with a dictionary of all the devices and their database fields.
