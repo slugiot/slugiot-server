@@ -489,6 +489,7 @@ def viz():
     id = request.vars['device_id']
     if id is not None:
         result = id
+        response.device_name = db(db.device.id == id).select()[0].name
     return {"device_id": result}
 
 
