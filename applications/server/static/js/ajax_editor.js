@@ -124,7 +124,7 @@ function delete_procedure(url ,procedure_id, device_id) {
             device_id: device_id
         },
         success: function() {
-            window.location.href = 'redirect_home';
+            window.location.href = '/?device_id='+device_id;
         },
         error: function() {
             console.log('delete_procedure error');
