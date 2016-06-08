@@ -137,7 +137,7 @@
                     </li>
                 {{pass}}
                 <!-- Sharing page -->
-                <li class="social {% #if ptype_share %} active {% /if %}"><a href="{{=URL('default', 'share')}}/{% device_id %}"><i class="fa fa-lg fa-share-alt"></i></a></li>
+                <li class="social {% #if ptype_share %} active {% /if %}"><a href="{{=URL('default', 'share')}}/?device_id={{=request.vars['device_id']}}"><i class="fa fa-lg fa-share-alt"></i></a></li>
                 <!-- Settings page -->
                 <li class="social {% #if ptype_set %} active {% /if %}"><a href="#"><i class="fa fa-lg fa-cog"></i></a></li>
               </ul>
