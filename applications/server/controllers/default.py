@@ -238,19 +238,6 @@ def share():
 """
 
 
-# @auth.requires_signature()
-def get_modulename():
-    device_id = request.vars.device_id
-    modulename = []
-    for row in db(db.module_values.device_id == device_id).select():
-        modulename.append(row.procedure_id)
-    print modulename
-    print "end of get_modulename"
-    modulename = set(modulename)
-    result = {'module_name': modulename}
-    return response.json(result)
-
-
 def get_parameter():
     """
     Description: Run this function when the procedure id is chosen in the data visualization control panel.
@@ -289,25 +276,12 @@ def get_var_name():
     procedure_id = request.vars.procedure_id
     record = db(db.device.id == id).select().first()
     device_id = record.device_id
-    print 'request data-------------'
-    print 'id of the device is :'
-    print id
-    print 'device id is :'
-    print device_id
-    print 'procedure id is :'
-    print procedure_id
-    print '---------'
-    print device_id
-    print procedure_id
-    var_name = []
-    for row in db((db.module_values.device_id == device_id) &
-                          (db.module_values.procedure_id == procedure_id)).select():
-        var_name.append(row.name)
-    print '--------return data of get_var_name-----------------'
-    print var_name
-    var_name = set(var_name)
-    print var_name
-    result = {'name': var_name}
+    names_set = set()
+    # TODO: This needs redoing.  We need to keep a table with variable names.
+    for row in db((db.outputs.device_id == device_id) &
+                          (db.outputs.procedure_id == procedure_id)).select():
+        names_set.add(row.name)
+    result = {'name': names_set} # TODO: change to plural
     return response.json(result)
 
 

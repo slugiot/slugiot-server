@@ -112,17 +112,6 @@ db.define_table('outputs',
                 Field('received_time_stamp', 'datetime', default=datetime.datetime.utcnow()),
 )
 
-# Synched client -> server
-db.define_table('module_values',
-                Field('device_id'),
-                Field('procedure_id'),
-                Field('name'),  # Name of variable
-                Field('output_value', 'text'),  # Json, short please
-                Field('time_stamp', 'datetime'),
-                Field('received_time_stamp', 'datetime', default=datetime.datetime.utcnow())
-                )
-
-
 ## TODO: define the tables that need to be synched "down", for settings, and procedures.
 
 ############ Test tables.

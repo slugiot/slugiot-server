@@ -146,7 +146,7 @@ def get_settings():
         if (vars == None or not vars.has_key('device_id')):
             raise HTTP(400, "Please specify 'device_id' as a parameter to retrieve settings")
         device_id = vars['device_id']
-        last_updated = datetime.fromtimestamp(1)
+        last_updated = datetime.datetime.fromtimestamp(1)
         if (vars.has_key('last_updated')):
             last_updated = vars['last_updated']
 
