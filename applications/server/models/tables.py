@@ -114,16 +114,6 @@ db.define_table('outputs',
 
 ## TODO: define the tables that need to be synched "down", for settings, and procedures.
 
-############ Test tables.
-## This is the table used to temporary testing editor
-## it get procedure by the table id instead of device id
-## because Team2 provide API for us to get the data from procedures
-## we will delete this table at the final edition.
-db.define_table('coding',
-            Field('procedures', 'text'),
-            Field('times','datetime')
-            )
-
 # Test table for inserting a procedure. Whatever gets inserted here is garbage.
 db.define_table('procedures_trash',
                 Field('device_id', 'string', required=True),

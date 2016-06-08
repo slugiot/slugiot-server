@@ -56,9 +56,9 @@
                         <div style="margin: 15px 0px 15px 0px;">
                             <a class="list-group-item" id="save_result" style=""><div></div></a>
                         </div>
-                        <button id = "save_unstable" type="button" class="btn btn-primary" onclick="save_procedure('{{=URL('editor','save_procedure',user_signature=True)}}',{{=procedure_id}}, false)">save temporary</button>
-                        <button id = "save_stable" type="button" class="btn btn-info" onclick="save_procedure('{{=URL('editor','save_procedure',user_signature=True)}}',{{=procedure_id}}, true)">save stable</button>
-                        <button id = "delete" type="button" class="btn btn-danger" onclick="delete_procedure('{{=URL('editor','delete_procedure',user_signature=True)}}',{{=procedure_id}}, {{=device_id}})">delete procedure</button>
+                        <button id = "save_unstable" type="button" class="btn btn-primary" onclick="save_procedure('{{=URL('default','save_procedure',user_signature=True)}}',{{=procedure_id}}, false)">save temporary</button>
+                        <button id = "save_stable" type="button" class="btn btn-info" onclick="save_procedure('{{=URL('default','save_procedure',user_signature=True)}}',{{=procedure_id}}, true)">save stable</button>
+                        <button id = "delete" type="button" class="btn btn-danger" onclick="delete_procedure('{{=URL('default','delete_procedure',user_signature=True)}}',{{=procedure_id}}, {{=device_id}})">delete procedure</button>
                     </div>
                 </div>
             </div>

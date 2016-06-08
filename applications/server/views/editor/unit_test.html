@@ -1,5 +1,0 @@
-{{extend 'layout.html'}}
-
-<a id = "unstable" class = "btn btn-default btn-lg" href="{{=URL('editor','test_edit',vars=dict(device_id='1',procedure_id=id_list[0],stable='false'),user_signature=True)}}" role="button">edit_unstable {{=id_list[0]}}</a>
-
-<a id = "stable" class = "btn btn-default btn-lg" href="{{=URL('editor','test_edit',vars=dict(device_id='1',procedure_id=id_list[0],stable='true'),user_signature=True)}}" role="button">edit_stable {{=id_list[0]}}</a>
