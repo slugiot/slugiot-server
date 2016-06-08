@@ -1,10 +1,12 @@
 
-{{extend 'layout.html'}}
+{{extend 'new_layout.html'}}
 
 <!-- the editor js and css part used which will be integrated to UI team web page-->
 {{cm=URL('static', 'codemirror')}}
 {{js_url=URL('static','js')}}
 {{css_url=URL('static', 'css')}}
+<script src="{{=URL('static', 'js/ractive.min.js')}}"></script>
+<script src="{{=URL('static', 'js/jquery-1.12.4.js')}}"></script>
 <link rel="stylesheet" href="{{=cm}}/lib/codemirror.css">
 <link rel="stylesheet" href="{{='%s/theme/web2py.css' % cm}}">
 <script src="{{=cm}}/lib/codemirror.js"></script>
@@ -36,6 +38,37 @@
 <!-- the editor html part used which can be integrated to UI team web page-->
 
 <div style="width: 100%; height: 100vh;">
+    <div class="container" style="height: 100%;">
+        <div class="row" style="height: 100%;">
+            <!-- left side procedure list -->
+            <div class="col-md-3">
+                <br>
+                <div class="list-group" id="procedures">
+
+                </div>
+            </div>
+            <!-- right side editor area -->
+            <div class="col-md-9" style="height: 100%;">
+                <br>
+                <div id="editor_area" class="row-fluid" style="height: 75%;">
+                    <div id="placeholder" style="height: 100%">
+                        <div id="myTabContent" class="tab-content" style="height: 100%"></div>
+                    </div>
+                </div>
+
+                <div style="margin: 15px 0px 0px 0px;">
+                    <a class="list-group-item active" id="save_result"><div></div></a>
+                </div>
+                <br>
+                <button id = "save_unstable" type="button" class="btn btn-primary" onclick="save_procedure('{{=URL('editor','save_procedure',user_signature=True)}}',{{=procedure_id}}, false)">save temporary</button>
+                <button id = "save_stable" type="button" class="btn btn-info" onclick="save_procedure('{{=URL('editor','save_procedure',user_signature=True)}}',{{=procedure_id}}, true)">save stable</button>
+                <button id = "delete" type="button" class="btn btn-danger" onclick="delete_procedure('{{=URL('editor','delete_procedure',user_signature=True)}}',{{=procedure_id}}, {{=device_id}})">delete procedure</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--
+<div style="width: 100%; height: 100vh;">
     <div id="editor_area" class="row-fluid" style="height:80%;">
         <div class="span12" id="edit_placeholder" style="height: 100%;">
             <div id="myTabContent" class="tab-content" style="height: 100%;">
@@ -43,21 +76,24 @@
         </div>
     </div>
     <br>
-    <!-- the save button example integrated to UI team web page-->
+    <!-- the save button example integrated to UI team web page
     <button id = "save_unstable" type="button" class="btn btn-primary" onclick="save_procedure('{{=URL('editor','save_procedure',user_signature=True)}}',{{=procedure_id}}, false)">save temporary</button>
     <button id = "save_stable" type="button" class="btn btn-info" onclick="save_procedure('{{=URL('editor','save_procedure',user_signature=True)}}',{{=procedure_id}}, true)">save stable</button>
-
-    <!-- the text area to show the saving state for editor-->
+    <button id = "delete" type="button" class="btn btn-danger" onclick="delete_procedure('{{=URL('editor','delete_procedure',user_signature=True)}}',{{=procedure_id}}, {{=device_id}})">delete procedure</button>
+    <!-- the text area to show the saving state for editor
     <div style="margin: 15px 0px 0px 0px;">
         <a class="list-group-item active" id="save_result"><div></div></a>
     </div>
     <br>
 </div>
+-->
+
+{{block footer}}{{end}}
 
 <script>
 
 $(document).ready(function() {
-    load_procedure('{{=URL('editor','edit_procedure',user_signature=True)}}',{{=procedure_id}}, {{=stable}});
+    load_procedure('{{=URL('editor','edit_procedure',user_signature=True)}}', {{=procedure_id}}, {{=stable}}, {{=device_id}});
 });
 
 </script>

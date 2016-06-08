@@ -18,9 +18,9 @@ def edit_procedure():
     preferences={'theme':'web2py', 'editor': 'default', 'closetag': 'true', 'codefolding': 'false', 'tabwidth':'4', 'indentwithtabs':'false', 'linenumbers':'true', 'highlightline':'true'}
 
     # get the procedure_id and stable state of procedure in TABLE procedure
+    device_id = request.vars['device_id']
     procedure_id = request.vars['procedure_id']
     stable = request.vars['stable']
-
     # the final edition will use Team 2 API "get_procedure_data(procedure_id, stable)"  to get the data
     #data = db(db.coding.id == procedure_id).select(db.coding.procedures).first().procedures
     if stable == 'false':
@@ -28,10 +28,17 @@ def edit_procedure():
     else:
         data = proc_harness_module.get_procedure_data(procedure_id, True)
 
+    # get the list of procedure_id belongs to the device
+    proc_list = proc_harness_module.get_procedures_for_edit(device_id)
+    #TO DO change the API to proc_harness_module.get_procedures_name_for_edit(device_id)
+    proc_name_list = proc_harness_module.get_procedures_name_for_edit(device_id)
     file_details = dict(
                     editor_settings=preferences,     # the option parameters used for setting editor feature.
                     id=procedure_id,                 # the procedure_id in the procedures TALBE
                     data=data,                       # code for procedure which is related with the id.
+                    dev_id = device_id,              # id of the device
+                    id_list = proc_list,              # id list of procedure belong to the device
+                    name_list = proc_name_list       # name list of the procedure belong to the device
                     )
 
     # generated HTML code for editor by parameters in file_details
@@ -111,6 +118,27 @@ def save_procedure():
                      highlight = highlight)
     return response.json(file_save)
 
+# @auth.requires_signature()
+def delete_procedure():
+    """
+    This function is used to delete specific procedure
+    :return:
+    """
+    procedure_id = request.vars.procedure_id
+    device_id = request.vars.device_id
+    # call api to delete the procedure
+    proc_harness_module.delete_procedure(procedure_id, device_id)
+    data=URL('redirect_home')
+    #response a json type data to redirect to homepage after delete procedure
+    return response.json(data=data)
+
+
+def redirect_home():
+    """
+    This function is used to redirect page to homepage
+    :return:
+    """
+    redirect(URL('default','index'))
 
 ## all the following function is used for self debug and will be deleted at final edition
 def create():
@@ -157,10 +185,10 @@ def test_edit():
     :rtype: dict
     """
     # get the procedure_id and stable statues of procedure in TABLE procedure
+    device_id = request.vars.device_id
     procedure_id = request.vars.procedure_id
     stable = request.vars.stable
-
-    return dict(procedure_id = procedure_id, stable=stable)
+    return dict(device_id = device_id, procedure_id = procedure_id, stable=stable)
 
 def eprint():
     print('ok')
@@ -191,15 +219,15 @@ def run_test():
 
     # create procedure name=demo_1 for the device whose id = 1 and saved it
     proc_id = proc_harness_module.create_procedure("demo_1", "1")
-    proc_harness_module.save(proc_id, "#demo1 stable edition code", True)
+    proc_harness_module.save(proc_id, "#demo1 stable edition code\nfrom procedureapi import Procedure\n\nclass DeviceProdecure (Procedure):\n\n    def init (self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n\n    def run (self):\n        # Called each time the schedule is triggered", True)
     time.sleep(2)
-    proc_harness_module.save(proc_id, "#demo1 temporary edition code", False)
+    proc_harness_module.save(proc_id, "#demo1 temporary edition code\nfrom procedureapi import Procedure\n\nclass DeviceProdecure (Procedure):\n\n    def init (self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n\n    def run (self):\n        # Called each time the schedule is triggered", False)
     time.sleep(2)
     # create procedure name=demo_2 for the device whose id = 1 and saved it
     proc_id2 = proc_harness_module.create_procedure("demo_2", "1")
-    proc_harness_module.save(proc_id2, "#demo2 stable edition code", True)
+    proc_harness_module.save(proc_id2, "#demo2 stable edition code\nfrom procedureapi import Procedure\n\nclass DeviceProdecure (Procedure):\n\n    def init (self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n\n    def run (self):\n        # Called each time the schedule is triggered", True)
     time.sleep(2)
-    proc_harness_module.save(proc_id2, "#demo2 temporary edition code", False)
+    proc_harness_module.save(proc_id2, "#demo2 temporary edition code\nfrom procedureapi import Procedure\n\nclass DeviceProdecure (Procedure):\n\n    def init (self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n\n    def run (self):\n        # Called each time the schedule is triggered", False)
 
     # get the list of procedure_id from device whose id = 1
     proc_list1 = proc_harness_module.get_procedures_for_edit("1")
