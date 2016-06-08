@@ -18,7 +18,8 @@ def edit_procedure():
     preferences={'theme':'web2py', 'editor': 'default', 'closetag': 'true', 'codefolding': 'false', 'tabwidth':'4', 'indentwithtabs':'false', 'linenumbers':'true', 'highlightline':'true'}
 
     # get the procedure_id and stable state of procedure in TABLE procedure
-    device_id = request.vars['device_id']
+    pseudo_id = int(request.vars['device_id'])
+    device_id = db(db.device.id == pseudo_id).select()[0].device_id
     procedure_id = request.vars['procedure_id']
     stable = request.vars['stable']
     # the final edition will use Team 2 API "get_procedure_data(procedure_id, stable)"  to get the data
@@ -36,7 +37,7 @@ def edit_procedure():
                     editor_settings=preferences,     # the option parameters used for setting editor feature.
                     id=procedure_id,                 # the procedure_id in the procedures TALBE
                     data=data,                       # code for procedure which is related with the id.
-                    dev_id = device_id,              # id of the device
+                    dev_id = pseudo_id,              # id of the sudo device
                     id_list = proc_list,              # id list of procedure belong to the device
                     name_list = proc_name_list       # name list of the procedure belong to the device
                     )
@@ -125,7 +126,8 @@ def delete_procedure():
     :return:
     """
     procedure_id = request.vars.procedure_id
-    device_id = request.vars.device_id
+    pseudo_id = int(request.vars.device_id)
+    device_id = db(db.device.id == pseudo_id).select()[0].device_id
     # call api to delete the procedure
     proc_harness_module.delete_procedure(procedure_id, device_id)
     data=URL('redirect_home')
@@ -185,10 +187,12 @@ def test_edit():
     :rtype: dict
     """
     # get the procedure_id and stable statues of procedure in TABLE procedure
-    device_id = request.vars.device_id
+    pseudo_id = int(request.vars.device_id)
+    device_id = ''+db(db.device.id == pseudo_id).select()[0].device_id
     procedure_id = request.vars.procedure_id
     stable = request.vars.stable
-    return dict(device_id = device_id, procedure_id = procedure_id, stable=stable)
+    print('196')
+    return dict(device_id = pseudo_id, procedure_id = procedure_id, stable=stable)
 
 def eprint():
     print('ok')

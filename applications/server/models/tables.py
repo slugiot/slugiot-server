@@ -134,3 +134,10 @@ db.define_table('coding',
             Field('procedures', 'text'),
             Field('times','datetime')
             )
+
+# Test table for inserting a procedure. Whatever gets inserted here is garbage.
+db.define_table('procedures_trash',
+                Field('device_id', 'string', required=True),
+                Field('name', 'string', required=True)
+                # Name of procedure used for file on client should be unique per device_id
+                )

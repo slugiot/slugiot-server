@@ -305,6 +305,13 @@
 
 
 
+
+
+
+
+
+
+
         </script>
     </div>
 </div>
@@ -343,6 +350,7 @@
     var global_device_id = -1;
 
     $(function () {
+
 //        alert($('#select_procedure_id option:selected').text());
         $("#select_name").empty();
         $("#select_procedure_id").empty();
@@ -352,6 +360,8 @@
         global_device_id = device_id;
         // add value to select_name
         // sending a ajax request
+        console.log('the device id is :')
+        console.log(device_id);
         $.ajax({
             'url': '/get_parameter',
             'type': 'get',
@@ -359,25 +369,65 @@
             'data': {device_id: device_id},
             'success': function (data) {
                 console.log(data);
+                console.log('--------');
 //                alert(data);
                 var name = data.name;
                 var procedure_id = data.procedure_id;
-                for (var val in name) {
-                    console.log(name[val].name);
-                    $("#select_name").append('<option>' + name[val].name + '</option>');
-                }
+//                for (var val in name) {
+//                    console.log(name[val].name);
+//                    $("#select_name").append('<option>' + name[val].name + '</option>');
+//                }
                 for (var val in procedure_id) {
-                    console.log(procedure_id[val].procedure_id);
-                    $("#select_procedure_id").append('<option>' + procedure_id[val].procedure_id + '</option>');
+                    console.log(procedure_id[val]);
+                    $("#select_procedure_id").append('<option>' + procedure_id[val] + '</option>');
                 }
                 $('.selectpicker').selectpicker('refresh');
             },
             error: function (error) {
-                console.log('error; ' + eval(error)+'fail to get parameter');
+                console.log('error; ' + eval(error) + 'fail to get parameter');
             }
         });
+
+
+        $('#select_procedure_id').on('change', function () {
+            var selected = $(this).find("option:selected").val();
+            console.log('the id of the device is :');
+            console.log(global_device_id);
+            console.log('the procedure_id is :');
+            console.log(selected);
+            $("#select_name").empty();
+            $('.selectpicker').selectpicker('refresh');
+
+            $.ajax({
+                'url': '/get_var_name',
+                'type': 'get',
+                'dataType': 'json',
+                'data': {device_id: global_device_id, procedure_id: selected},
+                'success': function (data) {
+                    console.log(data);
+                    console.log('!!!!!!!!!!!!!!!!!!!!!!');
+                    var name = data.name;
+                    console.log(name);
+                    for (var i = 0; i < name.length; i++) {
+                        console.log(name[i]);
+                        $("#select_name").append('<option>' + name[i] + '</option>');
+                    }
+                    $('.selectpicker').selectpicker('refresh');
+                },
+                error: function (error) {
+                    console.log('error; ' + eval(error) + 'fail to get parameter');
+                }
+            });
+        });
+
+
     });
 
+
+    function select_proc_id(obj) {
+        alert("111");
+        alert(obj.text());
+    }
 
     function clickTr(obj) {
         var c = $(obj).find("td").eq(0).text();

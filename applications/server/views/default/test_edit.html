@@ -1,0 +1,79 @@
+
+{{extend 'new_layout.html'}}
+
+<!-- the editor js and css part used which will be integrated to UI team web page-->
+{{cm=URL('static', 'codemirror')}}
+{{js_url=URL('static','js')}}
+{{css_url=URL('static', 'css')}}
+<script src="{{=URL('static', 'js/ractive.min.js')}}"></script>
+<script src="{{=URL('static', 'js/jquery-1.12.4.js')}}"></script>
+<link rel="stylesheet" href="{{=cm}}/lib/codemirror.css">
+<link rel="stylesheet" href="{{='%s/theme/web2py.css' % cm}}">
+<script src="{{=cm}}/lib/codemirror.js"></script>
+<script src="{{=cm}}/addon/edit/matchbrackets.js"></script>
+<script src="{{=cm}}/mode/python/python.js"></script>
+<script src="{{=cm}}/addon/hint/show-hint.js"></script>
+<script src="{{=cm}}/addon/hint/python-hint.js"></script>
+<link rel="stylesheet" href="{{=cm}}/addon/hint/show-hint.css">
+<script src="{{=cm}}/addon/search/search.js"></script>
+<script src="{{=cm}}/addon/search/searchcursor.js"></script>
+<script src="{{=cm}}/addon/dialog/dialog.js"></script>
+<script src="{{=cm}}/addon/edit/trailingspace.js"></script>
+<link rel="stylesheet" href="{{=cm}}/addon/dialog/dialog.css">
+<script src="{{=cm}}/addon/selection/active-line.js"></script>
+<script src="{{=cm}}/addon/display/fullscreen.js"></script>
+<link rel="stylesheet" href="{{=cm}}/addon/display/fullscreen.css">
+<script src="{{=cm}}/addon/fold/foldcode.js"></script>
+<script src="{{=cm}}/addon/fold/foldgutter.js"></script>
+<script src="{{=cm}}/addon/fold/brace-fold.js"></script>
+<script src="{{=cm}}/addon/fold/comment-fold.js"></script>
+<script src="{{=cm}}/addon/fold/indent-fold.js"></script>
+<script src="{{=cm}}/addon/comment/comment.js"></script>
+<link rel="stylesheet" href="{{=cm}}/addon/fold/foldgutter.css">
+<script src="{{=cm}}/emmet.min.js"></script>
+<script src="{{=js_url}}/ajax_editor.js"></script>
+<link rel="stylesheet" href="{{=css_url}}/typeahead.js-bootstrap.css">
+<link rel="stylesheet" href="{{=css_url}}/web2py-codemirror.css">
+
+<!-- the editor html part used which can be integrated to UI team web page-->
+
+<br>
+<div class="container" style="margin: 0 0 20px 0">
+    <div class="row" style=""><!-- overflow: hidden style="background: blue; position: absolute; overflow-y: auto; top: 70px; bottom: 100px;" -->
+        <!-- left side procedure list -->
+        <div class="col-md-3">
+            <div class="list-group" id="procedures">
+
+            </div>
+        </div>
+        <!-- right side editor area -->
+        <div class="col-md-9" style="">
+            <div id="editor_area" class="row-fluid" style="">
+                <div id="placeholder" style="">
+                    <div id="myTabContent" class="tab-content" style="height: 500px"></div>
+
+                    <div style="">
+                        <div style="margin: 15px 0px 15px 0px;">
+                            <a class="list-group-item" id="save_result" style=""><div></div></a>
+                        </div>
+                        <button id = "save_unstable" type="button" class="btn btn-primary" onclick="save_procedure('{{=URL('editor','save_procedure',user_signature=True)}}',{{=procedure_id}}, false)">save temporary</button>
+                        <button id = "save_stable" type="button" class="btn btn-info" onclick="save_procedure('{{=URL('editor','save_procedure',user_signature=True)}}',{{=procedure_id}}, true)">save stable</button>
+                        <button id = "delete" type="button" class="btn btn-danger" onclick="delete_procedure('{{=URL('editor','delete_procedure',user_signature=True)}}',{{=procedure_id}}, {{=device_id}})">delete procedure</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{{block footer}}{{end}}
+
+<script>
+
+$(document).ready(function() {
+    load_procedure('{{=URL('default','edit_procedure',user_signature=True)}}', '{{=procedure_id}}', {{=stable}}, '{{=device_id}}');
+});
+
+</script>
