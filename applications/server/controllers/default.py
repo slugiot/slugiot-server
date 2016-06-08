@@ -8,7 +8,6 @@ proc_harness_module: Used for adding procedures
 """
 from gluon import utils as gluon_utils
 import time
-import access
 import proc_harness_module
 import datetime
 import random
@@ -42,15 +41,9 @@ def index():
         response.device_name = "Try"
         return dict(message=T('Please sign in!'))
     else:
-        # Generate a UUID for user signatures
-        sign_uuid = gluon_utils.web2py_uuid()
-
-        # Generate a list of device associated with the user's email address.
-        device_list = db(db.device.user_email == auth.user.email).select()
-
         # Return the list of devices and UUID
         response.device_name = "Cat"
-        return dict(device_list=device_list, sign_uuid=sign_uuid)
+        return dict()
 
 
 def login():
@@ -73,56 +66,6 @@ def new_device():
         session.flash = T(form.vars.name + ' added!')
         redirect(URL('default', 'manage', vars=dict(device=device.id)))
     return dict(form=form)
-
-
-def modal():
-    foo = "foo!"
-    return dict(fo3o=foo)
-
-
-@auth.requires_login()
-def add_new_procedure():
-    """
-    Description: Controller for the add page, which lets you add a device into the DB.
-    Returns: A form that lets you add things into db.devices (use by including {{=form}})
-    """
-    # Device ID should not be changeable
-    db.procedures.device_id.writable = False
-    val = request.vars['device']
-    if val is None:
-        session.flash = T('No such device')
-        redirect(URL('default', 'index'))
-    else:
-        db.procedures.device_id.default = val
-    form = SQLFORM(db.procedures)
-
-    # set the logger logger
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    logger.addHandler(ch)
-
-    # initialize name variable
-    name = ""
-
-    # Generate a name to be passed on to add_permission
-    if db(db.device.device_id == val).select():
-        name = db(db.device.device_id == val).select()[0].name + "_procedure"
-
-    if form.process().accepted:
-        proc_id = proc_harness_module.create_procedure(name, val)
-        # Initialize some starter Python code
-        proc_harness_module.save(proc_id, "##This is your new (stable) procedure. Happy coding!\nfrom procedureapi import Procedure\n\nclass DeviceProdecure(Procedure):\n\n    def init(self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n    def run(self):\n        # Called each time the schedule is triggered", True)
-        # Sleep a little bit to allow it to successfully save
-        time.sleep(2)
-        # Initalize the draft Python ocde as well
-        proc_harness_module.save(proc_id, "##This is your new (temporary) procedure. Happy coding!\nfrom procedureapi import Procedure\n\nclass DeviceProdecure(Procedure):\n\n    def init(self):\n        # initialize variables\n        # Add schedule. For example:\n        # self.api.add_schedule(repeats=10, period_between_runs=86400)\n    def run(self):\n        # Called each time the schedule is triggered", False)
-        # Sleep a little bit again
-        time.sleep(2)
-        # Go back to the home page.
-        session.flash = "Procedure added!"
-        redirect(URL('default', 'index'))
-    return dict(form=form)
-
 
 @auth.requires_login()
 def edit_device():
@@ -169,21 +112,6 @@ def manage():
     return dict(procedures_list=procedure_list, sign_uuid=sign_uuid, val=device_id)
 
 
-@auth.requires_login()
-def edit_procedure():
-    """
-    Description: Passed procedure ID and stability mode to the editor to use
-    :return: procedure_id and stable
-    """
-    # get the procedure_id and stable statues of procedure in TABLE procedure
-    procedure_id = int(request.vars['procedure_id'])
-    stable = request.vars['stable']
-    print stable
-    # if procedure_id or stable is None:
-    # session.flash = T('No such ID')
-    # redirect(URL('default', 'index'))
-    return dict(procedure_id=procedure_id, stable=stable)
-
 
 @auth.requires_login()
 def load_devices():
@@ -201,17 +129,31 @@ def load_devices():
 
 
 @auth.requires_login()
-def read_procedures():
+def load_exist_procedures():
     """
     Description: Returns a list of devices to show on index.html. This is called from the JS.
     Returns: A JSON with a dictionary of all the devices and their database fields.
     """
-    val = request.vars['device']
-    rows = db(db.procedures.device_id == val).select()
-    time.sleep(1)  # so we can some time to stare at the pretty animation :-)
-    d = {r.device_id: {'name': r.name,
-                       'id': r.id}
-         for r in rows}
+    val = int(request.vars['device_id'])
+    if val is not None:
+        print "Test Record "
+        print val
+    device_id = db(db.device.id == val).select()[0].device_id
+    print device_id
+
+    # get the list of procedure_id belongs to the device
+    proc_list = proc_harness_module.get_procedures_for_edit(device_id)
+    # TO DO change the API to proc_harness_module.get_procedures_name_for_edit(device_id)
+    proc_name_list = proc_harness_module.get_procedures_name_for_edit(device_id)
+    #for proc_id in proc_list:
+    #    d['id'] = proc_id
+    d = []
+    for i in range(len(proc_list)):
+        d.append(dict(name=proc_name_list[i],id=proc_list[i]))
+    #d = dict(zip(proc_list, proc_name_list))
+    if d is not None:
+        print "Is this none?"
+    #dic = dict(zip(proc_list, d))
     return response.json(dict(procedure_dict=d))
 
 
@@ -494,3 +436,175 @@ def viz():
     if len(request.args) > 0:
         result = request.args[0]
     return {"device_id": result}
+
+
+
+
+"""
+---------------------------  editor_team ---------------------------
+"""
+
+
+import proc_harness_module
+from datetime import datetime
+# @auth.requires_signature()
+
+
+def edit_procedure():
+    """
+    This function received ajax request to generated the HTML content for editor
+
+    : parameter precedure_id: the precedure_id parameter in precedure TABLE sent by request.vars
+    : type precedure_id: str
+    :return: Dict with HTML content of editor and procedure_id, procedure data, editor preferences
+    :rtype: Json
+    """
+    # parameter for CodeMirror option parameter used for setting the editor feature
+    preferences={'theme':'web2py', 'editor': 'default', 'closetag': 'true', 'codefolding': 'false', 'tabwidth':'4', 'indentwithtabs':'false', 'linenumbers':'true', 'highlightline':'true'}
+
+    # get the procedure_id and stable state of procedure in TABLE procedure
+    pseudo_id = int(request.vars['device_id'])
+    device_id = db(db.device.id == pseudo_id).select()[0].device_id
+    procedure_id = request.vars['procedure_id']
+    stable = request.vars['stable']
+    # the final edition will use Team 2 API "get_procedure_data(procedure_id, stable)"  to get the data
+    #data = db(db.coding.id == procedure_id).select(db.coding.procedures).first().procedures
+    if stable == 'false':
+        data = proc_harness_module.get_procedure_data(procedure_id, False)
+    else:
+        data = proc_harness_module.get_procedure_data(procedure_id, True)
+
+    # get the list of procedure_id belongs to the device
+    proc_list = proc_harness_module.get_procedures_for_edit(device_id)
+    #TO DO change the API to proc_harness_module.get_procedures_name_for_edit(device_id)
+    proc_name_list = proc_harness_module.get_procedures_name_for_edit(device_id)
+    file_details = dict(
+                    editor_settings=preferences,     # the option parameters used for setting editor feature.
+                    id=procedure_id,                 # the procedure_id in the procedures TALBE
+                    data=data,                       # code for procedure which is related with the id.
+                    dev_id = pseudo_id,              # id of the sudo device
+                    id_list = proc_list,              # id list of procedure belong to the device
+                    name_list = proc_name_list       # name list of the procedure belong to the device
+                    )
+
+    # generated HTML code for editor by parameters in file_details
+    plain_html = response.render('default/edit_js.html', file_details)
+
+    # add the HTML content element for editor to file_details dictionary
+    file_details['plain_html'] = plain_html
+
+    return response.json(file_details)
+
+
+# @auth.requires_signature()
+def save_procedure():
+    """
+    This function received ajax request to save procedure to the procedure TABLE
+
+    : parameter procedure_id: the precedure_id parameter in precedure TABLE sent by request.vars
+    : type procedure_id: str
+    : parameter procedure: the procedure data in procedure TABLE sent by request.vars
+    : type procedure: str
+    : parameter stable: the sign to identify if saved procedure is stable
+    : type stable: str
+    :return: whether the procedure is saved correctlly.
+    :rtype: str
+    """
+
+    # obtain parameter from ajax request
+    procedure_id = request.vars.procedure_id
+    data = request.vars.procedure
+    stable = request.vars.stable
+
+    result_html = DIV(T('file saved successfully'))
+    highlight = None
+
+    #save the procedure data to the database
+    if stable == 'false':
+
+        #the final edition will use Team 2 API save(procedure_id, stable) to save the temporary procedure
+        #db(db.coding.id == procedure_id).update(procedures = data)
+        proc_harness_module.save(procedure_id,data,False)
+
+    else:
+        # compile the stable procedure and saved it if there is no exception during compiling
+
+        import _ast
+        try:
+            code = request.vars.procedure.rstrip().replace('\r\n', '\n') + '\n'
+            compile(code, '<string>', "exec", _ast.PyCF_ONLY_AST)
+
+            #the final edition will use Team 2 API save(procedure_id, stable) to save the data
+            #db(db.coding.id == procedure_id).update(procedures = data)
+            proc_harness_module.save(procedure_id,data,True)
+
+        except Exception, e:
+            # DISCUSS
+            # offset calculation is only used for textarea (start/stop)
+            start = sum([len(line) + 1 for l, line
+                         in enumerate(request.vars.procedure.split("\n"))
+                         if l < e.lineno - 1])
+
+            if e.text and e.offset:
+                offset = e.offset - (len(e.text) - len(
+                    e.text.splitlines()[-1]))
+            else:
+                offset = 0
+            highlight = {'start': start, 'end': start +
+                         offset + 1, 'lineno': e.lineno, 'offset': offset}
+            try:
+                ex_name = e.__class__.__name__
+            except:
+                ex_name = 'unknown exception!'
+            result_html = DIV(T('failed to compile and save file because:'), BR(),
+                                 B(ex_name), ' ' + T('at line %s', e.lineno),
+                                 offset and ' ' +
+                                 T('at char %s', offset) or '')
+
+    file_save = dict(result = result_html,
+                     highlight = highlight)
+    return response.json(file_save)
+
+
+# @auth.requires_signature()
+def delete_procedure():
+    """
+    This function is used to delete specific procedure
+    :return:
+    """
+    procedure_id = request.vars.procedure_id
+    pseudo_id = int(request.vars.device_id)
+    device_id = db(db.device.id == pseudo_id).select()[0].device_id
+    # call api to delete the procedure
+    proc_harness_module.delete_procedure(procedure_id, device_id)
+    data=URL('redirect_home')
+    #response a json type data to redirect to homepage after delete procedure
+    return response.json(data=data)
+
+
+def redirect_home():
+    """
+    This function is used to redirect page to homepage
+    :return:
+    """
+    redirect(URL('default','index'))
+
+## all the following function is used for self debug and will be deleted at final edition
+
+
+def test_edit():
+    """
+    This is served for the test example view page, which help UI team to integrate editor
+    This function will be delete at final edition
+
+    parameter procedure_id: the precedure_id parameter in precedure TABLE sent by request.vars
+    type procedure_id: str
+    :return: the procedure_id for procedure in procedure TABLE
+    :rtype: dict
+    """
+    # get the procedure_id and stable statues of procedure in TABLE procedure
+    pseudo_id = int(request.vars.device_id)
+    device_id = ''+db(db.device.id == pseudo_id).select()[0].device_id
+    procedure_id = request.vars.procedure_id
+    stable = request.vars.stable
+    return dict(device_id = pseudo_id, procedure_id = procedure_id, stable=stable)
