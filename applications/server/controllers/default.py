@@ -226,8 +226,7 @@ def call():
 
 @auth.requires_login()
 def share():
-    """"This allows us to edit permissions for a device.  We imagine we deal only
-    with the view permission here."""
+    """"This allows us to edit permissions for a device"""
     id = request.vars['device_id']
     device_id = str(db((db.device.id == id)).select().first().device_id)
 
@@ -253,7 +252,7 @@ def share():
         for u in new_users - old_users:
             if u != '':
                 access.add_permission(device_id,u,'v',procedure_id=procedure_id)
-        redirect(URL('default', 'share', vars={'device_id' : id}))
+        redirect(URL('default', 'share', vars={'device_id' : id, 'procedure_id': procedure_id}))
     """"This allows us to edit permissions for a device.  We imagine we deal only
     with the view permission here."""
     # Gets list of users who can view.
@@ -273,7 +272,7 @@ def share():
         for u in new_users - old_users:
             if u != '':
                 access.add_permission(device_id,u,'e',procedure_id=procedure_id)
-        redirect(URL('default', 'share', vars={'device_id' : id}))
+        redirect(URL('default', 'share', vars={'device_id' : id, 'procedure_id': procedure_id}))
 
     user_emails_3 = [u.perm_user_email for u in filter(lambda x: x.perm_type == 'a', user_list)]
     # Let's get a nice form for editing this.
@@ -293,7 +292,7 @@ def share():
         for u in new_users - old_users:
             if u != '':
                 access.add_permission(device_id, u, 'a', procedure_id=procedure_id)
-        redirect(URL('default', 'share', vars={'device_id': id}))
+        redirect(URL('default', 'share', vars={'device_id': id,'procedure_id': procedure_id}))
 
 
     return dict(form=form,form2=form2,form3=form3)
