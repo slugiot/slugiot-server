@@ -246,6 +246,7 @@ def get_modulename():
         modulename.append(row.procedure_id)
     print modulename
     print "end of get_modulename"
+    modulename = set(modulename)
     result = {'module_name': modulename}
     return response.json(result)
 
@@ -303,6 +304,8 @@ def get_var_name():
                           (db.module_values.procedure_id == procedure_id)).select():
         var_name.append(row.name)
     print '--------return data of get_var_name-----------------'
+    print var_name
+    var_name = set(var_name)
     print var_name
     result = {'name': var_name}
     return response.json(result)
