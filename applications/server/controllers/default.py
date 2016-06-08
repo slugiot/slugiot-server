@@ -229,7 +229,7 @@ def share():
     """"This allows us to edit permissions for a device.  We imagine we deal only
     with the view permission here."""
     id = request.vars['device_id']
-    device_id = db((db.device.id == id)).select().first().device_id
+    device_id = str(db((db.device.id == id)).select().first().device_id)
 
     procedure_id = request.vars['procedure_id']
     # validate them: user has to be manager.
@@ -253,11 +253,9 @@ def share():
         for u in new_users - old_users:
             if u != '':
                 access.add_permission(device_id,u,'v',procedure_id=procedure_id)
-        redirect(URL('share', 'index', vars={'device_id' : device_id, 'procedure_id': procedure_id}))
+        redirect(URL('default', 'share', vars={'device_id' : id}))
     """"This allows us to edit permissions for a device.  We imagine we deal only
     with the view permission here."""
-    device_id = request.vars['device_id']
-    procedure_id = request.vars['procedure_id']
     # Gets list of users who can view.
     user_emails_2 = [u.perm_user_email for u in filter(lambda x: x.perm_type=='e', user_list)]
     # Let's get a nice form for editing this.
@@ -275,7 +273,7 @@ def share():
         for u in new_users - old_users:
             if u != '':
                 access.add_permission(device_id,u,'e',procedure_id=procedure_id)
-        redirect(URL('share', 'index', vars={'device_id' : device_id, 'procedure_id': procedure_id}))
+        redirect(URL('default', 'share', vars={'device_id' : id}))
 
     user_emails_3 = [u.perm_user_email for u in filter(lambda x: x.perm_type == 'a', user_list)]
     # Let's get a nice form for editing this.
@@ -295,7 +293,7 @@ def share():
         for u in new_users - old_users:
             if u != '':
                 access.add_permission(device_id, u, 'a', procedure_id=procedure_id)
-        redirect(URL('share', 'index', vars={'device_id': device_id, 'procedure_id': procedure_id}))
+        redirect(URL('default', 'share', vars={'device_id': id}))
 
 
     return dict(form=form,form2=form2,form3=form3)
